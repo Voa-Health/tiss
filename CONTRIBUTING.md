@@ -20,6 +20,7 @@ uvx pre-commit install
 - Escreva tutoriais em notebooks.
 - Consulte `LIMITES` em `scripts/manutencao.py` para as guardas automáticas.
 - Rode `uv run python scripts/manutencao.py verificar` antes de enviar.
+- O Gitleaks bloqueia segredos na CI e no pre-commit.
 
 ## Como contribuir
 
