@@ -1,18 +1,65 @@
+# Python
 .venv/
+venv/
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
+.dmypy.json
 .ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+.ipynb_checkpoints/
+
+# Build e cobertura
 dist/
 build/
 *.egg-info/
+.eggs/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
-.vercel
-src/voa_tiss/rede/_data/*.sqlite
+
+# Web
 node_modules/
 .next/
+out/
+.turbo/
+.pnpm-store/
 *.tsbuildinfo
 web/next-env.d.ts
+test-results/
+playwright-report/
+npm-debug.log*
+pnpm-debug.log*
+
+# Vercel
+.vercel
+
+# Dados baixados sob demanda
+src/voa_tiss/rede/_data/*.sqlite*
+
+# Segredos e certificados (inclusive ICP-Brasil A1)
 .env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+.aws/
+gitleaks-report*.json
+
+# Dados reais nunca entram no repositório
+privado/
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+*.log
