@@ -22,7 +22,7 @@ jobs:
       - run: uv run python scripts/manutencao.py tabela38 --archive /tmp/ans/tabela38.zip
       - run: uv run python scripts/manutencao.py artefatos
       - run: uv run python scripts/manutencao.py verificar
-      - uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           title: "Atualizar dados públicos da ANS"
           commit-message: "Atualiza dados públicos da ANS"
