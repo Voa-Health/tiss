@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "54b60ff72381941336cff787d0c32ef8c16b08c139ebae090030edc5dda3299d",
+  "files": {
+    "tissAssinaturaDigital_v1.01.xsd": "8567690a0eb05b9681fdc575ca7c867f75bf5cb33573175b8d333617ef035221",
+    "tissComplexTypesV4_02_00.xsd": "18e927e8c65f9734c65b047db42533c96bb899d6f1494c517afb8abdb97ccbea",
+    "tissGuiasV4_02_00.xsd": "20a7c80218d0a6551bc736f22895196ebc892e18e9f8ac214957691446d61284",
+    "tissSimpleTypesV4_02_00.xsd": "a0a3e8bff37827a468915b70c44e913a335cd6b703c1e9d0661d77dc9033370a",
+    "tissV4_02_00.xsd": "193e727c93120f21a2ca0483e261f1b0205069bf0bafc8bcbeb83a51145f324b",
+    "tissWebServicesV4_02_00.xsd": "060569ecb0c8577282e23aadff223d0445dd0975e1ff29f7025fb88346f96ada",
+    "xmldsig-core-schema.xsd": "b6388292d746c6cc8f932ce3b6bf7c7fc0bf6cba58ec385b38988887bcf5fdbb"
+  },
+  "license": "não informado",
+  "root": "tissV4_02_00.xsd",
+  "source": "https://www.gov.br/ans/pt-br/assuntos/prestadores/padrao-para-troca-de-informacao-de-saude-suplementar-2013-tiss/PadroTISSComunicao202505.zip",
+  "version": "4.02.00"
+}

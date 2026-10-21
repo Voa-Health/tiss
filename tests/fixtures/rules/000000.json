@@ -1,0 +1,190 @@
+{
+  "operadora": "__REGISTRO_ANS__",
+  "mantenedor": {
+    "tipo": "comunidade"
+  },
+  "official": false,
+  "versao_tiss": "4.03.00",
+  "regras": [
+    {
+      "id": "obrigatorio.valido",
+      "descricao": "Campo presente.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "obrigatorio",
+        "pointer": "/operadora/registro_ans"
+      }
+    },
+    {
+      "id": "obrigatorio.invalido",
+      "descricao": "Campo ausente.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "obrigatorio",
+        "pointer": "/ausente"
+      }
+    },
+    {
+      "id": "padrao.valido",
+      "descricao": "Valor no padrão.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "padrao",
+        "pointer": "/numero_lote",
+        "regex": ".+"
+      }
+    },
+    {
+      "id": "padrao.invalido",
+      "descricao": "Valor fora do padrão.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "padrao",
+        "pointer": "/numero_lote",
+        "regex": "^$"
+      }
+    },
+    {
+      "id": "valores.valido",
+      "descricao": "Valor permitido.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "valores",
+        "pointer": "/numero_lote",
+        "permitidos": [
+          "__NUMERO_LOTE__"
+        ]
+      }
+    },
+    {
+      "id": "valores.invalido",
+      "descricao": "Valor não permitido.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "valores",
+        "pointer": "/numero_lote",
+        "permitidos": []
+      }
+    },
+    {
+      "id": "max_itens.valido",
+      "descricao": "Quantidade dentro do limite.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "max_itens",
+        "pointer": "/guias",
+        "max": 99999
+      }
+    },
+    {
+      "id": "max_itens.invalido",
+      "descricao": "Quantidade acima do limite.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "max_itens",
+        "pointer": "/guias",
+        "max": 0
+      }
+    },
+    {
+      "id": "combinacao_proibida.valido",
+      "descricao": "Combinação permitida.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "combinacao_proibida",
+        "se": {
+          "pointer": "/numero_lote",
+          "valores": [
+            "__NEVER__"
+          ]
+        },
+        "entao_proibido": {
+          "pointer": "/operadora/registro_ans",
+          "valores": [
+            "__REGISTRO_ANS__"
+          ]
+        }
+      }
+    },
+    {
+      "id": "combinacao_proibida.invalido",
+      "descricao": "Combinação proibida.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "combinacao_proibida",
+        "se": {
+          "pointer": "/numero_lote",
+          "valores": [
+            "__NUMERO_LOTE__"
+          ]
+        },
+        "entao_proibido": {
+          "pointer": "/operadora/registro_ans",
+          "valores": [
+            "__REGISTRO_ANS__"
+          ]
+        }
+      }
+    }
+  ]
+}

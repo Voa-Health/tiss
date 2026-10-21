@@ -1,0 +1,21 @@
+name: Sugerir uma funcionalidade
+description: Descreva uma necessidade do projeto.
+title: "[Funcionalidade]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: Não inclua dados pessoais ou informações de saúde identificáveis.
+  - type: textarea
+    id: need
+    attributes:
+      label: Qual necessidade?
+      description: Descreva o problema que deseja resolver.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true

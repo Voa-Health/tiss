@@ -1,0 +1,12 @@
+{
+  "versao": "4.03.00",
+  "transacao": {
+    "sequencial_transacao": "1",
+    "data_registro_transacao": "2026-01-01",
+    "hora_registro_transacao": "00:00:00"
+  },
+  "prestador": {"cnpj": "12345678000199"},
+  "operadora": {"registro_ans": "123456"},
+  "numero_lote": "1",
+  "guias": []
+}

@@ -1,0 +1,14 @@
+changelog:
+  categories:
+    - title: Novidades
+      labels:
+        - novidade
+    - title: Correções
+      labels:
+        - correcao
+    - title: Regras de operadora
+      labels:
+        - regra
+    - title: Manutenção
+      labels:
+        - manutencao

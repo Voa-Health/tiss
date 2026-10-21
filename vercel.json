@@ -1,0 +1,27 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "api": {
+      "root": "./",
+      "framework": "fastapi",
+      "entrypoint": "api.index:app",
+      "buildCommand": "PYTHONPATH=src python -m voa_tiss.rede src/voa_tiss/rede/_data/rede.sqlite || echo 'rede indisponível no build'",
+      "functions": {
+        "api/index.py": {
+          "includeFiles": "src/voa_tiss/**"
+        }
+      }
+    },
+    "web": {
+      "root": "web/",
+      "framework": "nextjs"
+    }
+  },
+  "rewrites": [
+    { "source": "/v1/(.*)", "destination": { "service": "api" } },
+    { "source": "/mcp", "destination": { "service": "api" } },
+    { "source": "/mcp/(.*)", "destination": { "service": "api" } },
+    { "source": "/openapi.json", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
+}

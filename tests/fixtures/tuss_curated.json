@@ -1,0 +1,117 @@
+{
+  "license": "CC BY-ND — ANS dados abertos (verbatim redistribution only)",
+  "records": [
+    {
+      "codigo": "60000123",
+      "descricao": "Diária hospitalar em acomodação coletiva (enfermaria)",
+      "tabela": "18",
+      "termo": "Diária de enfermaria",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "60000131",
+      "descricao": "Diária em unidade de terapia intensiva adulto",
+      "tabela": "18",
+      "termo": "Diária de UTI adulto",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "60012345",
+      "descricao": "Taxa de oxigênio medicinal por hora de utilização",
+      "tabela": "18",
+      "termo": "Oxigênio medicinal",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2009-01-01"
+    },
+    {
+      "codigo": "70000010",
+      "descricao": "Stent coronariano eluidor de fármaco",
+      "tabela": "19",
+      "termo": "Stent coronário farmacológico",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2010-01-01"
+    },
+    {
+      "codigo": "81500014",
+      "descricao": "Fio de sutura cirúrgico com agulha",
+      "tabela": "19",
+      "termo": "Fio de sutura agulhado",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "90000015",
+      "descricao": "Solução injetável de dipirona sódica 500 mg/mL",
+      "tabela": "20",
+      "termo": "Dipirona sódica injetável",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "90000023",
+      "descricao": "Cápsula de cefalexina 500 mg",
+      "tabela": "20",
+      "termo": "Cefalexina cápsula",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "10101012",
+      "descricao": "Consulta médica em consultório no horário normal ou preestabelecido",
+      "tabela": "22",
+      "termo": "Consulta em consultório",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "10101020",
+      "descricao": "Consulta antiga descontinuada em pronto atendimento",
+      "tabela": "22",
+      "termo": "Consulta em pronto socorro",
+      "vigencia_fim": "2015-12-31",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "10101039",
+      "descricao": "Atendimento médico em domicílio",
+      "tabela": "22",
+      "termo": "Consulta em domicílio",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "31602401",
+      "descricao": "Registro eletrocardiográfico convencional de até 12 derivações",
+      "tabela": "22",
+      "termo": "Eletrocardiograma convencional",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2008-01-01"
+    },
+    {
+      "codigo": "40808010",
+      "descricao": "Exame de ressonância magnética da região craniana",
+      "tabela": "22",
+      "termo": "Ressonância magnética de crânio",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2010-01-01"
+    },
+    {
+      "codigo": "41101014",
+      "descricao": "Ressonância magnética do crânio e encéfalo",
+      "tabela": "22",
+      "termo": "RM - Crânio (encéfalo)",
+      "vigencia_fim": "",
+      "vigencia_inicio": "2014-01-01"
+    }
+  ],
+  "source": "ANS — Terminologia Unificada da Saúde Suplementar (TUSS)",
+  "tables": {
+    "18": "Diárias, taxas e gases medicinais",
+    "19": "Materiais e OPME",
+    "20": "Medicamentos",
+    "22": "Procedimentos e eventos em saúde"
+  },
+  "version": 1
+}

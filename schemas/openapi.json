@@ -1,0 +1,1374 @@
+{
+  "info": {
+    "description": "API HTTP e MCP para documentos TISS.",
+    "title": "voa-tiss",
+    "version": "0.2.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/oauth/client.json": {
+      "get": {
+        "operationId": "oauth_client_oauth_client_json_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Oauth Client Oauth Client Json Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Oauth Client"
+      }
+    },
+    "/v1/auth/callback": {
+      "get": {
+        "operationId": "auth_callback_v1_auth_callback_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Auth Callback"
+      }
+    },
+    "/v1/auth/login": {
+      "get": {
+        "operationId": "auth_login_v1_auth_login_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Auth Login V1 Auth Login Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Auth Login"
+      }
+    },
+    "/v1/keys/refresh": {
+      "post": {
+        "operationId": "refresh_key_v1_keys_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "refresh_token"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Refresh Key"
+      }
+    },
+    "/v1/limits": {
+      "get": {
+        "operationId": "limits_v1_limits_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Limits V1 Limits Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Limits"
+      }
+    },
+    "/v1/operadoras/{registro_ans}": {
+      "get": {
+        "operationId": "operadora_perfil_v1_operadoras__registro_ans__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registro_ans",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{5,6}$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "indicadores": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "fonte": {
+                          "additionalProperties": true,
+                          "properties": {},
+                          "type": "object"
+                        },
+                        "serie": {
+                          "items": {
+                            "additionalProperties": true,
+                            "properties": {},
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "fonte",
+                        "serie"
+                      ],
+                      "type": "object"
+                    },
+                    "razao_social": {
+                      "type": "string"
+                    },
+                    "registro_ans": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "registro_ans",
+                    "razao_social",
+                    "indicadores"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Operadora Perfil"
+      }
+    },
+    "/v1/operadoras/{registro}/rede": {
+      "get": {
+        "operationId": "operadora_rede_v1_operadoras__registro__rede_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registro",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "uf",
+            "required": false,
+            "schema": {
+              "pattern": "^[A-Za-z]{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "atualizado_em": {
+                      "type": "string"
+                    },
+                    "estabelecimentos": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "cd_municipio": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "classe": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "cnes": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "cnpj": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "disponibilidade": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "dt_vinculo_inicio": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "nome": {
+                            "type": "string"
+                          },
+                          "planos": {
+                            "type": "integer"
+                          },
+                          "tipo_contrato": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "tipo_prestador": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "uf": {
+                            "type": "string"
+                          },
+                          "urgencia_emergencia": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "cnes",
+                          "cnpj",
+                          "nome",
+                          "classe",
+                          "cd_municipio",
+                          "uf",
+                          "tipo_contrato",
+                          "disponibilidade",
+                          "tipo_prestador",
+                          "urgencia_emergencia",
+                          "dt_vinculo_inicio",
+                          "planos"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "fonte": {
+                      "type": "string"
+                    },
+                    "por_uf": {
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "type": "object"
+                    },
+                    "registro_ans": {
+                      "type": "string"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "atualizado_em",
+                    "fonte",
+                    "registro_ans",
+                    "total",
+                    "por_uf",
+                    "estabelecimentos"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          },
+          "503": {
+            "description": "Rede hospitalar indisponível."
+          }
+        },
+        "summary": "Operadora Rede"
+      }
+    },
+    "/v1/parse_demonstrativo": {
+      "post": {
+        "operationId": "parse_demonstrativo_v1_parse_demonstrativo_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "xml": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "xml"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "decisoes": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "decision": {
+                            "enum": [
+                              "pago",
+                              "glosado",
+                              "glosa_parcial"
+                            ]
+                          },
+                          "guia_operadora": {
+                            "type": "string"
+                          },
+                          "guia_ref": {
+                            "type": "string"
+                          },
+                          "motivo": {
+                            "type": "string"
+                          },
+                          "tuss_code": {
+                            "type": "string"
+                          },
+                          "valor_glosa_cents": {
+                            "type": "integer"
+                          },
+                          "valor_liberado_cents": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "guia_ref",
+                          "decision",
+                          "motivo"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "decisoes"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Parse Demonstrativo"
+      }
+    },
+    "/v1/plan_reconciliation": {
+      "post": {
+        "operationId": "plan_reconciliation_v1_plan_reconciliation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "decisoes": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "decision": {
+                          "enum": [
+                            "pago",
+                            "glosado",
+                            "glosa_parcial"
+                          ]
+                        },
+                        "guia_operadora": {
+                          "type": "string"
+                        },
+                        "guia_ref": {
+                          "type": "string"
+                        },
+                        "motivo": {
+                          "type": "string"
+                        },
+                        "tuss_code": {
+                          "type": "string"
+                        },
+                        "valor_glosa_cents": {
+                          "type": "integer"
+                        },
+                        "valor_liberado_cents": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "guia_ref",
+                        "decision",
+                        "motivo"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "guias": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {},
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "id_key": {
+                    "type": "string"
+                  },
+                  "operadora_key": {
+                    "type": "string"
+                  },
+                  "prestador_key": {
+                    "type": "string"
+                  },
+                  "status_key": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "decisoes",
+                  "guias"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "ambiguas": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "decision": {
+                            "enum": [
+                              "pago",
+                              "glosado",
+                              "glosa_parcial"
+                            ]
+                          },
+                          "guia_operadora": {
+                            "type": "string"
+                          },
+                          "guia_ref": {
+                            "type": "string"
+                          },
+                          "motivo": {
+                            "type": "string"
+                          },
+                          "tuss_code": {
+                            "type": "string"
+                          },
+                          "valor_glosa_cents": {
+                            "type": "integer"
+                          },
+                          "valor_liberado_cents": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "guia_ref",
+                          "decision",
+                          "motivo"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "propostas": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "sem_par": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "decision": {
+                            "enum": [
+                              "pago",
+                              "glosado",
+                              "glosa_parcial"
+                            ]
+                          },
+                          "guia_operadora": {
+                            "type": "string"
+                          },
+                          "guia_ref": {
+                            "type": "string"
+                          },
+                          "motivo": {
+                            "type": "string"
+                          },
+                          "tuss_code": {
+                            "type": "string"
+                          },
+                          "valor_glosa_cents": {
+                            "type": "integer"
+                          },
+                          "valor_liberado_cents": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "guia_ref",
+                          "decision",
+                          "motivo"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "propostas",
+                    "sem_par",
+                    "ambiguas"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Plan Reconciliation"
+      }
+    },
+    "/v1/rede": {
+      "get": {
+        "operationId": "rede_v1_rede_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cnpj",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cnes",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "atualizado_em": {
+                      "type": "string"
+                    },
+                    "fonte": {
+                      "type": "string"
+                    },
+                    "operadoras": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "cnes": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "disponibilidade": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "dt_vinculo_inicio": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "nome": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "nome_estabelecimento": {
+                            "type": "string"
+                          },
+                          "planos": {
+                            "type": "integer"
+                          },
+                          "registro_ans": {
+                            "type": "string"
+                          },
+                          "tipo_contrato": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "tipo_prestador": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "urgencia_emergencia": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "registro_ans",
+                          "nome",
+                          "cnes",
+                          "nome_estabelecimento",
+                          "tipo_contrato",
+                          "disponibilidade",
+                          "tipo_prestador",
+                          "urgencia_emergencia",
+                          "dt_vinculo_inicio",
+                          "planos"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "atualizado_em",
+                    "fonte",
+                    "total",
+                    "operadoras"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          },
+          "503": {
+            "description": "Rede hospitalar indisponível."
+          }
+        },
+        "summary": "Rede"
+      }
+    },
+    "/v1/sadt_catalog": {
+      "post": {
+        "operationId": "sadt_catalog_v1_sadt_catalog_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "properties": {},
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Sadt Catalog"
+      }
+    },
+    "/v1/sadt_missing": {
+      "post": {
+        "operationId": "sadt_missing_v1_sadt_missing_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "values": {
+                    "additionalProperties": true,
+                    "properties": {},
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "values"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "faltando": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "faltando"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Sadt Missing"
+      }
+    },
+    "/v1/sandbox/lotes": {
+      "post": {
+        "operationId": "sandbox_enviar_lote_v1_sandbox_lotes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "cenario": {
+                    "enum": [
+                      "aprovado",
+                      "duplicidade",
+                      "carteirinha_vencida",
+                      "sem_autorizacao",
+                      "falha_transitoria",
+                      "falha_permanente"
+                    ]
+                  },
+                  "tentativa": {
+                    "minimum": 1.0,
+                    "type": "integer"
+                  },
+                  "xml": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "xml"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "aceito": {
+                      "type": "boolean"
+                    },
+                    "cenario": {
+                      "type": "string"
+                    },
+                    "findings": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "numero_lote": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "numero_protocolo": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "protocolo": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "resumo": {
+                      "additionalProperties": true,
+                      "properties": {},
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "aceito",
+                    "protocolo",
+                    "numero_protocolo",
+                    "numero_lote",
+                    "cenario",
+                    "findings"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Sandbox Enviar Lote"
+      }
+    },
+    "/v1/sandbox/lotes/{protocolo}/demonstrativo": {
+      "get": {
+        "operationId": "sandbox_demonstrativo_v1_sandbox_lotes__protocolo__demonstrativo_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "protocolo",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "protocolo": {
+                      "type": "string"
+                    },
+                    "xml": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "protocolo",
+                    "xml"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Sandbox Demonstrativo"
+      }
+    },
+    "/v1/tuss_lookup": {
+      "post": {
+        "operationId": "tuss_lookup_v1_tuss_lookup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "format": "date",
+                    "type": "string"
+                  },
+                  "include_expired": {
+                    "type": "boolean"
+                  },
+                  "tabela": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "resultados": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "resultados"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Tuss Lookup"
+      }
+    },
+    "/v1/tuss_search": {
+      "post": {
+        "operationId": "tuss_search_v1_tuss_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "format": "date",
+                    "type": "string"
+                  },
+                  "include_expired": {
+                    "type": "boolean"
+                  },
+                  "limite": {
+                    "default": 20,
+                    "maximum": 100.0,
+                    "minimum": 1.0,
+                    "type": "integer"
+                  },
+                  "tabela": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "resultados": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "resultados"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Tuss Search"
+      }
+    },
+    "/v1/validate": {
+      "post": {
+        "operationId": "validate_v1_validate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "xml": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "xml"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "additionalProperties": false,
+                  "properties": {
+                    "findings": {
+                      "items": {
+                        "$schema": "https://json-schema.org/draft/2020-12/schema",
+                        "additionalProperties": false,
+                        "properties": {
+                          "code": {
+                            "enum": [
+                              "audit.autorizacao_ausente",
+                              "audit.autorizacao_vencida",
+                              "audit.carteirinha_ausente",
+                              "audit.carteirinha_inativa",
+                              "audit.carteirinha_vencida",
+                              "audit.data_ausente",
+                              "audit.operadora_divergente",
+                              "audit.procedimento_ausente",
+                              "audit.procedimento_fora_da_tabela",
+                              "audit.tabela_fora_de_vigencia",
+                              "audit.tabela_sem_procedimentos",
+                              "audit.valor_nao_positivo",
+                              "guia.carteirinha_ausente",
+                              "guia.executante_ausente",
+                              "guia.sequencial",
+                              "item.valor_divergente",
+                              "item.valor_zerado",
+                              "lote.acima_do_teto",
+                              "lote.caractere_invalido",
+                              "lote.estrutura",
+                              "lote.guia_duplicada",
+                              "lote.hash_divergente",
+                              "lote.valor_total_geral",
+                              "lote.vazio",
+                              "regra.combinacao_proibida",
+                              "regra.max_itens",
+                              "regra.obrigatorio",
+                              "regra.padrao",
+                              "regra.valores",
+                              "tuss.fora_de_vigencia",
+                              "tuss.inexistente",
+                              "versao.divergente",
+                              "versao.nao_detectada",
+                              "versao.nao_suportada",
+                              "xml.doctype",
+                              "xml.encoding",
+                              "xml.malformado",
+                              "xsd.atributo",
+                              "xsd.elemento_ausente",
+                              "xsd.elemento_inesperado",
+                              "xsd.enumeracao",
+                              "xsd.outro",
+                              "xsd.padrao",
+                              "xsd.tamanho",
+                              "xsd.tipo"
+                            ]
+                          },
+                          "fix": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "items": {
+                                  "type": "object"
+                                },
+                                "type": "array"
+                              }
+                            ]
+                          },
+                          "glosa": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "guia": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "needs": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "items": {
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              }
+                            ]
+                          },
+                          "pointer": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "rule": {
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          },
+                          "severity": {
+                            "enum": [
+                              "error",
+                              "warning"
+                            ]
+                          },
+                          "xpath": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "severity",
+                          "guia",
+                          "xpath",
+                          "pointer",
+                          "message",
+                          "fix",
+                          "needs",
+                          "glosa",
+                          "rule"
+                        ],
+                        "title": "Finding",
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "valid": {
+                      "type": "boolean"
+                    },
+                    "version": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "valid",
+                    "version",
+                    "findings"
+                  ],
+                  "title": "Report",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Validate"
+      }
+    }
+  }
+}

@@ -1,0 +1,148 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "voa-tiss"
+dynamic = ["version"]
+description = "Biblioteca Python offline para validar e operar documentos TISS."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Voa Health" }]
+keywords = ["TISS", "ANS", "XML TISS", "SP/SADT", "glosa", "TUSS", "saúde suplementar"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["lxml>=5,<7"]
+
+[project.optional-dependencies]
+pdf = ["weasyprint>=60", "jinja2>=3.1", "markupsafe>=2.1"]
+server = [
+  "fastapi>=0.115,<1",
+  "jsonschema>=4.23",
+  "mcp>=1.30,<2",
+  "uvicorn>=0.34,<1",
+]
+
+[project.urls]
+Homepage = "https://github.com/Voa-Health/tiss"
+Repository = "https://github.com/Voa-Health/tiss"
+Issues = "https://github.com/Voa-Health/tiss/issues"
+Documentation = "https://github.com/Voa-Health/tiss#readme"
+
+[dependency-groups]
+dev = [
+  "jinja2>=3.1",
+  "jsonschema>=4.23",
+  "mypy>=1.13",
+  "nbmake>=1.5",
+  "pypdf>=5",
+  "pytest>=8.3",
+  "ruff>=0.8",
+  "types-jsonschema>=4.26.0.20261006",
+  "vulture>=2.16",
+]
+
+[tool.hatch.version]
+path = "src/voa_tiss/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/voa_tiss"]
+exclude = ["*.sqlite"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["*.sqlite"]
+include = [
+  "src/voa_tiss",
+  "README.md",
+  "LICENSE",
+  "DATA_SOURCES.md",
+  "CONTRIBUTING.md",
+  "schemas",
+  "docs/codigos.md",
+  "scripts",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RET", "PL", "T20", "ERA", "D", "RUF"]
+ignore = [
+  "D105",
+  "D107",
+  "D203",
+  "D213",
+  "D401",
+  "PLR0911",
+  "PLR0912",
+  "PLR0915",
+  "PLR2004",
+  "PLC0415",
+]
+allowed-confusables = ["×"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "PLR2004"]
+"scripts/**" = ["D", "PLR2004", "T20"]
+"docs/**/*.ipynb" = ["D", "PLR2004"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.pylint]
+max-args = 6
+max-branches = 12
+max-returns = 6
+max-statements = 40
+
+[tool.vulture]
+ignore_names = [
+  "BundleError",
+  "Decision",
+  "Decisao",
+  "Finding",
+  "MissingExtraError",
+  "Proposta",
+  "Reconciliacao",
+  "Report",
+  "RetornoError",
+  "examples",
+  "json_schema",
+  "lookup",
+  "parse_demonstrativo",
+  "plan_reconciliation",
+  "render_sadt",
+  "sadt_catalog",
+  "sadt_missing",
+  "search",
+  "validate",
+]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["lxml.*", "weasyprint.*", "jinja2", "jinja2.*", "markupsafe", "markupsafe.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+pythonpath = [".", "src"]

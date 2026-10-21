@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lote TISS 4.03.00",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "versao",
+    "transacao",
+    "prestador",
+    "operadora",
+    "numero_lote",
+    "guias"
+  ],
+  "properties": {
+    "versao": {
+      "const": "4.03.00"
+    },
+    "transacao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequencial_transacao",
+        "data_registro_transacao",
+        "hora_registro_transacao"
+      ],
+      "properties": {
+        "sequencial_transacao": {
+          "type": "string"
+        },
+        "data_registro_transacao": {
+          "type": "string"
+        },
+        "hora_registro_transacao": {
+          "type": "string"
+        }
+      }
+    },
+    "prestador": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cnpj": {
+          "type": "string"
+        },
+        "cpf": {
+          "type": "string"
+        },
+        "codigo_prestador_na_operadora": {
+          "type": "string"
+        }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
+    },
+    "operadora": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registro_ans"
+      ],
+      "properties": {
+        "registro_ans": {
+          "type": "string"
+        }
+      }
+    },
+    "numero_lote": {
+      "type": "string"
+    },
+    "guias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tipo"
+        ],
+        "properties": {
+          "tipo": {
+            "enum": [
+              "consulta",
+              "sp_sadt"
+            ]
+          },
+          "cabecalho_guia": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "registro_ans": {
+                "type": "string"
+              },
+              "numero_guia_prestador": {
+                "type": "string"
+              },
+              "numero_guia_operadora": {
+                "type": "string"
+              },
+              "guia_principal": {
+                "type": "string"
+              }
+            }
+          },
+          "cabecalho_consulta": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "registro_ans": {
+                "type": "string"
+              },
+              "numero_guia_prestador": {
+                "type": "string"
+              },
+              "numero_guia_operadora": {
+                "type": "string"
+              }
+            }
+          },
+          "dados_beneficiario": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "numero_carteira": {
+                "type": "string"
+              },
+              "atendimento_rn": {
+                "type": "string"
+              },
+              "nome_beneficiario": {
+                "type": "string"
+              }
+            }
+          },
+          "dados_solicitante": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "contratado_solicitante": {
+                "type": "object"
+              },
+              "nome_contratado_solicitante": {
+                "type": "string"
+              },
+              "profissional_solicitante": {
+                "type": "object"
+              }
+            }
+          },
+          "dados_solicitacao": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "data_solicitacao": {
+                "type": "string"
+              },
+              "carater_atendimento": {
+                "type": "string"
+              },
+              "indicacao_clinica": {
+                "type": "string"
+              }
+            }
+          },
+          "dados_executante": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "type": "object"
+            }
+          },
+          "contratado_executante": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "type": "object"
+            }
+          },
+          "profissional_executante": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "type": "object"
+            }
+          },
+          "indicacao_acidente": {
+            "type": "string"
+          },
+          "dados_atendimento": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "cobertura_especial": {
+                "type": "string"
+              },
+              "regime_atendimento": {
+                "type": "string"
+              },
+              "saude_ocupacional": {
+                "type": "string"
+              },
+              "data_atendimento": {
+                "type": "string"
+              },
+              "tipo_consulta": {
+                "type": "string"
+              },
+              "procedimento": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "codigo_tabela": {
+                    "type": "string"
+                  },
+                  "codigo_procedimento": {
+                    "type": "string"
+                  },
+                  "valor_procedimento": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "tipo_atendimento": {
+                "type": "string"
+              }
+            }
+          },
+          "procedimentos_executados": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sequencial_item": {
+                  "type": "string"
+                },
+                "data_execucao": {
+                  "type": "string"
+                },
+                "hora_inicial": {
+                  "type": "string"
+                },
+                "hora_final": {
+                  "type": "string"
+                },
+                "procedimento": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "codigo_tabela": {
+                      "type": "string"
+                    },
+                    "codigo_procedimento": {
+                      "type": "string"
+                    },
+                    "descricao_procedimento": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "quantidade_executada": {
+                  "type": "string"
+                },
+                "via_acesso": {
+                  "type": "string"
+                },
+                "tecnica_utilizada": {
+                  "type": "string"
+                },
+                "reducao_acrescimo": {
+                  "type": "string"
+                },
+                "valor_unitario": {
+                  "type": "integer"
+                },
+                "valor_total": {
+                  "type": "integer"
+                }
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "sequencial_item": {
+                    "type": "string"
+                  },
+                  "data_execucao": {
+                    "type": "string"
+                  },
+                  "hora_inicial": {
+                    "type": "string"
+                  },
+                  "hora_final": {
+                    "type": "string"
+                  },
+                  "procedimento": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "codigo_tabela": {
+                        "type": "string"
+                      },
+                      "codigo_procedimento": {
+                        "type": "string"
+                      },
+                      "descricao_procedimento": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "quantidade_executada": {
+                    "type": "string"
+                  },
+                  "via_acesso": {
+                    "type": "string"
+                  },
+                  "tecnica_utilizada": {
+                    "type": "string"
+                  },
+                  "reducao_acrescimo": {
+                    "type": "string"
+                  },
+                  "valor_unitario": {
+                    "type": "integer"
+                  },
+                  "valor_total": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "valor_total": {
+            "type": "object",
+            "items": {},
+            "additionalProperties": false,
+            "properties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "valor_procedimentos": {
+                  "type": "integer"
+                },
+                "valor_diarias": {
+                  "type": "integer"
+                },
+                "valor_taxas": {
+                  "type": "integer"
+                },
+                "valor_materiais": {
+                  "type": "integer"
+                },
+                "valor_opme": {
+                  "type": "integer"
+                },
+                "valor_medicamentos": {
+                  "type": "integer"
+                },
+                "valor_gases_medicinais": {
+                  "type": "integer"
+                },
+                "valor_total_geral": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "numero_guia_operadora": {
+            "type": "string"
+          },
+          "ausencia_cod_validacao": {
+            "type": "string"
+          },
+          "cod_validacao": {
+            "type": "string"
+          },
+          "observacao": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

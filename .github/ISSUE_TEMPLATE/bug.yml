@@ -1,0 +1,33 @@
+name: Relatar um erro
+description: Descreva um problema reproduzível.
+title: "[Erro]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: Não inclua dados pessoais ou informações de saúde identificáveis.
+  - type: textarea
+    id: description
+    attributes:
+      label: O que aconteceu?
+      description: Inclua os passos mínimos para reproduzir.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que você esperava?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versão de voa-tiss
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Versão de Python
+    validations:
+      required: true

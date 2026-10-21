@@ -1,0 +1,36 @@
+name: Sugerir uma regra pública
+description: Registre uma regra documentada publicamente por uma operadora.
+title: "[Regra]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: Não inclua dados pessoais ou informações de saúde identificáveis.
+  - type: input
+    id: operator
+    attributes:
+      label: Operadora
+    validations:
+      required: true
+  - type: textarea
+    id: rule
+    attributes:
+      label: Regra
+      description: Resuma a regra e o comportamento observado.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: URL da fonte pública
+      description: Link direto para a documentação pública.
+      placeholder: https://
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Data da fonte
+      description: Data de publicação ou consulta, em AAAA-MM-DD.
+    validations:
+      required: true

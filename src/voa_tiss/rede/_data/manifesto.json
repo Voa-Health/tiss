@@ -1,0 +1,15 @@
+{
+  "atualizado_em": "2026-09-24",
+  "contagens": {
+    "estabelecimentos": 33092,
+    "estabelecimentos_com_cnpj": 31893,
+    "operadoras": 680,
+    "vinculos": 932625
+  },
+  "fonte_sha256": "e16da0d641d1213d32cb6b35a9aa07c192edcecdee162a49df52d1e92b5df3dc",
+  "sha256": "6e6c2b8c59def3ebeaf7b9174aec38943a66bf1a28898fc2e9a11f165957487e",
+  "sqlite_sha256": "b186aa80e373692500941c65357f9adba91286508e936921420ffea46c97c8cf",
+  "sqlite_tamanho": 73949184,
+  "tamanho": 11317582,
+  "url": "https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/rede/2026-09-24/rede-hospitalar.sqlite.gz"
+}

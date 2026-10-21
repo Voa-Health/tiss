@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ans:mensagemTISS xmlns:ans="http://www.ans.gov.br/padroes/tiss/schemas">
+  <ans:operadoraParaPrestador>
+    <ans:demonstrativoAnaliseConta>
+      <ans:dadosGuia>
+        <ans:numeroGuiaPrestador>EXEMPLO-001</ans:numeroGuiaPrestador>
+        <ans:numeroGuiaOperadora>RET-001</ans:numeroGuiaOperadora>
+        <ans:procedimentos>
+          <ans:procedimento>
+            <ans:codigoProcedimento>10101012</ans:codigoProcedimento>
+            <ans:valorInformado>100.00</ans:valorInformado>
+            <ans:valorLiberado>60.00</ans:valorLiberado>
+            <ans:valorGlosa>40.00</ans:valorGlosa>
+            <ans:glosas><ans:glosa><ans:codigoGlosa>1707</ans:codigoGlosa><ans:descricaoGlosa>Exemplo sintético de motivo</ans:descricaoGlosa></ans:glosa></ans:glosas>
+          </ans:procedimento>
+        </ans:procedimentos>
+      </ans:dadosGuia>
+    </ans:demonstrativoAnaliseConta>
+  </ans:operadoraParaPrestador>
+</ans:mensagemTISS>

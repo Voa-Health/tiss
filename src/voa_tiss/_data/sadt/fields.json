@@ -1,0 +1,958 @@
+{
+  "_meta": {
+    "form": "Guia de Serviço Profissional / Serviço Auxiliar de Diagnóstico e Terapia (SP/SADT)",
+    "padrao": "TISS (ANS)",
+    "competencia_layout": "v4.03.00 (Nov/2025)",
+    "tiss_domain_version": "4.03.00",
+    "notes": [
+      "numero_no_layout identifica o campo impresso na versão do formulário.",
+      "Datas usam AAAA-MM-DD; valores monetários usam ponto decimal e duas casas.",
+      "O formulário SP/SADT não contém campo CID-10 nem CPF do beneficiário."
+    ],
+    "authoritative_sources": [
+      "ANS Padrão TISS — Componente de Comunicação v4.03.00 (Nov/2025): tissGuiasV4_03_00.xsd (ctm_sp-sadtGuia / ctm_sp-sadtAtendimento — element minOccurs → O/OC), tissComplexTypesV4_03_00.xsd (ct_beneficiarioDados, ct_contratadoProfissionalDados, ct_procedimentoExecutadoSadt, ct_guiaValorTotal — type bindings incl. nomeSocial=st_texto70, reducaoAcrescimo=st_decimal3-2), tissSimpleTypesV4_03_00.xsd (closed-domain enumerations + facets).",
+      "ANS Padrão TISS — Componente de Conteúdo e Estrutura v4.03.00 (202511) XLSX, sheet 'Guia de SP SADT': verbatim printed field numbers (1–68, plus 89/90/91/92) + Condição de Preenchimento (Obrigatório / Condicionado / Opcional).",
+      "ANS FHIR terminology (fhir-hm.ans.gov.br): CodeSystem tuss-50 (tipo de atendimento, incl. 23=Exame), tuss-35 (grau de participação), tuss-38 (motivo de glosa).",
+      "Padrão TISS — Componente Organizacional (março/2023) — source for organizational business rules."
+    ],
+    "despesas": {
+      "sistemas_por_tabela": {
+        "18": "https://voa.health/fhir/CodeSystem/tuss-diarias-taxas-gases-medicinais",
+        "19": "https://voa.health/fhir/CodeSystem/tuss-materiais-opme",
+        "20": "https://voa.health/fhir/CodeSystem/tuss-medicamentos"
+      },
+      "exige_unidade_de_embalagem": [
+        "19",
+        "20"
+      ],
+      "nota": "A matriz de Outras Despesas pode incluir as tabelas 18, 19 e 20 da ANS. Nas tabelas 19 e 20, a unidade de medida da Tabela 60 é obrigatória; na tabela 18, não se aplica. O chamador deve conferir a unidade conforme a tabela."
+    }
+  },
+  "domains": {
+    "dm_simNao": {
+      "S": "Sim",
+      "N": "Nao"
+    },
+    "tabela_23_carater_atendimento": {
+      "1": "Eletiva",
+      "2": "Urgencia/Emergencia"
+    },
+    "tabela_50_tipo_atendimento": {
+      "01": "Remocao",
+      "02": "Pequena Cirurgia",
+      "03": "Outras Terapias",
+      "04": "Consulta",
+      "08": "Quimioterapia",
+      "09": "Radioterapia",
+      "10": "Terapia Renal Substitutiva (TRS)",
+      "13": "Pequeno atendimento (sutura, gesso e outros)",
+      "23": "Exame"
+    },
+    "tabela_52_tipo_consulta": {
+      "1": "Primeira",
+      "2": "Seguimento",
+      "3": "Pre-natal",
+      "4": "Por encaminhamento"
+    },
+    "tabela_36_indicacao_acidente": {
+      "0": "Acidente ou doenca relacionada ao trabalho",
+      "1": "Transito",
+      "2": "Outros acidentes",
+      "9": "Nao acidente"
+    },
+    "tabela_39_motivo_encerramento": {
+      "41": "Obito com declaracao de obito fornecida pelo medico assistente",
+      "42": "Obito com declaracao de obito fornecida pelo Instituto Medico Legal (IML)",
+      "43": "Obito com declaracao de obito fornecida pelo Servico de Verificacao de Obito (SVO)"
+    },
+    "tabela_76_regime_atendimento": {
+      "01": "Ambulatorial",
+      "02": "Domiciliar",
+      "03": "Internacao",
+      "04": "Pronto Socorro",
+      "05": "Telessaude"
+    },
+    "tabela_77_saude_ocupacional": {
+      "01": "Admissional",
+      "02": "Demissional",
+      "03": "Periodico",
+      "04": "Retorno ao trabalho",
+      "05": "Mudanca de funcao",
+      "06": "Promocao a saude"
+    },
+    "tabela_75_cobertura_especial": {
+      "01": "Gestante",
+      "02": "Pre-operatorio",
+      "03": "Pos-operatorio"
+    },
+    "tabela_61_via_acesso": {
+      "1": "Unica",
+      "2": "Mesma Via",
+      "3": "Diferentes vias"
+    },
+    "tabela_48_tecnica_utilizada": {
+      "1": "Convencional",
+      "2": "Videolaparoscopia",
+      "3": "Robotica"
+    },
+    "tabela_35_grau_participacao": {
+      "00": "Cirurgiao",
+      "01": "Primeiro Auxiliar",
+      "02": "Segundo Auxiliar",
+      "03": "Terceiro Auxiliar",
+      "04": "Quarto Auxiliar",
+      "05": "Instrumentador",
+      "06": "Anestesista",
+      "07": "Auxiliar de Anestesista",
+      "08": "Consultor",
+      "09": "Perfusionista",
+      "10": "Pediatra na sala de parto",
+      "11": "Auxiliar SADT",
+      "12": "Clinico",
+      "13": "Intensivista"
+    },
+    "tabela_26_conselho_profissional": {
+      "01": "CRESS",
+      "02": "COREN",
+      "03": "CRF",
+      "04": "CRFA",
+      "05": "CREFITO",
+      "06": "CRM",
+      "07": "CRN",
+      "08": "CRO",
+      "09": "CRP",
+      "10": "OUT (Outros Conselhos)",
+      "11": "CRBio",
+      "12": "CRBM",
+      "13": "CREF",
+      "14": "CRMV",
+      "15": "CRTR"
+    },
+    "dm_UF": {
+      "AC": "Acre",
+      "AL": "Alagoas",
+      "AP": "Amapa",
+      "AM": "Amazonas",
+      "BA": "Bahia",
+      "CE": "Ceara",
+      "DF": "Distrito Federal",
+      "ES": "Espirito Santo",
+      "GO": "Goias",
+      "MA": "Maranhao",
+      "MT": "Mato Grosso",
+      "MS": "Mato Grosso do Sul",
+      "MG": "Minas Gerais",
+      "PA": "Para",
+      "PB": "Paraiba",
+      "PR": "Parana",
+      "PE": "Pernambuco",
+      "PI": "Piaui",
+      "RJ": "Rio de Janeiro",
+      "RN": "Rio Grande do Norte",
+      "RS": "Rio Grande do Sul",
+      "RO": "Rondonia",
+      "RR": "Roraima",
+      "SC": "Santa Catarina",
+      "SP": "Sao Paulo",
+      "SE": "Sergipe",
+      "TO": "Tocantins"
+    },
+    "tabela_87_despesas": {
+      "18": "Diarias, taxas e gases medicinais",
+      "19": "Materiais",
+      "20": "Medicamentos"
+    }
+  },
+  "fields": {
+    "registro_ans": {
+      "bloco": "cabecalho",
+      "label": "Registro ANS",
+      "numero_no_layout": 1,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 6,
+      "format": "st_registroANS"
+    },
+    "numero_guia_prestador": {
+      "bloco": "cabecalho",
+      "label": "N. Guia no Prestador",
+      "numero_no_layout": 2,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 20,
+      "format": "st_texto20"
+    },
+    "numero_guia_principal": {
+      "bloco": "cabecalho",
+      "label": "N. Guia Principal",
+      "numero_no_layout": 3,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "SADT em paciente internado ou cobranca de honorario medico em separado para procedimentos ambulatoriais.",
+      "dominio": null,
+      "maxlen": 20,
+      "format": "st_texto20"
+    },
+    "numero_guia_operadora": {
+      "bloco": "autorizacao",
+      "label": "N. Guia atribuido pela Operadora",
+      "numero_no_layout": 7,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Quando a operadora atribui numero proprio a guia.",
+      "dominio": null,
+      "maxlen": 20,
+      "format": "st_texto20"
+    },
+    "data_autorizacao": {
+      "bloco": "autorizacao",
+      "label": "Data da Autorizacao",
+      "numero_no_layout": 4,
+      "type": "date",
+      "obrigatoriedade": "condicional",
+      "condicao": "Em caso de autorizacao pela operadora.",
+      "dominio": null,
+      "maxlen": 10,
+      "format": "AAAA-MM-DD"
+    },
+    "senha": {
+      "bloco": "autorizacao",
+      "label": "Senha",
+      "numero_no_layout": 5,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Em caso de autorizacao pela operadora com emissao de senha (requer_senha=true).",
+      "dominio": null,
+      "maxlen": 20,
+      "format": "st_texto20"
+    },
+    "validade_senha": {
+      "bloco": "autorizacao",
+      "label": "Data de Validade da Senha",
+      "numero_no_layout": 6,
+      "type": "date",
+      "obrigatoriedade": "condicional",
+      "condicao": "Em caso de senha com prazo de validade.",
+      "dominio": null,
+      "maxlen": 10,
+      "format": "AAAA-MM-DD"
+    },
+    "beneficiario_carteira": {
+      "bloco": "beneficiario",
+      "label": "N. da Carteira",
+      "numero_no_layout": 8,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 20,
+      "format": "st_texto20"
+    },
+    "beneficiario_validade_carteira": {
+      "bloco": "beneficiario",
+      "label": "Validade da Carteira",
+      "numero_no_layout": 9,
+      "type": "date",
+      "obrigatoriedade": "condicional",
+      "condicao": "Contingencia em papel quando a operadora exige autorizacao previa nao obtida.",
+      "dominio": null,
+      "maxlen": 10,
+      "format": "AAAA-MM-DD"
+    },
+    "beneficiario_nome_social": {
+      "bloco": "beneficiario",
+      "label": "Nome Social",
+      "numero_no_layout": 89,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Quando requerido expressamente pelo interessado (Decreto 8.727/2016).",
+      "dominio": null,
+      "maxlen": 70,
+      "format": "st_texto70"
+    },
+    "beneficiario_nome": {
+      "bloco": "beneficiario",
+      "label": "Nome",
+      "numero_no_layout": 10,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 70,
+      "format": "st_texto70"
+    },
+    "atendimento_rn": {
+      "bloco": "beneficiario",
+      "label": "Atendimento a RN",
+      "numero_no_layout": 12,
+      "type": "enum",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": "dm_simNao",
+      "maxlen": 1,
+      "format": "dm_simNao"
+    },
+    "beneficiario_cns": {
+      "bloco": "beneficiario",
+      "label": "Cartao Nacional de Saude",
+      "numero_no_layout": null,
+      "type": "text",
+      "obrigatoriedade": "opcional",
+      "condicao": "Nao e campo numerado da guia SP/SADT em papel; presente no XML (ct_beneficiarioDados.numeroCNS, OC). Renderizado como auxiliar de identificacao.",
+      "dominio": null,
+      "maxlen": 15,
+      "format": "st_numerico15"
+    },
+    "solicitante_codigo_operadora": {
+      "bloco": "contratado_solicitante",
+      "label": "Codigo do Contratado Solicitante na Operadora",
+      "numero_no_layout": 13,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": "Quando nao informado pelo solicitante, o executante preenche com 99999999999999 (exceto se solicitante e executante forem o mesmo).",
+      "dominio": null,
+      "maxlen": 14,
+      "format": "st_texto14"
+    },
+    "solicitante_nome_contratado": {
+      "bloco": "contratado_solicitante",
+      "label": "Nome do Contratado Solicitante",
+      "numero_no_layout": 14,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 70,
+      "format": "st_texto70"
+    },
+    "solicitante_profissional_nome": {
+      "bloco": "contratado_solicitante",
+      "label": "Nome do Profissional Solicitante",
+      "numero_no_layout": 15,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Quando o contratado solicitante for pessoa juridica.",
+      "dominio": null,
+      "maxlen": 70,
+      "format": "st_texto70"
+    },
+    "solicitante_conselho": {
+      "bloco": "contratado_solicitante",
+      "label": "Conselho Profissional",
+      "numero_no_layout": 16,
+      "type": "enum",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": "tabela_26_conselho_profissional",
+      "maxlen": 2,
+      "format": "tabela_26"
+    },
+    "solicitante_numero_conselho": {
+      "bloco": "contratado_solicitante",
+      "label": "N. no Conselho",
+      "numero_no_layout": 17,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 15,
+      "format": "st_texto15"
+    },
+    "solicitante_uf_conselho": {
+      "bloco": "contratado_solicitante",
+      "label": "UF",
+      "numero_no_layout": 18,
+      "type": "enum",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": "dm_UF",
+      "maxlen": 2,
+      "format": "dm_UF"
+    },
+    "solicitante_cbo": {
+      "bloco": "contratado_solicitante",
+      "label": "Codigo CBO",
+      "numero_no_layout": 19,
+      "type": "text",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "maxlen": 6,
+      "format": "st_texto6",
+      "dominio_externo": {
+        "dominio": "tabela_24_cbo",
+        "tabela": "24",
+        "sistema": "https://voa.health/fhir/CodeSystem/cbo",
+        "total_de_conceitos": "~2.700",
+        "motivo": "Domínio aberto: a validade do código depende da tabela e do contexto da linha. O chamador deve conferir o código na terminologia oficial aplicável."
+      }
+    },
+    "carater_atendimento": {
+      "bloco": "solicitacao",
+      "label": "Carater do Atendimento",
+      "numero_no_layout": 21,
+      "type": "enum",
+      "obrigatoriedade": "obrigatorio",
+      "condicao": null,
+      "dominio": "tabela_23_carater_atendimento",
+      "maxlen": 1,
+      "format": "tabela_23"
+    },
+    "data_solicitacao": {
+      "bloco": "solicitacao",
+      "label": "Data da Solicitacao",
+      "numero_no_layout": 22,
+      "type": "date",
+      "obrigatoriedade": "condicional",
+      "condicao": "Em caso de autorizacao pela operadora.",
+      "dominio": null,
+      "maxlen": 10,
+      "format": "AAAA-MM-DD"
+    },
+    "indicacao_clinica": {
+      "bloco": "solicitacao",
+      "label": "Indicacao Clinica",
+      "numero_no_layout": 23,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Pequena cirurgia, terapia, alta complexidade ou procedimento com diretriz de utilizacao (DUT).",
+      "dominio": null,
+      "maxlen": 500,
+      "format": "st_texto500"
+    },
+    "cobertura_especial": {
+      "bloco": "solicitacao",
+      "label": "Cobertura Especial",
+      "numero_no_layout": 90,
+      "type": "enum",
+      "obrigatoriedade": "condicional",
+      "condicao": "Atendimento ambulatorial em plano de cobertura exclusivamente hospitalar, a gestantes ou no pre/pos-operatorio.",
+      "dominio": "tabela_75_cobertura_especial",
+      "maxlen": 2,
+      "format": "tabela_75"
+    },
+    "executante_codigo_operadora": {
+      "bloco": "contratado_executante",
+      "label": "Codigo do Contratado Executante na Operadora",
+      "numero_no_layout": 29,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio quando o bloco de execucao e usado (na guia SP/SADT de execucao/faturamento).",
+      "dominio": null,
+      "maxlen": 14,
+      "format": "st_texto14"
+    },
+    "executante_nome_contratado": {
+      "bloco": "contratado_executante",
+      "label": "Nome do Contratado Executante",
+      "numero_no_layout": 30,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio quando o bloco de execucao e usado.",
+      "dominio": null,
+      "maxlen": 70,
+      "format": "st_texto70"
+    },
+    "executante_cnes": {
+      "bloco": "contratado_executante",
+      "label": "Codigo CNES",
+      "numero_no_layout": 31,
+      "type": "text",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio quando o bloco de execucao e usado; sem CNES preencher 9999999 (glosa 1202).",
+      "dominio": null,
+      "maxlen": 7,
+      "format": "st_texto7"
+    },
+    "tipo_atendimento": {
+      "bloco": "atendimento",
+      "label": "Tipo de Atendimento",
+      "numero_no_layout": 32,
+      "type": "enum",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio no bloco de atendimento/execucao (Tabela 50).",
+      "dominio": "tabela_50_tipo_atendimento",
+      "maxlen": 2,
+      "format": "tabela_50"
+    },
+    "indicacao_acidente": {
+      "bloco": "atendimento",
+      "label": "Indicacao de Acidente",
+      "numero_no_layout": 33,
+      "type": "enum",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio no bloco de atendimento/execucao (Tabela 36).",
+      "dominio": "tabela_36_indicacao_acidente",
+      "maxlen": 1,
+      "format": "tabela_36"
+    },
+    "tipo_consulta": {
+      "bloco": "atendimento",
+      "label": "Tipo de Consulta",
+      "numero_no_layout": 34,
+      "type": "enum",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio quando tipo_atendimento = 04 (Consulta).",
+      "dominio": "tabela_52_tipo_consulta",
+      "maxlen": 1,
+      "format": "tabela_52"
+    },
+    "motivo_encerramento": {
+      "bloco": "atendimento",
+      "label": "Motivo de Encerramento do Atendimento",
+      "numero_no_layout": 35,
+      "type": "enum",
+      "obrigatoriedade": "condicional",
+      "condicao": "Em caso de obito (Tabela 39, subconjunto de obito).",
+      "dominio": "tabela_39_motivo_encerramento",
+      "maxlen": 2,
+      "format": "tabela_39"
+    },
+    "regime_atendimento": {
+      "bloco": "atendimento",
+      "label": "Regime de Atendimento",
+      "numero_no_layout": 91,
+      "type": "enum",
+      "obrigatoriedade": "condicional",
+      "condicao": "Obrigatorio no bloco de atendimento/execucao (Tabela 76).",
+      "dominio": "tabela_76_regime_atendimento",
+      "maxlen": 2,
+      "format": "tabela_76"
+    },
+    "saude_ocupacional": {
+      "bloco": "atendimento",
+      "label": "Saude Ocupacional",
+      "numero_no_layout": 92,
+      "type": "enum",
+      "obrigatoriedade": "opcional",
+      "condicao": "Atendimento referente a saude ocupacional do beneficiario (Tabela 77).",
+      "dominio": "tabela_77_saude_ocupacional",
+      "maxlen": 2,
+      "format": "tabela_77"
+    },
+    "observacao": {
+      "bloco": "observacao",
+      "label": "Observacao / Justificativa",
+      "numero_no_layout": 58,
+      "type": "text",
+      "obrigatoriedade": "opcional",
+      "condicao": null,
+      "dominio": null,
+      "maxlen": 500,
+      "format": "st_texto500"
+    }
+  },
+  "matrices": {
+    "procedimentos_solicitados": {
+      "bloco": "solicitacao",
+      "label": "Procedimentos ou Itens Solicitados",
+      "min_rows": 0,
+      "columns": [
+        {
+          "key": "sequencial",
+          "label": "Seq.",
+          "type": "int",
+          "obrigatoriedade": "obrigatorio",
+          "auto": "sequencial"
+        },
+        {
+          "key": "tabela",
+          "label": "Tabela",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio",
+          "dominio_externo": {
+            "dominio": "tuss_tabela_de_tabelas",
+            "tabela": "87",
+            "sistema": "https://voa.health/fhir/CodeSystem/tiss-tabela-de-tabelas",
+            "total_de_conceitos": "dezenas",
+            "motivo": "Dominio da Tabela 87 (tabela de tabelas) da TISS, que a Voa nao hospeda. A matriz de procedimentos aceita qualquer tabela que a operadora contratou; fecha-la aqui, sem a fonte oficial, recusaria linha legitima. A matriz de DESPESA, essa sim, e fechada (tabela_87_despesas) porque o recorte de despesa e conhecido."
+          }
+        },
+        {
+          "key": "codigo",
+          "label": "Codigo do Procedimento",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio",
+          "dominio_externo": {
+            "dominio": "tuss",
+            "tabela": "18/19/20/22 (o da linha)",
+            "sistema": "",
+            "total_de_conceitos": "~58.000 (materiais 45.889 + medicamentos 12.572 + procedimentos)",
+            "motivo": "Domínio aberto: a validade do código depende da tabela e do contexto da linha. O chamador deve conferir o código na terminologia oficial aplicável."
+          }
+        },
+        {
+          "key": "descricao",
+          "label": "Descricao",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio"
+        },
+        {
+          "key": "quantidade_solicitada",
+          "label": "Qtde. Solic.",
+          "type": "int",
+          "obrigatoriedade": "obrigatorio",
+          "format": "st_numerico3",
+          "min_exclusive": 0
+        }
+      ]
+    },
+    "procedimentos_executados": {
+      "bloco": "execucao",
+      "label": "Procedimentos e Exames Realizados",
+      "min_rows": 0,
+      "columns": [
+        {
+          "key": "sequencial",
+          "label": "Seq.",
+          "type": "int",
+          "obrigatoriedade": "obrigatorio",
+          "auto": "sequencial"
+        },
+        {
+          "key": "data_execucao",
+          "label": "Data",
+          "type": "date",
+          "obrigatoriedade": "obrigatorio",
+          "format": "AAAA-MM-DD"
+        },
+        {
+          "key": "tabela",
+          "label": "Tabela",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio",
+          "dominio_externo": {
+            "dominio": "tuss_tabela_de_tabelas",
+            "tabela": "87",
+            "sistema": "https://voa.health/fhir/CodeSystem/tiss-tabela-de-tabelas",
+            "total_de_conceitos": "dezenas",
+            "motivo": "Dominio da Tabela 87 (tabela de tabelas) da TISS, que a Voa nao hospeda. A matriz de procedimentos aceita qualquer tabela que a operadora contratou; fecha-la aqui, sem a fonte oficial, recusaria linha legitima. A matriz de DESPESA, essa sim, e fechada (tabela_87_despesas) porque o recorte de despesa e conhecido."
+          }
+        },
+        {
+          "key": "codigo",
+          "label": "Codigo",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio",
+          "dominio_externo": {
+            "dominio": "tuss",
+            "tabela": "18/19/20/22 (o da linha)",
+            "sistema": "",
+            "total_de_conceitos": "~58.000 (materiais 45.889 + medicamentos 12.572 + procedimentos)",
+            "motivo": "Domínio aberto: a validade do código depende da tabela e do contexto da linha. O chamador deve conferir o código na terminologia oficial aplicável."
+          }
+        },
+        {
+          "key": "descricao",
+          "label": "Descricao",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio"
+        },
+        {
+          "key": "quantidade",
+          "label": "Qtde",
+          "type": "int",
+          "obrigatoriedade": "obrigatorio",
+          "format": "st_numerico3",
+          "min_exclusive": 0
+        },
+        {
+          "key": "via_acesso",
+          "label": "Via",
+          "type": "enum",
+          "obrigatoriedade": "condicional",
+          "dominio": "tabela_61_via_acesso",
+          "condicao": "Procedimento cirurgico."
+        },
+        {
+          "key": "tecnica",
+          "label": "Tec",
+          "type": "enum",
+          "obrigatoriedade": "condicional",
+          "dominio": "tabela_48_tecnica_utilizada",
+          "condicao": "Procedimento cirurgico."
+        },
+        {
+          "key": "fator_reducao_acrescimo",
+          "label": "Fator Red/Acresc",
+          "type": "decimal",
+          "obrigatoriedade": "condicional",
+          "format": "st_decimal3-2",
+          "default": "1.00",
+          "condicao": "Sempre que houver procedimento realizado; 1.00 quando neutro."
+        },
+        {
+          "key": "valor_unitario",
+          "label": "Valor Unitario",
+          "type": "money",
+          "obrigatoriedade": "obrigatorio",
+          "format": "st_decimal10-2"
+        },
+        {
+          "key": "valor_total",
+          "label": "Valor Total",
+          "type": "money",
+          "obrigatoriedade": "computado",
+          "format": "st_decimal10-2",
+          "computed": "valor_unitario * quantidade * fator_reducao_acrescimo"
+        }
+      ],
+      "profissional_executante_columns": [
+        {
+          "key": "grau_participacao",
+          "label": "Grau Part.",
+          "type": "enum",
+          "obrigatoriedade": "condicional",
+          "dominio": "tabela_35_grau_participacao",
+          "condicao": "Quando ha equipe."
+        },
+        {
+          "key": "codigo_operadora",
+          "label": "Cod. Operadora / CPF / CNPJ",
+          "type": "text",
+          "obrigatoriedade": "condicional"
+        },
+        {
+          "key": "nome_profissional",
+          "label": "Nome do Profissional",
+          "type": "text",
+          "obrigatoriedade": "condicional"
+        },
+        {
+          "key": "conselho",
+          "label": "Conselho",
+          "type": "enum",
+          "obrigatoriedade": "condicional",
+          "dominio": "tabela_26_conselho_profissional"
+        },
+        {
+          "key": "numero_conselho",
+          "label": "N. Conselho",
+          "type": "text",
+          "obrigatoriedade": "condicional"
+        },
+        {
+          "key": "uf_conselho",
+          "label": "UF",
+          "type": "enum",
+          "obrigatoriedade": "condicional",
+          "dominio": "dm_UF"
+        },
+        {
+          "key": "cbo",
+          "label": "CBO",
+          "type": "text",
+          "obrigatoriedade": "condicional",
+          "dominio_externo": {
+            "dominio": "tabela_24_cbo",
+            "tabela": "24",
+            "sistema": "https://voa.health/fhir/CodeSystem/cbo",
+            "total_de_conceitos": "~2.700",
+            "motivo": "Domínio aberto: a validade do código depende da tabela e do contexto da linha. O chamador deve conferir o código na terminologia oficial aplicável."
+          }
+        }
+      ]
+    },
+    "outras_despesas": {
+      "bloco": "despesas",
+      "label": "Outras Despesas",
+      "min_rows": 0,
+      "columns": [
+        {
+          "key": "sequencial",
+          "label": "Seq.",
+          "type": "int",
+          "obrigatoriedade": "obrigatorio",
+          "auto": "sequencial"
+        },
+        {
+          "key": "data",
+          "label": "Data",
+          "type": "date",
+          "obrigatoriedade": "obrigatorio",
+          "format": "AAAA-MM-DD"
+        },
+        {
+          "key": "tabela",
+          "label": "Tabela",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio",
+          "dominio": "tabela_87_despesas",
+          "condicao": "A matriz de Outras Despesas transporta so as tabelas 18, 19 e 20 da ANS. Codigo de procedimento lancado como despesa (ou o contrario) e guia errada."
+        },
+        {
+          "key": "codigo",
+          "label": "Codigo Despesa",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio",
+          "dominio_externo": {
+            "dominio": "tuss",
+            "tabela": "18/19/20/22 (o da linha)",
+            "sistema": "",
+            "total_de_conceitos": "~58.000 (materiais 45.889 + medicamentos 12.572 + procedimentos)",
+            "motivo": "Domínio aberto: a validade do código depende da tabela e do contexto da linha. O chamador deve conferir o código na terminologia oficial aplicável."
+          }
+        },
+        {
+          "key": "descricao",
+          "label": "Descricao",
+          "type": "text",
+          "obrigatoriedade": "obrigatorio"
+        },
+        {
+          "key": "quantidade",
+          "label": "Qtde",
+          "type": "int",
+          "obrigatoriedade": "obrigatorio",
+          "format": "st_numerico3",
+          "min_exclusive": 0
+        },
+        {
+          "key": "unidade_medida",
+          "label": "Unid. Medida",
+          "type": "text",
+          "obrigatoriedade": "condicional",
+          "condicao": "Obrigatorio nas tabelas 19 e 20, que cobram por embalagem (glosa 5085); nao deve ser preenchido na tabela 18 (glosa 5084). A unidade e da Tabela 60 da TISS.",
+          "dominio_externo": {
+            "dominio": "tabela_60_unidade_medida",
+            "tabela": "60",
+            "sistema": "https://voa.health/fhir/CodeSystem/tiss-unidade-medida",
+            "total_de_conceitos": 61,
+            "motivo": "Domínio fechado com 61 conceitos. O catálogo registra o sistema e a obrigatoriedade condicional; o chamador deve conferir a pertinência do código."
+          },
+          "obrigatoria_quando_tabela": [
+            "19",
+            "20"
+          ]
+        },
+        {
+          "key": "unidade_sistema",
+          "label": "Sistema da unidade",
+          "type": "text",
+          "obrigatoriedade": "condicional",
+          "impresso": false,
+          "default": "https://voa.health/fhir/CodeSystem/tiss-unidade-medida",
+          "condicao": "Acompanha unidade_medida. Nao e impresso na guia: e o que torna o par (sistema, codigo) total, para que a unidade seja interpretavel fora da Voa."
+        },
+        {
+          "key": "fator_reducao_acrescimo",
+          "label": "Fator Red/Acresc",
+          "type": "decimal",
+          "obrigatoriedade": "condicional",
+          "format": "st_decimal3-2",
+          "default": "1.00",
+          "condicao": "Sempre que houver item; 1.00 quando neutro."
+        },
+        {
+          "key": "valor_unitario",
+          "label": "Valor Unitario",
+          "type": "money",
+          "obrigatoriedade": "obrigatorio",
+          "format": "st_decimal10-2"
+        },
+        {
+          "key": "valor_total",
+          "label": "Valor Total",
+          "type": "money",
+          "obrigatoriedade": "computado",
+          "format": "st_decimal10-2",
+          "computed": "valor_unitario * quantidade * fator_reducao_acrescimo"
+        }
+      ]
+    }
+  },
+  "totais": {
+    "label": "Valor Total da Guia",
+    "campos": [
+      {
+        "key": "valor_procedimentos",
+        "label": "Total Procedimentos",
+        "type": "money",
+        "format": "st_decimal10-2",
+        "source": "sum(procedimentos_executados.valor_total)"
+      },
+      {
+        "key": "valor_outras_despesas",
+        "label": "Total Outras Despesas",
+        "type": "money",
+        "format": "st_decimal10-2",
+        "source": "sum(outras_despesas.valor_total)"
+      },
+      {
+        "key": "valor_total_geral",
+        "label": "Total Geral",
+        "type": "money",
+        "format": "st_decimal10-2",
+        "source": "valor_procedimentos + valor_outras_despesas"
+      }
+    ]
+  },
+  "signature_areas": [
+    {
+      "key": "assinatura_beneficiario",
+      "label": "Assinatura do Beneficiario ou Responsavel"
+    },
+    {
+      "key": "assinatura_solicitante",
+      "label": "Assinatura do Profissional Solicitante"
+    },
+    {
+      "key": "assinatura_executante",
+      "label": "Assinatura do Profissional Executante"
+    },
+    {
+      "key": "assinatura_contratado",
+      "label": "Assinatura do Contratado"
+    }
+  ],
+  "conditional_rules": [
+    {
+      "when": {
+        "field": "tipo_atendimento",
+        "equals": "04"
+      },
+      "require": [
+        "tipo_consulta"
+      ],
+      "note": "Tipo de consulta (Tabela 52) e obrigatorio quando o tipo de atendimento e Consulta (04)."
+    },
+    {
+      "when": {
+        "field": "requer_senha",
+        "truthy": true
+      },
+      "require": [
+        "senha"
+      ],
+      "note": "Senha obrigatoria quando o carater/procedimento exige autorizacao previa (glosas 1403/1406/1818)."
+    }
+  ],
+  "row_conditional_rules": [
+    {
+      "matrix": "procedimentos_executados",
+      "when": {
+        "field": "cirurgico",
+        "truthy": true
+      },
+      "require": [
+        "via_acesso",
+        "tecnica"
+      ],
+      "note": "Via de acesso (dm_viaDeAcesso) e tecnica utilizada (Tabela 48) obrigatorias em procedimento cirurgico."
+    }
+  ],
+  "structural_rules": [
+    {
+      "rule": "at_least_one_procedimento",
+      "matrices": [
+        "procedimentos_solicitados",
+        "procedimentos_executados"
+      ],
+      "key": "procedimentos",
+      "note": "A guia precisa de >= 1 procedimento (solicitado ou executado)."
+    }
+  ]
+}

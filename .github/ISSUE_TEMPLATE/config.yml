@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reportar vulnerabilidade
+    url: https://github.com/Voa-Health/tiss/security/advisories/new
+    about: Use o relato privado do GitHub Security Advisories.

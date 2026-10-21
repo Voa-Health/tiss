@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+{#-
+  SP/SADT (Padrão TISS) — regenerated ANS v4.03.00 (Nov/2025) layout, filled per-turn.
+  Printed field numbers reconciled to the Conteúdo-e-Estrutura v4.03.00 table (Phase 4).
+
+  This is a dumb layout template: ALL formatting, enum resolution, totals and
+  pagination-safety are computed by the renderer and handed
+  in as `ctx`. The template only places values. `f` is a defaultdict-like map
+  of semantic_name -> display string (missing keys render blank). Item lists
+  (`solicitados`, `executados`, `despesas`) auto-paginate via repeating <thead>;
+  the .running-header banner repeats on continuation pages. Signature areas are
+  ALWAYS blank for wet signature. No Voa branding.
+-#}
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Guia SP/SADT — {{ f.beneficiario_nome }}</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+  <span class="gen-date">{{ gen_date }}</span>
+
+  {# Continuation banner — repeated in the top margin of pages 2+ (see @page:first). #}
+  <div class="running-header">
+    <span class="rh-title">SP/SADT · Guia {{ f.numero_guia_prestador }}</span>
+    <span>{{ f.beneficiario_nome }} · Carteira {{ f.beneficiario_carteira }}</span>
+  </div>
+
+  {# ── Title bar with clinic logo slot (no Voa branding) ─────────────────── #}
+  <div class="guia-title">
+    <div class="logo-slot">
+      {% if logo_src %}<img src="{{ logo_src }}" alt="Logo da Empresa" />
+      {% else %}<span class="clinic-name">{{ clinic_name }}</span>{% endif %}
+    </div>
+    <div class="title-block">
+      <div class="t1">Guia de Serviço Profissional / SP · SADT</div>
+      <div class="t2">Padrão TISS — Serviço Auxiliar de Diagnóstico e Terapia</div>
+    </div>
+    <div class="guia-num">
+      <span>Nº Guia no Prestador</span>
+      <strong>{{ f.numero_guia_prestador }}</strong>
+      <span>Registro ANS: {{ f.registro_ans }}</span>
+    </div>
+  </div>
+
+  {# ── Dados da Autorização ──────────────────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Dados da Autorização</div>
+    <div class="grid">
+      <div class="cell w25"><span class="lbl"><span class="num">7</span> Nº Guia Operadora</span><div class="val">{{ f.numero_guia_operadora }}</div></div>
+      <div class="cell w25"><span class="lbl"><span class="num">4</span> Data da Autorização</span><div class="val">{{ f.data_autorizacao }}</div></div>
+      <div class="cell w25"><span class="lbl"><span class="num">5</span> Senha</span><div class="val">{{ f.senha }}</div></div>
+      <div class="cell w25"><span class="lbl"><span class="num">6</span> Validade da Senha</span><div class="val">{{ f.validade_senha }}</div></div>
+      <div class="cell w100"><span class="lbl"><span class="num">3</span> Nº Guia Principal</span><div class="val">{{ f.numero_guia_principal }}</div></div>
+    </div>
+  </div>
+
+  {# ── Dados do Beneficiário ─────────────────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Dados do Beneficiário</div>
+    <div class="grid">
+      <div class="cell w25"><span class="lbl"><span class="num">8</span> Nº da Carteira</span><div class="val">{{ f.beneficiario_carteira }}</div></div>
+      <div class="cell w15"><span class="lbl"><span class="num">9</span> Validade</span><div class="val">{{ f.beneficiario_validade_carteira }}</div></div>
+      <div class="cell w45"><span class="lbl"><span class="num">10</span> Nome</span><div class="val">{{ f.beneficiario_nome }}</div></div>
+      <div class="cell w15"><span class="lbl"><span class="num">12</span> Atend. a RN</span><div class="val">{{ f.atendimento_rn }}</div></div>
+      <div class="cell w50"><span class="lbl"><span class="num">89</span> Nome Social</span><div class="val">{{ f.beneficiario_nome_social }}</div></div>
+      <div class="cell w50"><span class="lbl">Cartão Nacional de Saúde</span><div class="val">{{ f.beneficiario_cns }}</div></div>
+    </div>
+  </div>
+
+  {# ── Dados do Contratado Solicitante ───────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Dados do Contratado Solicitante</div>
+    <div class="grid">
+      <div class="cell w25"><span class="lbl"><span class="num">13</span> Código do Contratado na Operadora</span><div class="val">{{ f.solicitante_codigo_operadora }}</div></div>
+      <div class="cell w75"><span class="lbl"><span class="num">14</span> Nome do Contratado</span><div class="val">{{ f.solicitante_nome_contratado }}</div></div>
+      <div class="cell w40"><span class="lbl"><span class="num">15</span> Nome do Profissional Solicitante</span><div class="val">{{ f.solicitante_profissional_nome }}</div></div>
+      <div class="cell w15"><span class="lbl"><span class="num">16</span> Conselho</span><div class="val">{{ f.solicitante_conselho }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">17</span> Nº no Conselho</span><div class="val">{{ f.solicitante_numero_conselho }}</div></div>
+      <div class="cell w10"><span class="lbl"><span class="num">18</span> UF</span><div class="val">{{ f.solicitante_uf_conselho }}</div></div>
+      <div class="cell w15"><span class="lbl"><span class="num">19</span> CBO</span><div class="val">{{ f.solicitante_cbo }}</div></div>
+    </div>
+  </div>
+
+  {# ── Dados da Solicitação ──────────────────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Dados da Solicitação</div>
+    <div class="grid">
+      <div class="cell w33"><span class="lbl"><span class="num">21</span> Caráter do Atendimento</span><div class="val">{{ f.carater_atendimento }}</div></div>
+      <div class="cell w33"><span class="lbl"><span class="num">22</span> Data da Solicitação</span><div class="val">{{ f.data_solicitacao }}</div></div>
+      <div class="cell w33"><span class="lbl"><span class="num">90</span> Cobertura Especial</span><div class="val">{{ f.cobertura_especial }}</div></div>
+      <div class="cell w100"><span class="lbl"><span class="num">23</span> Indicação Clínica</span><div class="val">{{ f.indicacao_clinica }}</div></div>
+    </div>
+  </div>
+
+  {# ── Procedimentos ou Itens Solicitados ────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Procedimentos ou Itens Solicitados</div>
+    <table class="items">
+      <thead>
+        <tr>
+          <th class="num">Seq.</th><th class="ctr">Tabela</th><th>Código</th>
+          <th>Descrição</th><th class="num">Qtde. Solic.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in solicitados %}
+        <tr>
+          <td class="num">{{ it.sequencial }}</td>
+          <td class="ctr">{{ it.tabela }}</td>
+          <td>{{ it.codigo }}</td>
+          <td>{{ it.descricao }}</td>
+          <td class="num">{{ it.quantidade_solicitada }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="ctr">— sem procedimentos solicitados —</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if show_execucao %}
+  {# ── Dados do Contratado Executante + Atendimento ──────────────────────── #}
+  <div class="section">
+    <div class="section-title">Dados do Contratado Executante</div>
+    <div class="grid">
+      <div class="cell w25"><span class="lbl"><span class="num">29</span> Código do Contratado na Operadora</span><div class="val">{{ f.executante_codigo_operadora }}</div></div>
+      <div class="cell w55"><span class="lbl"><span class="num">30</span> Nome do Contratado</span><div class="val">{{ f.executante_nome_contratado }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">31</span> CNES</span><div class="val">{{ f.executante_cnes }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">32</span> Tipo de Atendimento</span><div class="val">{{ f.tipo_atendimento }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">33</span> Ind. Acidente</span><div class="val">{{ f.indicacao_acidente }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">34</span> Tipo de Consulta</span><div class="val">{{ f.tipo_consulta }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">35</span> Motivo Encerramento</span><div class="val">{{ f.motivo_encerramento }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">91</span> Regime</span><div class="val">{{ f.regime_atendimento }}</div></div>
+      <div class="cell w20"><span class="lbl"><span class="num">92</span> Saúde Ocupacional</span><div class="val">{{ f.saude_ocupacional }}</div></div>
+    </div>
+  </div>
+
+  {# ── Procedimentos e Exames Realizados (execução) ──────────────────────── #}
+  <div class="section">
+    <div class="section-title">Procedimentos e Exames Realizados</div>
+    <table class="items">
+      <thead>
+        <tr>
+          <th class="num">Seq.</th><th class="ctr">Data</th><th class="ctr">Tab.</th>
+          <th>Código</th><th>Descrição</th><th class="num">Qtde</th>
+          <th class="ctr">Via</th><th class="ctr">Téc</th><th class="num">Fator</th>
+          <th class="num">Vlr Unit.</th><th class="num">Vlr Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in executados %}
+        <tr>
+          <td class="num">{{ it.sequencial }}</td>
+          <td class="ctr">{{ it.data_execucao }}</td>
+          <td class="ctr">{{ it.tabela }}</td>
+          <td>{{ it.codigo }}</td>
+          <td>{{ it.descricao }}</td>
+          <td class="num">{{ it.quantidade }}</td>
+          <td class="ctr">{{ it.via_acesso }}</td>
+          <td class="ctr">{{ it.tecnica }}</td>
+          <td class="num">{{ it.fator_reducao_acrescimo }}</td>
+          <td class="num">{{ it.valor_unitario }}</td>
+          <td class="num">{{ it.valor_total }}</td>
+        </tr>
+        {% if it.equipe %}
+        <tr class="equipe">
+          <td></td>
+          <td colspan="10">
+            {% for p in it.equipe %}
+            <span><span class="eq-lbl">Grau:</span> {{ p.grau_participacao }} · {{ p.nome_profissional }}
+            ({{ p.conselho }} {{ p.numero_conselho }}/{{ p.uf_conselho }}, CBO {{ p.cbo }})</span>{% if not loop.last %} · {% endif %}
+            {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
+        {% else %}
+        <tr><td colspan="11" class="ctr">— sem procedimentos executados —</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if show_despesas %}
+  {# ── Outras Despesas ───────────────────────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Outras Despesas (materiais, medicamentos, diarias e taxas)</div>
+    <table class="items">
+      <thead>
+        <tr>
+          <th class="num">Seq.</th><th class="ctr">Data</th><th class="ctr">Tab.</th>
+          <th>Código</th><th>Descrição</th><th class="num">Qtde</th>
+          <th>Unid.</th><th class="num">Fator</th><th class="num">Vlr Unit.</th><th class="num">Vlr Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in despesas %}
+        <tr>
+          <td class="num">{{ it.sequencial }}</td>
+          <td class="ctr">{{ it.data }}</td>
+          <td class="ctr">{{ it.tabela }}</td>
+          <td>{{ it.codigo }}</td>
+          <td>{{ it.descricao }}</td>
+          <td class="num">{{ it.quantidade }}</td>
+          <td>{{ it.unidade_medida }}</td>
+          <td class="num">{{ it.fator_reducao_acrescimo }}</td>
+          <td class="num">{{ it.valor_unitario }}</td>
+          <td class="num">{{ it.valor_total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {# ── Valor Total da Guia ───────────────────────────────────────────────── #}
+  <div class="section">
+    <div class="section-title">Valor Total da Guia (R$)</div>
+    <div class="grid totais">
+      <div class="cell w33"><span class="lbl">Total Procedimentos</span><div class="val">{{ totais.valor_procedimentos }}</div></div>
+      <div class="cell w33"><span class="lbl">Total Outras Despesas</span><div class="val">{{ totais.valor_outras_despesas }}</div></div>
+      <div class="cell w33 grand"><span class="lbl">Total Geral</span><div class="val">{{ totais.valor_total_geral }}</div></div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if f.observacao %}
+  <div class="section">
+    <div class="section-title">Observação / Justificativa</div>
+    <div class="grid"><div class="cell w100"><div class="val">{{ f.observacao }}</div></div></div>
+  </div>
+  {% endif %}
+
+  {# ── Assinaturas — SEMPRE em branco (assinatura de próprio punho) ───────── #}
+  <div class="assinaturas">
+    {% for s in signatures %}
+    <div class="assinatura">
+      <div class="date-line">Data: ____/____/________</div>
+      <div class="line">{{ s.label }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if reconstructed %}
+  <div class="reconstructed-note">
+    Layout e obrigatoriedade de campos reconstruídos a partir do Padrão TISS
+    (competência {{ competencia }}); pendente verificação contra o XSD/PDF oficial da ANS.
+  </div>
+  {% endif %}
+</body>
+</html>

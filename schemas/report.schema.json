@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "valid",
+    "version",
+    "findings"
+  ],
+  "properties": {
+    "valid": {
+      "type": "boolean"
+    },
+    "version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Finding",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "severity",
+          "guia",
+          "xpath",
+          "pointer",
+          "message",
+          "fix",
+          "needs",
+          "glosa",
+          "rule"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "audit.autorizacao_ausente",
+              "audit.autorizacao_vencida",
+              "audit.carteirinha_ausente",
+              "audit.carteirinha_inativa",
+              "audit.carteirinha_vencida",
+              "audit.data_ausente",
+              "audit.operadora_divergente",
+              "audit.procedimento_ausente",
+              "audit.procedimento_fora_da_tabela",
+              "audit.tabela_fora_de_vigencia",
+              "audit.tabela_sem_procedimentos",
+              "audit.valor_nao_positivo",
+              "guia.carteirinha_ausente",
+              "guia.executante_ausente",
+              "guia.sequencial",
+              "item.valor_divergente",
+              "item.valor_zerado",
+              "lote.acima_do_teto",
+              "lote.caractere_invalido",
+              "lote.estrutura",
+              "lote.guia_duplicada",
+              "lote.hash_divergente",
+              "lote.valor_total_geral",
+              "lote.vazio",
+              "regra.combinacao_proibida",
+              "regra.max_itens",
+              "regra.obrigatorio",
+              "regra.padrao",
+              "regra.valores",
+              "tuss.fora_de_vigencia",
+              "tuss.inexistente",
+              "versao.divergente",
+              "versao.nao_detectada",
+              "versao.nao_suportada",
+              "xml.doctype",
+              "xml.encoding",
+              "xml.malformado",
+              "xsd.atributo",
+              "xsd.elemento_ausente",
+              "xsd.elemento_inesperado",
+              "xsd.enumeracao",
+              "xsd.outro",
+              "xsd.padrao",
+              "xsd.tamanho",
+              "xsd.tipo"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "error",
+              "warning"
+            ]
+          },
+          "guia": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "xpath": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pointer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "fix": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            ]
+          },
+          "needs": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "glosa": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rule": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

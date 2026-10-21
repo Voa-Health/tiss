@@ -1,0 +1,131 @@
+{
+  "guias": [
+    {
+      "cabecalho_guia": {
+        "numero_guia_prestador": "0001",
+        "registro_ans": "123456"
+      },
+      "dados_atendimento": {
+        "indicacao_acidente": "0",
+        "regime_atendimento": "01",
+        "tipo_atendimento": "01"
+      },
+      "dados_beneficiario": {
+        "atendimento_rn": "N",
+        "numero_carteira": "12345"
+      },
+      "dados_executante": {
+        "cnes": "1234567",
+        "contratado_executante": {
+          "codigo_prestador_na_operadora": "PRESTADOR1"
+        }
+      },
+      "dados_solicitacao": {
+        "carater_atendimento": "1"
+      },
+      "dados_solicitante": {
+        "contratado_solicitante": {
+          "codigo_prestador_na_operadora": "PRESTADOR1"
+        },
+        "nome_contratado_solicitante": "CLINICA EXEMPLO",
+        "profissional_solicitante": {
+          "cbos": "201115",
+          "conselho_profissional": "01",
+          "nome_profissional": "PROFISSIONAL EXEMPLO",
+          "numero_conselho_profissional": "12345",
+          "uf": "35"
+        }
+      },
+      "procedimentos_executados": [
+        {
+          "data_execucao": "2026-10-21",
+          "procedimento": {
+            "codigo_procedimento": "10101012",
+            "codigo_tabela": "22",
+            "descricao_procedimento": "CONSULTA"
+          },
+          "quantidade_executada": "1",
+          "reducao_acrescimo": "1.00",
+          "sequencial_item": "1",
+          "valor_total": 10001,
+          "valor_unitario": 10000
+        }
+      ],
+      "tipo": "sp_sadt",
+      "valor_total": {
+        "valor_procedimentos": 10000,
+        "valor_total_geral": 10000
+      }
+    },
+    {
+      "cabecalho_guia": {
+        "numero_guia_prestador": "0002",
+        "registro_ans": "123456"
+      },
+      "dados_atendimento": {
+        "indicacao_acidente": "0",
+        "regime_atendimento": "01",
+        "tipo_atendimento": "01"
+      },
+      "dados_beneficiario": {
+        "atendimento_rn": "N",
+        "numero_carteira": "67890"
+      },
+      "dados_executante": {
+        "cnes": "1234567",
+        "contratado_executante": {
+          "codigo_prestador_na_operadora": "PRESTADOR1"
+        }
+      },
+      "dados_solicitacao": {
+        "carater_atendimento": "1"
+      },
+      "dados_solicitante": {
+        "contratado_solicitante": {
+          "codigo_prestador_na_operadora": "PRESTADOR1"
+        },
+        "nome_contratado_solicitante": "CLINICA EXEMPLO",
+        "profissional_solicitante": {
+          "cbos": "201115",
+          "conselho_profissional": "01",
+          "nome_profissional": "PROFISSIONAL EXEMPLO",
+          "numero_conselho_profissional": "12345",
+          "uf": "35"
+        }
+      },
+      "procedimentos_executados": [
+        {
+          "data_execucao": "2026-10-21",
+          "procedimento": {
+            "codigo_procedimento": "10101012",
+            "codigo_tabela": "22",
+            "descricao_procedimento": "CONSULTA"
+          },
+          "quantidade_executada": "1",
+          "reducao_acrescimo": "1.00",
+          "sequencial_item": "1",
+          "valor_total": 10000,
+          "valor_unitario": 10000
+        }
+      ],
+      "tipo": "sp_sadt",
+      "valor_total": {
+        "valor_procedimentos": 10000,
+        "valor_total_geral": 10000
+      }
+    }
+  ],
+  "numero_lote": "0007",
+  "operadora": {
+    "registro_ans": "123456"
+  },
+  "prestador": {
+    "cnpj": "00000000000000"
+  },
+  "transacao": {
+    "data_registro_transacao": "2026-10-21",
+    "hora_registro_transacao": "12:00:00",
+    "sequencial_transacao": "1"
+  },
+  "versao": "4.03.00"
+}

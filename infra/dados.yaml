@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Bucket de dados publicos do voa-tiss.
+
+Parameters:
+  NomeDoBucket:
+    Type: String
+    Default: voa-tiss-dados
+
+Resources:
+  BucketDados:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref NomeDoBucket
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false
+      LifecycleConfiguration:
+        Rules:
+          - Id: expira-versoes-nao-correntes
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 90
+          - Id: aborta-multipart-incompleto
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+      Tags:
+        - Key: projeto
+          Value: voa-tiss
+
+  BucketDadosPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BucketDados
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: LeituraPublicaPrefixo
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "arn:aws:s3:::${NomeDoBucket}/publico/*"
+          - Sid: ExigeTransporteSeguro
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !Sub "arn:aws:s3:::${NomeDoBucket}"
+              - !Sub "arn:aws:s3:::${NomeDoBucket}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+Outputs:
+  NomeDoBucket:
+    Description: Nome do bucket de dados.
+    Value: !Ref BucketDados
+  BaseUrlPublica:
+    Description: URL base do prefixo publico.
+    Value: !Sub "https://${NomeDoBucket}.s3.sa-east-1.amazonaws.com/publico/"

@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pacote declarativo de regras de operadora",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operadora",
+    "mantenedor",
+    "official",
+    "versao_tiss",
+    "regras"
+  ],
+  "properties": {
+    "operadora": {
+      "type": "string"
+    },
+    "mantenedor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipo"
+      ],
+      "properties": {
+        "tipo": {
+          "enum": [
+            "comunidade",
+            "operadora"
+          ]
+        },
+        "registro_ans": {
+          "type": "string"
+        }
+      }
+    },
+    "official": {
+      "type": "boolean"
+    },
+    "versao_tiss": {
+      "const": "4.03.00"
+    },
+    "regras": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "descricao",
+          "source",
+          "severity",
+          "check"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "url",
+              "titulo",
+              "data",
+              "acesso"
+            ],
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "titulo": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "acesso": {
+                "type": "string"
+              }
+            }
+          },
+          "severity": {
+            "enum": [
+              "error",
+              "warning"
+            ]
+          },
+          "glosa": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tipo_guia": {
+            "enum": [
+              "consulta",
+              "sp_sadt"
+            ]
+          },
+          "check": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo",
+                  "pointer"
+                ],
+                "properties": {
+                  "tipo": {
+                    "const": "obrigatorio"
+                  },
+                  "pointer": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo",
+                  "pointer",
+                  "regex"
+                ],
+                "properties": {
+                  "tipo": {
+                    "const": "padrao"
+                  },
+                  "pointer": {
+                    "type": "string"
+                  },
+                  "regex": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo",
+                  "pointer",
+                  "permitidos"
+                ],
+                "properties": {
+                  "tipo": {
+                    "const": "valores"
+                  },
+                  "pointer": {
+                    "type": "string"
+                  },
+                  "permitidos": {
+                    "type": "array"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo",
+                  "pointer",
+                  "max"
+                ],
+                "properties": {
+                  "tipo": {
+                    "const": "max_itens"
+                  },
+                  "pointer": {
+                    "type": "string"
+                  },
+                  "max": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo",
+                  "se",
+                  "entao_proibido"
+                ],
+                "properties": {
+                  "tipo": {
+                    "const": "combinacao_proibida"
+                  },
+                  "se": {
+                    "type": "object"
+                  },
+                  "entao_proibido": {
+                    "type": "object"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

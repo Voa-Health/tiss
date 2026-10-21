@@ -1,0 +1,30 @@
+name: Atualizar dados ANS
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 8 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - run: uv sync --group dev
+      - run: uv run python scripts/manutencao.py baixar --out /tmp/ans
+      - run: uv run python scripts/manutencao.py tuss --pda-zip /tmp/ans/pda-049-tuss.zip
+      - run: uv run python scripts/manutencao.py dominio --pda-zip /tmp/ans/pda-049-tuss.zip --cadop-csv /tmp/ans/Relatorio_cadop.csv
+      - run: uv run python scripts/manutencao.py tabela38 --archive /tmp/ans/tabela38.zip
+      - run: uv run python scripts/manutencao.py artefatos
+      - run: uv run python scripts/manutencao.py verificar
+      - uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
+        with:
+          title: "Atualizar dados públicos da ANS"
+          commit-message: "Atualiza dados públicos da ANS"
+          branch: "automation/atualizar-dados-ans"
+          delete-branch: true
