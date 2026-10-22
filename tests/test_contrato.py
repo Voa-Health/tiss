@@ -60,6 +60,7 @@ def test_public_api_and_example_contract():
         "parse_demonstrativo",
         "parse_autorizacao",
         "plan_reconciliation",
+        "rejection_map",
         "render_sadt",
         "sadt_catalog",
         "sadt_missing",

@@ -29,6 +29,9 @@ com `tiss_sandbox_*` ou `voa_tiss.sandbox`. Para autorização SP/SADT, use
 `tiss_autorizacao_build`, `tiss_autorizacao_parse`, `tiss_autorizacao_check`
 ou `tiss_sandbox_autorizacao`.
 
+Para operadoras, use `tiss_rejection_map` ou `rejection_map` para agregar achados
+por prestador com CPF pseudonimizado.
+
 Atende operadoras, prestadores (hospitais, clínicas e laboratórios),
 profissionais de saúde, pacientes e gestores do SUS e do governo que consultam
 dados abertos da ANS sobre perfil de operadoras, glosas e rede hospitalar.

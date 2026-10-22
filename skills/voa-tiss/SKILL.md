@@ -15,6 +15,8 @@ Use o MCP remoto em `https://tiss-api.voa.health/mcp` ou a biblioteca Python
 - Interpretar glosas e demonstrativos.
 - Consultar códigos TUSS, domínios TISS e dados de operadoras da ANS.
 - Conferir campos de guias SP/SADT ou testar envios no sandbox.
+- Para operadoras, use `tiss_rejection_map` ou `rejection_map` para agregar
+  achados por prestador com CPF pseudonimizado.
 - Criar, interpretar e analisar solicitações de autorização SP/SADT.
 - Ajudar pacientes a entender guias, glosas e demonstrativos; apoiar
   prestadores, profissionais de saúde, operadoras e gestores do SUS e do

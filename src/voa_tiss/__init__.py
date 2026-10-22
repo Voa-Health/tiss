@@ -12,6 +12,7 @@ from ._completeness import missing_mandatory
 from ._glosa import glosa
 from ._lote import Lote, LoteError
 from ._lote_codec import build_lote, hash_epilogo, parse_lote
+from ._mapa import rejection_map
 from ._patch import PatchError, apply_fixes
 from ._report import Finding, Report, json_schema
 from ._retorno import (
@@ -71,6 +72,7 @@ __all__ = [
     "parse_demonstrativo",
     "parse_lote",
     "plan_reconciliation",
+    "rejection_map",
     "render_sadt",
     "sadt_catalog",
     "sadt_missing",
