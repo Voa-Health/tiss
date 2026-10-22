@@ -1,4 +1,5 @@
 const docsUrl = "https://docs.voa.health/integracao/voa-tiss";
+const tutorialsUrl = `${docsUrl}/tutoriais`;
 
 export const site = {
   name: "voa-tiss",
@@ -11,12 +12,16 @@ export const site = {
   mcpCommand: "claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp",
   navigation: [
     { href: docsUrl, label: "Documentação" },
-    { href: "/tutoriais", label: "Tutoriais" },
+    { href: tutorialUrl(), label: "Tutoriais" },
     { href: "/api", label: "API" },
     { href: "/playground", label: "Playground" },
     { href: "/operadoras", label: "Operadoras" },
   ],
 } as const;
+
+export function tutorialUrl(slug?: string): string {
+  return slug ? `${tutorialsUrl}/${slug}` : tutorialsUrl;
+}
 
 export function docsPageUrl(slug?: string): string {
   switch (slug) {

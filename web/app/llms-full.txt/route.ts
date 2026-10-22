@@ -1,7 +1,7 @@
 import { readDocs, readOpenApi, readTutorials, tutorialMarkdown } from "@/lib/content";
 import { descricaoOperadora } from "@/lib/operadoras";
 import { fontePainel, readOperadoras, readSerie } from "@/lib/operadoras-dados";
-import { docsPageUrl, site } from "@/lib/site";
+import { docsPageUrl, site, tutorialUrl } from "@/lib/site";
 import { formatLaunchPrice, launchPrices, moduleContent, moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
 import { audiences } from "@/lib/audiences";
@@ -18,10 +18,10 @@ export function GET() {
     .join("\n\n---\n\n");
   const tutorialData = readTutorials();
   const tutorialIndex = tutorialData
-    .map((tutorial) => `- [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})`)
+    .map((tutorial) => `- [${tutorial.title}](${tutorialUrl(tutorial.slug)})`)
     .join("\n");
   const tutorials = tutorialData
-    .map((tutorial) => `# [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})\n\n${tutorialMarkdown(tutorial)}`)
+    .map((tutorial) => `# [${tutorial.title}](${tutorialUrl(tutorial.slug)})\n\n${tutorialMarkdown(tutorial)}`)
     .join("\n\n---\n\n");
   const operations = Object.entries(readOpenApi().paths)
     .flatMap(([path, methods]) =>

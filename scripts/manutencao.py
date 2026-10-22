@@ -177,6 +177,111 @@ def _bake_tables(*, tables: dict[str, Path], encoding: str, delimiter: str) -> d
     return _finalise(records, table_ids=list(tables))
 
 
+def _notebook_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        return "".join(str(part) for part in value)
+    return ""
+
+
+def _tutorial_details(cells: list[dict[str, Any]]) -> tuple[str, str]:
+    for cell in cells:
+        if cell.get("cell_type") != "markdown":
+            continue
+        source = _notebook_text(cell.get("source"))
+        heading = re.search(r"(?m)^#\s+(.+?)\s*$", source)
+        if not heading:
+            continue
+        paragraph: list[str] = []
+        for line in source[heading.end() :].splitlines():
+            if not line.strip():
+                if paragraph:
+                    break
+                continue
+            paragraph.append(line.strip())
+        description = " ".join(paragraph)
+        if description:
+            return heading.group(1), description
+    raise ValueError("Notebook sem título H1 e parágrafo de descrição")
+
+
+def _tutorial_source(source: str, notebook: Path, *, add_links: bool) -> str:
+    source = re.sub(
+        r"(?P<prefix>\]\()(?P<path>(?:\./)?\d{2}-[A-Za-z0-9-]+)\.ipynb"
+        r"(?P<suffix>[?#][^)]*)?\)",
+        lambda match: f"{match['prefix']}{match['path']}.md{match['suffix'] or ''})",
+        source,
+    )
+    if not add_links:
+        return source
+    heading = re.search(r"(?m)^#\s+.+$", source)
+    if not heading:
+        return source
+    github_url = "https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/" + notebook.name
+    colab_url = (
+        "https://colab.research.google.com/github/Voa-Health/tiss/blob/main/docs/tutoriais/"
+        + notebook.name
+    )
+    links = f"[Abrir no GitHub]({github_url}) · [Abrir no Colab]({colab_url})"
+    return f"{source[: heading.end()]}\n\n{links}\n\n{source[heading.end() :].lstrip()}"
+
+
+def _tutorial_outputs(cell: dict[str, Any]) -> list[str]:
+    outputs: list[str] = []
+    for output in cell.get("outputs", []):
+        if output.get("output_type") == "stream":
+            text = _notebook_text(output.get("text"))
+        elif output.get("output_type") in {"execute_result", "display_data"}:
+            data = output.get("data")
+            text = _notebook_text(data.get("text/plain")) if isinstance(data, dict) else ""
+        else:
+            continue
+        if text.strip():
+            outputs.append(text.rstrip("\n"))
+    return outputs
+
+
+def _render_tutorial(notebook_path: Path, notebook: dict[str, Any]) -> tuple[str, str, str]:
+    cells = notebook.get("cells", [])
+    title, description = _tutorial_details(cells)
+    parts = [f"---\ndescription: {description}\n---"]
+    links_added = False
+    for cell in cells:
+        cell_type = cell.get("cell_type")
+        source = _notebook_text(cell.get("source")).strip("\n")
+        if cell_type == "markdown":
+            has_heading = bool(re.search(r"(?m)^#\s+.+$", source))
+            parts.append(
+                _tutorial_source(source, notebook_path, add_links=has_heading and not links_added)
+            )
+            links_added = links_added or has_heading
+        elif cell_type == "code":
+            parts.append(f"```python\n{source}\n```")
+            parts.extend(f"```text\n{output}\n```" for output in _tutorial_outputs(cell))
+    content = "\n\n".join(part for part in parts if part).rstrip() + "\n"
+    return title, description, content
+
+
+def gitbook_tutorials(destination: Path) -> int:
+    tutorials: list[tuple[str, str, str, str]] = []
+    for notebook_path in sorted((ROOT / "docs" / "tutoriais").glob("*.ipynb")):
+        notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+        if not isinstance(notebook, dict):
+            raise ValueError(f"Notebook inválido: {notebook_path.name}")
+        title, description, content = _render_tutorial(notebook_path, notebook)
+        tutorials.append((notebook_path.stem, title, description, content))
+
+    destination.mkdir(parents=True, exist_ok=True)
+    intro = "Exemplos práticos com dados sintéticos para integrar o voa-tiss."
+    index = ["# Tutoriais", "", intro, ""]
+    for slug, title, description, content in tutorials:
+        index.append(f"- [{title}]({slug}.md): {description}")
+        (destination / f"{slug}.md").write_text(content, encoding="utf-8")
+    (destination / "README.md").write_text("\n".join(index) + "\n", encoding="utf-8")
+    return 0
+
+
 def verificar() -> int:
     return _verificar(_STYLE_PATTERN, _SKIP_PREFIXES, lambda: _write_artifacts(check=True))
 
@@ -210,6 +315,8 @@ def main(argv: list[str] | None = None) -> int:
     xsd.add_argument("--source", type=Path, required=True)
     xsd.add_argument("--out", type=Path, default=ROOT / "src/voa_tiss/_data/schemas/4.02.00")
     commands.add_parser("verificar", help="verificar padrões, exemplos e artefatos")
+    gitbook = commands.add_parser("gitbook", help="gerar páginas GitBook dos tutoriais")
+    gitbook.add_argument("destination", type=Path)
     rede = commands.add_parser("ans-rede", help="preparar o SQLite da rede hospitalar")
     rede.add_argument("--zip", type=Path, required=True)
     rede.add_argument("--out", type=Path, default=REDE_OUT)
@@ -239,6 +346,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if all(checks) else 1
     if args.command == "verificar":
         return verificar()
+    if args.command == "gitbook":
+        return gitbook_tutorials(args.destination)
     if args.command == "descoberta":
         return descoberta(args.limite_usd, args.brutos, teto_chamada_usd=args.teto_chamada_usd)
     if args.command == "dominio":

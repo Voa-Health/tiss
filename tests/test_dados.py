@@ -58,6 +58,29 @@ def test_tuss_bake_and_index_are_deterministic(tmp_path):
     assert not dated.get("X1", include_expired=False, today=datetime.date(2026, 1, 1))
     assert dated.get("X1", include_expired=True, today=datetime.date(2026, 1, 1))
 
+    notebook = json.loads((ROOT / "docs/tutoriais/01-validar-um-lote.ipynb").read_text())
+    output = "".join(notebook["cells"][1]["outputs"][0]["data"]["text/plain"]).rstrip("\n")
+    destination = tmp_path / "tutoriais"
+
+    assert manutencao.main(["gitbook", str(destination)]) == 0
+    pages = sorted(destination.glob("*.md"))
+    assert len(pages) == 9
+    first_page = (destination / "01-validar-um-lote.md").read_text()
+    assert first_page.startswith(
+        "---\ndescription: Comece pelo exemplo incluído. O relatório reúne achados que podem "
+        "ser revisados antes de corrigir a guia.\n---"
+    )
+    colab_url = (
+        "https://colab.research.google.com/github/Voa-Health/tiss/blob/main/docs/tutoriais/"
+        "01-validar-um-lote.ipynb"
+    )
+    assert colab_url in first_page
+    assert f"```text\n{output}\n```" in first_page
+    first_run = {page.name: page.read_bytes() for page in pages}
+
+    assert manutencao.main(["gitbook", str(destination)]) == 0
+    assert {page.name: page.read_bytes() for page in pages} == first_run
+
 
 def test_packaged_data_and_catalog_glosas():
     assert dominio.lookup("38", "1801")[0]["descricao"] == glosa("1801")["descricao"]

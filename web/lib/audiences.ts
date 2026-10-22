@@ -1,5 +1,5 @@
 import { type ModuleSlug } from "@/lib/modules";
-import { docsPageUrl, operationAnchor, site } from "@/lib/site";
+import { docsPageUrl, operationAnchor, site, tutorialUrl } from "@/lib/site";
 
 export type TerminalDemo = { src: string; alt: string; width: number; height: number };
 export type AudienceItem = {
@@ -22,8 +22,8 @@ export type Audience = {
   cta: { href: string; label: string };
 };
 
-const demonstrativo = "/tutoriais/02-demonstrativo-e-conciliacao";
-const sandbox = "/tutoriais/06-operadora-simulada";
+const demonstrativo = tutorialUrl("02-demonstrativo-e-conciliacao");
+const sandbox = tutorialUrl("06-operadora-simulada");
 
 export const healthplanModules: ModuleSlug[] = ["analise_contas", "autorizacao"];
 
@@ -43,7 +43,7 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Mapa de rejeição por prestador",
     description:
       "Veja quais prestadores e quais regras geram mais retrabalho nos lotes recebidos, agregado por prestador e código.",
-    href: "/tutoriais/08-mapa-de-rejeicao",
+    href: tutorialUrl("08-mapa-de-rejeicao"),
     linkLabel: "Ver tutorial",
     demo: terminalDemo(
       "mapa",
@@ -102,7 +102,7 @@ export const audiences: Audience[] = [
       {
         label: "Validar, corrigir e revalidar",
         description: "Valide o lote com XSD e regras de negócio e aplique correções determinísticas.",
-        href: "/tutoriais/01-validar-um-lote",
+        href: tutorialUrl("01-validar-um-lote"),
         linkLabel: "Ver tutorial",
       },
       {
@@ -114,7 +114,7 @@ export const audiences: Audience[] = [
       {
         label: "TUSS e SP/SADT",
         description: "Confira códigos TUSS e gere a guia SP/SADT sem decorar o manual.",
-        href: "/tutoriais/03-tuss-e-sp-sadt",
+        href: tutorialUrl("03-tuss-e-sp-sadt"),
         linkLabel: "Ver tutorial",
       },
     ],

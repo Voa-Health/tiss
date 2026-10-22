@@ -1,6 +1,6 @@
 import { readDocs, readOpenApi, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
-import { docsPageUrl, operationAnchor, site } from "@/lib/site";
+import { docsPageUrl, operationAnchor, site, tutorialUrl } from "@/lib/site";
 import { moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
 
@@ -11,7 +11,7 @@ export function GET() {
     .map((doc) => `- [${doc.title}](${docsPageUrl(doc.slug)})`)
     .join("\n");
   const tutorials = readTutorials()
-    .map((tutorial) => `- [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})`)
+    .map((tutorial) => `- [${tutorial.title}](${tutorialUrl(tutorial.slug)})`)
     .join("\n");
   const operations = Object.entries(readOpenApi().paths)
     .flatMap(([path, methods]) =>
