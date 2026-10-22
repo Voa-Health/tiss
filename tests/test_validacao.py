@@ -28,9 +28,79 @@ from voa_tiss.codes import CODES
                 "lote.valor_total_geral",
             },
         ),
+        ("guia-consulta", set()),
+        ("hash-divergente", set()),
+        ("hash-ausente", set()),
     ],
 )
 def test_example_reports(name, expected):
+    if name == "guia-consulta":
+        lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        lote["numero_lote"] = "TISS-001"
+        lote["guias"] = [
+            {
+                "tipo": "consulta",
+                "cabecalho_consulta": {
+                    "registro_ans": "123456",
+                    "numero_guia_prestador": "CONSULTA-001",
+                },
+                "dados_beneficiario": {
+                    "numero_carteira": "000000000001",
+                    "atendimento_rn": "N",
+                },
+                "contratado_executante": {
+                    "codigo_prestador_na_operadora": "PRESTADOR01",
+                    "cnes": "1234567",
+                },
+                "profissional_executante": {
+                    "nome_profissional": "DRA. MARIA COSTA",
+                    "conselho_profissional": "01",
+                    "numero_conselho_profissional": "12345",
+                    "uf": "35",
+                    "cbos": "225125",
+                },
+                "indicacao_acidente": "0",
+                "dados_atendimento": {
+                    "regime_atendimento": "01",
+                    "data_atendimento": "2026-10-21",
+                    "tipo_consulta": "1",
+                    "procedimento": {
+                        "codigo_tabela": "22",
+                        "codigo_procedimento": "10101012",
+                        "valor_procedimento": 15000,
+                    },
+                },
+            }
+        ]
+        xml = voa_tiss.build_lote(lote)
+        assert voa_tiss.validate(xml).valid
+        parsed = voa_tiss.parse_lote(xml)
+        assert parsed == lote
+        report = voa_tiss.check(parsed)
+        assert report.valid and report.findings == ()
+        return
+    if name.startswith("hash-"):
+        root = etree.fromstring(examples.load("lote-valido"), parser())
+        hash_element = root.xpath(".//ans:epilogo/ans:hash", namespaces=ANS)[0]
+        if name == "hash-divergente":
+            hash_element.text = "0" * 32
+        else:
+            hash_element.getparent().remove(hash_element)
+        document = etree.tostring(root, encoding="ISO-8859-1", xml_declaration=True)
+        report = voa_tiss.validate(document)
+        codes = {finding.code for finding in report.findings}
+        if name == "hash-divergente":
+            assert codes == {"lote.hash_divergente"}
+            assert not report.valid
+            finding = report.findings[0]
+            assert finding.xpath.endswith("/ans:epilogo/ans:hash")
+            assert finding.message == "Hash do epílogo divergente do calculado."
+            assert finding.glosa == "5014"
+            assert finding.fix is None
+        else:
+            assert "lote.hash_divergente" not in codes
+            assert any(code.startswith("xsd.") for code in codes)
+        return
     report = voa_tiss.validate(examples.load(name))
     codes = {finding.code for finding in report.findings}
     assert expected <= codes

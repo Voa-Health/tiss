@@ -1,0 +1,13 @@
+{
+  "categoria": "regra",
+  "errada": "99",
+  "esperado": {
+    "codigo": "23",
+    "tabela": "50"
+  },
+  "formato": "texto",
+  "id": "regra-dominio-02",
+  "instrucao": "Na TISS 4.03.00, qual é o código da Tabela de domínio 50 (Exame) para \"exame\"?\n\nResposta: apenas o código.",
+  "perspectiva": "gestor",
+  "referencia": "23"
+}

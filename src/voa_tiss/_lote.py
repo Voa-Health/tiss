@@ -111,6 +111,13 @@ _ORDERS: dict[str, tuple[str, ...]] = {
     ),
     "dados_beneficiario": ("numero_carteira", "atendimento_rn", "nome_beneficiario"),
     "dados_executante": ("contratado_executante", "cnes", "profissional_executante"),
+    "contratado_executante": (
+        "codigo_prestador_na_operadora",
+        "cpf_contratado",
+        "cnpj_contratado",
+        "nome_contratado",
+        "cnes",
+    ),
     "dados_atendimento": (
         "tipo_atendimento",
         "indicacao_acidente",
@@ -118,6 +125,14 @@ _ORDERS: dict[str, tuple[str, ...]] = {
         "cobertura_especial",
         "saude_ocupacional",
         "data_atendimento",
+    ),
+    "dados_atendimento_consulta": (
+        "cobertura_especial",
+        "regime_atendimento",
+        "saude_ocupacional",
+        "data_atendimento",
+        "tipo_consulta",
+        "procedimento",
     ),
     "procedimento": ("codigo_tabela", "codigo_procedimento", "descricao_procedimento"),
     "profissional_solicitante": (

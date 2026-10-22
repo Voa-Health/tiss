@@ -21,7 +21,7 @@ LIMITES = {
     "comment_lines": 2,
     "module_lines": 600,
     "test_files": 7,
-    "test_functions": 34,
+    "test_functions": 35,
     "notebook_output_chars": 2000,
 }
 _SKIP_PATHS = {

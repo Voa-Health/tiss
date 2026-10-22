@@ -16,6 +16,8 @@ import pytest
 from conftest import ROOT
 
 import voa_tiss
+from bench._tarefas import TASK_DIR, gerar
+from bench._verificar import verificar
 from scripts import manutencao
 from voa_tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
 from voa_tiss._sadt import load_bundle, render_html
@@ -207,3 +209,11 @@ def test_sadt_pdf_render_when_available(tmp_path):
     output = tmp_path / "guide.pdf"
     render_sadt({}, output, gen_date=datetime.date(2026, 6, 22))
     assert output.is_file() and output.stat().st_size > 0
+
+
+@pytest.mark.parametrize("task", gerar(), ids=lambda task: task["id"])
+def test_benchmark_task_contract(task):
+    path = TASK_DIR / f"{task['id']}.json"
+    assert json.loads(path.read_text(encoding="utf-8")) == task
+    assert verificar(task, task["referencia"])[0]
+    assert not verificar(task, task["errada"])[0]
