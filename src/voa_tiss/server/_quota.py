@@ -11,7 +11,8 @@ from collections.abc import Callable
 from typing import Any
 
 from ._context import CallContext
-from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, LOGIN_URL, TIER_LIMITS
+from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, KEYS_URL, TIER_LIMITS
+from ._service import configured
 
 Counter = Callable[[str, int], int]
 _counter: Counter | None = None
@@ -55,21 +56,25 @@ def _denied(status: int, code: str, message: str, link: str) -> tuple[int, dict[
     return status, {"erro": {"codigo": code, "mensagem": message, "link": link}}
 
 
-def admit(op_name: str, ctx: CallContext) -> tuple[int, dict[str, Any]] | None:
-    """Devolva a recusa da chamada, ou `None` quando ela cabe no nível."""
+def admit(
+    op_name: str, ctx: CallContext, scope: str | None = None
+) -> tuple[int, dict[str, Any]] | None:
+    """Devolva a recusa da chamada, ou `None` quando ela cabe no escopo e no nível."""
     access = ctx.access
-    # Sem segredo de chaves, o servidor é local ou auto-hospedado e não exige chave.
-    if not os.environ.get("VOA_TISS_KEY_SECRET"):
+    # Sem backend de chaves, o servidor é local ou auto-hospedado e não exige chave.
+    if not configured():
         return None
     if access is None and not op_name.startswith(_ANONYMOUS_OPERATIONS):
         return _denied(
-            401, "chave_obrigatoria", "Esta operação exige chave do login Voa.", LOGIN_URL
+            401, "chave_obrigatoria", "Esta operação exige chave da organização.", KEYS_URL
         )
+    if access is not None and scope is not None and scope not in access.scopes:
+        return _denied(403, "escopo_ausente", f"A chave não tem o escopo {scope}.", KEYS_URL)
     counter = _active_counter()
     if counter is None:
         return None
     if access is None:
-        subject, limit, link = f"ip:{ctx.client_ip}", ANONYMOUS_LIMIT, LOGIN_URL
+        subject, limit, link = f"ip:{ctx.client_ip}", ANONYMOUS_LIMIT, KEYS_URL
     else:
         subject, limit, link = f"org:{access.org}", TIER_LIMITS[access.tier], ENTERPRISE_URL
     try:

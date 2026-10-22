@@ -15,6 +15,8 @@ class Op:
     max_tokens: int
     method: str = "POST"
     path: str | None = None
+    scope: str | None = None
+    usage_kind: str = "tiss_api_call"
 
     @property
     def route(self) -> str:

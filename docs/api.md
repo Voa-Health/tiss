@@ -32,18 +32,26 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
 
 ## Acesso
 
-Sem chave, respondem `sandbox_*` e a lista de espera. As demais exigem a chave
-do login Voa em `Authorization: Bearer`. Não há limite diário.
-Chave inválida ou expirada retorna `401`.
-A chave vale 24 h e é renovada com o `refresh_token`.
+Sem chave, respondem `sandbox_*` e a lista de espera. As demais exigem uma chave
+`sk_tiss_` da organização em `Authorization: Bearer`, criada no painel
+`/org`. Não há limite diário.
+Chave inválida ou revogada retorna `401`; a revogação vale em até 60 s.
+Chave sem o escopo da operação retorna `403`. Cada chamada com chave entra
+no uso da organização, por operação e por chave.
+
+| Escopo | Operações |
+| --- | --- |
+| `qualquer chave` | `tuss_lookup`, `tuss_search`, `rede`, `operadora_rede`, `operadora_perfil`, `glosa_explain`, `dominio`, `operadora_lookup`, `buscar_docs` |
+| `tiss:accounts` | `parse_demonstrativo`, `plan_reconciliation` |
+| `tiss:authorization` | `autorizacao_build`, `autorizacao_parse`, `autorizacao_check` |
+| `tiss:build` | `build`, `apply_fixes` |
+| `tiss:rules` | `audit`, `rejection_map` |
+| `tiss:sandbox` | `sandbox_enviar_lote`, `sandbox_demonstrativo`, `sandbox_autorizacao` |
+| `tiss:validate` | `validate`, `sadt_missing`, `sadt_catalog`, `hash` |
 
 | Rota HTTP | Descrição |
 | --- | --- |
-| `GET /v1/auth/login` | Inicia o login Voa. |
-| `GET /v1/auth/callback` | Emite a chave e volta para `/chaves`. |
-| `POST /v1/keys/refresh` | Troca o `refresh_token` por uma chave nova. |
 | `GET /v1/limits` | Regras de acesso. |
-| `GET /oauth/client.json` | Metadados do cliente OAuth. |
 
 ## Lista de espera
 
