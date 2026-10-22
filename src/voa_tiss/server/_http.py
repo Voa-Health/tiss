@@ -180,13 +180,14 @@ def _endpoint(operation: Any) -> Any:
 
 def _operation_openapi_extra(operation: Any) -> dict[str, Any]:
     request_body = None
+    properties = operation.input_schema.get("properties", {})
     if operation.method != "GET":
+        content = {"application/json": {"schema": operation.input_schema}}
+        if "xml" in properties:
+            content["application/xml"] = {"schema": {"type": "string"}}
         request_body = {
             "required": True,
-            "content": {
-                "application/json": {"schema": operation.input_schema},
-                "application/xml": {"schema": {"type": "string"}},
-            },
+            "content": content,
         }
     extra: dict[str, Any] = {
         "responses": {
@@ -201,7 +202,6 @@ def _operation_openapi_extra(operation: Any) -> dict[str, Any]:
         extra["responses"]["503"] = {"description": "Rede hospitalar indisponível."}
     if request_body is not None:
         extra["requestBody"] = request_body
-    properties = operation.input_schema.get("properties", {})
     path_parameters = re.findall(r"\{([^}]+)\}", operation.route)
     parameters = [
         {
