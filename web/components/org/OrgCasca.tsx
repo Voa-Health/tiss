@@ -127,7 +127,7 @@ export function OrgCasca({
       >
         <Flex
           gap={token.marginLG}
-          style={{ maxWidth: LARGURA, margin: "0 auto", padding: `0 ${token.paddingLG}px`, overflowX: "auto" }}
+          style={{ maxWidth: LARGURA, margin: "0 auto", padding: `0 ${token.paddingLG}px`, overflowX: "auto", scrollbarWidth: "none" }}
         >
           {secoesDaOrg.map((item) => {
             const ativa = item.key === secao;

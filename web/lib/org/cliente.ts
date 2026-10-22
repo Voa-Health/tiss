@@ -36,7 +36,8 @@ function falha(status: number, corpo: unknown): FalhaDoPedido {
 
 /** Chama o BFF do painel; o navegador nunca vê o token Voa. */
 export async function pedir<T>(caminho: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
-  const resposta = await fetch(caminho.startsWith("/") ? caminho : `/api/org/${caminho}`, {
+  const destino = caminho.startsWith("/") ? caminho : `/api/org/${caminho.replace(/\/(?=$|\?)/, "")}`;
+  const resposta = await fetch(destino, {
     method: init.method ?? "GET",
     headers: init.body !== undefined ? { "content-type": "application/json" } : undefined,
     body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
