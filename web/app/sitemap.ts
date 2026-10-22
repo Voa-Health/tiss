@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 import { readDocs, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
-import { site } from "@/lib/site";
+import { indexingEnabled, site } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!indexingEnabled()) return [];
+
   const paths = [
     "",
     "/docs",
@@ -12,8 +14,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/playground",
     "/operadoras",
     ...site.modules.map(({ href }) => href),
-    "/entrar",
-    "/chaves",
     "/termos",
     ...readDocs().map((doc) => `/docs/${doc.slug}`),
     ...readTutorials().map((tutorial) => `/tutoriais/${tutorial.slug}`),
