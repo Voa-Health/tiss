@@ -2,10 +2,13 @@
 
 import { CheckOutlined, CopyOutlined } from "@ant-design/icons";
 import { Button, Flex, theme, Typography } from "antd";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { track } from "@/lib/analytics";
 
 export function CodeBlock({ code, output = false }: { code: string; output?: boolean }) {
   const { token } = theme.useToken();
+  const pathname = usePathname();
   const [copied, setCopied] = useState(false);
   const resetCopy = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -19,6 +22,7 @@ export function CodeBlock({ code, output = false }: { code: string; output?: boo
   async function copyCode() {
     try {
       await navigator.clipboard.writeText(code);
+      track("tiss_copy_snippet", { pagina: pathname });
       setCopied(true);
       if (resetCopy.current) clearTimeout(resetCopy.current);
       resetCopy.current = setTimeout(() => setCopied(false), 1500);

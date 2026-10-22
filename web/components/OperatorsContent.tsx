@@ -4,6 +4,8 @@ import { Button, Card, Flex, Space, Tag, theme, Typography } from "antd";
 import { NetworkSearch } from "@/components/NetworkSearch";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { RulePack } from "@/lib/rule-packs";
+import { site } from "@/lib/site";
+import { track } from "@/lib/analytics";
 
 export function OperatorsContent({ packs }: { packs: RulePack[] }) {
   const { token } = theme.useToken();
@@ -20,7 +22,8 @@ export function OperatorsContent({ packs }: { packs: RulePack[] }) {
               <Button href="/docs/regras-operadora">Como criar um pacote</Button>
               <Button
                 type="primary"
-                href="https://github.com/Voa-Health/tiss/issues/new?template=regra-de-operadora.yml"
+                href={site.operatorContactUrl}
+                onClick={() => track("tiss_cta_github", { local: "operadoras" })}
               >
                 Sugerir pacote
               </Button>

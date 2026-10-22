@@ -1,7 +1,7 @@
 "use client";
 
-import { MenuOutlined } from "@ant-design/icons";
-import { Button, Drawer, Flex, Grid, theme } from "antd";
+import { DownOutlined, MenuOutlined } from "@ant-design/icons";
+import { Button, Drawer, Dropdown, Flex, Grid, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -19,6 +19,10 @@ export function SiteHeader() {
       {item.label}
     </Link>
   ));
+  const moduleItems = site.modules.map((item) => ({
+    key: item.href,
+    label: <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>,
+  }));
 
   return (
     <header style={{ borderBottom: `${token.lineWidth}px ${token.lineType} ${token.colorBorderSecondary}` }}>
@@ -34,6 +38,25 @@ export function SiteHeader() {
         {screens.md ? (
           <Flex align="center" gap={token.marginLG} className="site-nav">
             {links}
+            <Dropdown menu={{ items: moduleItems }} trigger={["click"]}>
+              <Button
+                type="link"
+                style={{
+                  height: "auto",
+                  paddingInline: 0,
+                  fontSize: "inherit",
+                  fontWeight: "inherit",
+                }}
+              >
+                Módulos
+                <DownOutlined
+                  style={{
+                    marginInlineStart: token.marginXXS,
+                    fontSize: token.fontSizeSM,
+                  }}
+                />
+              </Button>
+            </Dropdown>
           </Flex>
         ) : (
           <>
@@ -41,6 +64,12 @@ export function SiteHeader() {
             <Drawer title="Navegação" open={open} onClose={() => setOpen(false)}>
               <Flex vertical gap={token.marginLG}>
                 {links}
+                <Typography.Text strong>Módulos</Typography.Text>
+                {site.modules.map((item) => (
+                  <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
+                    {item.label}
+                  </Link>
+                ))}
                 <Link href="/entrar" onClick={() => setOpen(false)}>Entrar</Link>
               </Flex>
             </Drawer>

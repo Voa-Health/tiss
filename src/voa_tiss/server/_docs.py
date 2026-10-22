@@ -100,7 +100,7 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
             "",
             "## Acesso",
             "",
-            "Sem chave, só as operações `sandbox_*` respondem. As demais exigem a chave",
+            "Sem chave, respondem `sandbox_*` e a lista de espera. As demais exigem a chave",
             "do login Voa em `Authorization: Bearer`. Não há limite diário.",
             "Chave inválida ou expirada retorna `401`.",
             f"A chave vale {key_ttl_seconds // 3600} h e é renovada com o `refresh_token`.",
@@ -112,6 +112,17 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
             "| `POST /v1/keys/refresh` | Troca o `refresh_token` por uma chave nova. |",
             "| `GET /v1/limits` | Regras de acesso. |",
             "| `GET /oauth/client.json` | Metadados do cliente OAuth. |",
+        ]
+    )
+    rows.extend(
+        [
+            "",
+            "## Lista de espera",
+            "",
+            "`POST /v1/lista-de-espera` recebe `modulo`, `email`, `empresa`, `volume_mensal`",
+            "e, para o extrator, `tipos_documento`. Retorna `202`, `422`, `429` ou `503`.",
+            "Nada é gravado; o pedido vai para a ferramenta de análise do produto.",
+            "A rota é HTTP e não está disponível como ferramenta MCP.",
         ]
     )
     rows.extend(

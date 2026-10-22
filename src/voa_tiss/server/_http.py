@@ -25,6 +25,7 @@ from ._keys import LIMITS, LOGIN_URL, authorize
 from ._mcp import create_mcp
 from ._ops import OPS, call
 from ._quota import seconds_until_reset
+from ._waitlist import register_waitlist
 
 _logger = logging.getLogger("voa_tiss.server")
 _HTTP_SERVICE_UNAVAILABLE = 503
@@ -258,6 +259,7 @@ def create_app() -> FastAPI:
     app.middleware("http")(_request_context)
     _register_ops(app)
     register_auth(app)
+    register_waitlist(app)
     app.add_api_route("/v1/limits", _limits, methods=["GET"], name="limits")
     app.router.routes.append(Route("/mcp", _MCPApp(mcp_manager), methods=["GET", "POST", "DELETE"]))
     return app

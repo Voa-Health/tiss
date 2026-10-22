@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { CodeBlock } from "./CodeBlock";
 import { site } from "@/lib/site";
+import { track } from "@/lib/analytics";
 
 export function HomeContent() {
   const { token } = theme.useToken();
@@ -81,9 +82,21 @@ export function HomeContent() {
           { href: "/tutoriais", label: "Tutoriais" },
           { href: "/api", label: "API" },
           { href: "/playground", label: "Playground" },
-          { href: site.github, label: "GitHub" },
+          { href: site.github, label: "GitHub", local: "home" },
           { href: site.pypi, label: "PyPI" },
-        ].map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
+        ].map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={
+              link.href === site.github
+                ? () => track("tiss_cta_github", { local: "home" })
+                : undefined
+            }
+          >
+            {link.label}
+          </Link>
+        ))}
       </Space>
     </Flex>
   );

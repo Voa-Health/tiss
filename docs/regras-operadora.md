@@ -17,3 +17,12 @@ flowchart LR
 
 Regras oficiais exigem mantenedor do tipo `operadora` e fonte publicada.
 Pacotes de exemplo devem usar dados sintéticos.
+
+## Publicação pela operadora
+
+Salve um pacote válido em `src/voa_tiss/rules/NNNNNN.json`, com o registro ANS de seis dígitos
+no nome, fonte e data em cada regra e `mantenedor` com `tipo: operadora` e `registro_ans`.
+Envie a contribuição pelo GitHub; as verificações automáticas validam o pacote. Após
+aprovação por responsável com e-mail no domínio cadastrado da operadora na ANS, as regras
+recebem o selo Oficial.
+Novas regras e ajustes são enviados pelo GitHub.

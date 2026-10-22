@@ -17,7 +17,7 @@ LOGIN_URL = f"{SITE_URL}/chaves"
 ENTERPRISE_URL = "https://voa.health"
 LIMITS = {
     "limite_diario": None,
-    "sem_chave": {"operacoes": "sandbox_*", "login": LOGIN_URL},
+    "sem_chave": {"operacoes": ["sandbox_*", "lista_de_espera"], "login": LOGIN_URL},
     "niveis": sorted(TIER_LIMITS),
     "chave_invalida": {"status": 401},
     "validade_chave_segundos": KEY_TTL_SECONDS,
