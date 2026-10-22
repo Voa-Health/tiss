@@ -13,12 +13,6 @@ export const site = {
     { href: "/playground", label: "Playground" },
     { href: "/operadoras", label: "Operadoras" },
   ],
-  modules: [
-    { href: "/recurso", label: "Recurso de glosa", slug: "recurso" },
-    { href: "/extrator", label: "Extrator", slug: "extrator" },
-    { href: "/cloud", label: "Cloud", slug: "cloud" },
-    { href: "/calculadora", label: "Calculadora", slug: "calculadora" },
-  ],
 } as const;
 
 export const siteContentWidth = 1120;

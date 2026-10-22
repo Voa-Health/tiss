@@ -587,7 +587,18 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
                 client.post("/v1/lista-de-espera", json={**base, "email": email}).status_code == 202
             )
             assert events[0][1]["org_match"] == expected
+        for modulo in ("analise_contas", "autorizacao"):
+            events.clear()
+            assert (
+                client.post("/v1/lista-de-espera", json={**base, "modulo": modulo}).status_code
+                == 202
+            )
+            assert events[0][1]["module"] == modulo
         invalid_waitlist = [
+            (
+                {**base, "modulo": "autorizacao", "tipos_documento": ["guia_pdf"]},
+                HTTP_UNPROCESSABLE,
+            ),
             ({**base, "modulo": "extrator"}, HTTP_UNPROCESSABLE),
             (
                 {
