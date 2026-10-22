@@ -100,7 +100,7 @@ STYLE_TERMS = (
     r"\bconvenio_batch_validator\b",
 )
 _STYLE_PATTERN = re.compile("|".join(STYLE_TERMS), re.IGNORECASE)
-_SKIP_PREFIXES = ("tests/fixtures/", "bench/resultados/")
+_SKIP_PREFIXES = ("tests/fixtures/",)
 
 
 def _artifact_contents() -> dict[Path, bytes]:
