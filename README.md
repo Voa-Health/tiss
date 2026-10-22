@@ -18,7 +18,7 @@
   <a href="https://pypi.org/project/voa-tiss/"><img src="https://img.shields.io/pypi/v/voa-tiss?label=PyPI" alt="Versão no PyPI"></a>
   <a href="https://pypi.org/project/voa-tiss/"><img src="https://img.shields.io/pypi/pyversions/voa-tiss" alt="Versões do Python"></a>
   <a href="https://pypistats.org/packages/voa-tiss"><img src="https://img.shields.io/pypi/dm/voa-tiss?label=downloads" alt="Downloads por mês"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue" alt="Licença Apache-2.0"></a>
+  <a href="https://github.com/Voa-Health/tiss/blob/main/LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue" alt="Licença Apache-2.0"></a>
   <a href="https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss"><img src="https://img.shields.io/badge/MCP-health.voa%2Ftiss-7c3aed" alt="MCP Registry"></a>
 </div>
 
@@ -27,7 +27,7 @@
   <a href="https://tiss-api.voa.health/playground">Playground</a> ·
   <a href="https://tiss-api.voa.health/docs">Documentação</a> ·
   <a href="https://tiss-api.voa.health/operadoras">Operadoras</a> ·
-  <a href="bench/README.md">TISS-Bench</a>
+  <a href="https://github.com/Voa-Health/tiss/blob/main/bench/README.md">TISS-Bench</a>
 </div>
 
 <br>
@@ -39,7 +39,7 @@ remoto para o seu agente de IA.
 <div align="center">
   <img src="https://raw.githubusercontent.com/Voa-Health/tiss/main/agents/faturista/execucao-real/fluxo.gif" alt="Agente faturista fechando o ciclo TISS no terminal: valida o lote, corrige, envia à operadora simulada, lê as glosas e rascunha os recursos" width="820">
   <br>
-  <sub>O <a href="agents/faturista/README.md">agente faturista</a> usando só o MCP público: corrige dois erros do lote, envia à operadora simulada, lê as glosas e rascunha um recurso por guia, sem inventar evidência.</sub>
+  <sub>O <a href="https://github.com/Voa-Health/tiss/blob/main/agents/faturista/README.md">agente faturista</a> usando só o MCP público: corrige dois erros do lote, envia à operadora simulada, lê as glosas e rascunha um recurso por guia, sem inventar evidência.</sub>
 </div>
 
 > [!TIP]
@@ -89,7 +89,7 @@ Você não precisa escrever XML TISS à mão. O ciclo é sempre o mesmo:
 Depois do envio, `parse_demonstrativo` lê o retorno da operadora, `glosa` explica
 cada código da Tabela 38 e `plan_reconciliation` concilia o que foi pago com o
 que foi cobrado. Para testar sem operadora real, use a
-[operadora simulada](docs/tutoriais/06-operadora-simulada.ipynb).
+[operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb).
 
 ## O que vem no pacote
 
@@ -99,11 +99,11 @@ que foi cobrado. Para testar sem operadora real, use a
   `https://tiss-api.voa.health`, com [OpenAPI](https://tiss-api.voa.health/openapi.json).
 - **[MCP remoto](#conectar-agentes)**: 20 ferramentas e 3 prompts para agentes,
   no [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss).
-- **[Operadora simulada](docs/tutoriais/06-operadora-simulada.ipynb)**: envie
+- **[Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)**: envie
   lotes e receba protocolo, demonstrativo e glosas sem tocar em produção.
-- **[Agente faturista](agents/faturista/README.md)**: um agente completo para
+- **[Agente faturista](https://github.com/Voa-Health/tiss/blob/main/agents/faturista/README.md)**: um agente completo para
   adaptar ao seu fluxo.
-- **[TISS-Bench](bench/README.md)**: 40 tarefas sintéticas para medir agentes com
+- **[TISS-Bench](https://github.com/Voa-Health/tiss/blob/main/bench/README.md)**: 40 tarefas sintéticas para medir agentes com
   e sem o MCP.
 
 ## Por que confiar
@@ -113,16 +113,17 @@ que foi cobrado. Para testar sem operadora real, use a
 - **XSD fixado por hash:** a validação usa o esquema TISS oficial, conferido por
   hash.
 - **À prova de prompt injection:** texto livre da guia é dado, nunca instrução.
-- **Seus dados não ficam com a gente:** a API não armazena nem registra payloads
-  e não os usa para treinar modelos.
-- **Medido:** no [TISS-Bench](bench/README.md), com quatro modelos, o acerto
-  médio subiu de 58% sem o MCP para 81% com ele.
+- **Seus dados não ficam com a gente:** veja a política de payloads e telemetria
+  em [API HTTP](#api-http).
+- **Medido:** no [TISS-Bench](https://github.com/Voa-Health/tiss/blob/main/bench/README.md), com quatro modelos, o acerto
+  médio subiu de 58% sem o MCP para 81% com ele. Gerar um lote do zero ainda fica
+  em 16% nos dois modos.
 
 ## Conectar agentes
 
 O MCP remoto fica em `https://tiss-api.voa.health/mcp`. Agentes encontram as
-instruções de uso no [AGENTS.md](AGENTS.md) e na
-[skill voa-tiss](skills/voa-tiss/SKILL.md).
+instruções de uso no [AGENTS.md](https://github.com/Voa-Health/tiss/blob/main/AGENTS.md) e na
+[skill voa-tiss](https://github.com/Voa-Health/tiss/blob/main/skills/voa-tiss/SKILL.md).
 
 ```sh
 claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp
@@ -162,12 +163,12 @@ No Cursor, adicione ao `mcp.json`:
 
 | Tutorial | O que você aprende |
 | --- | --- |
-| [Validar um lote](docs/tutoriais/01-validar-um-lote.ipynb) | ler achados e corrigir |
-| [Demonstrativo e conciliação](docs/tutoriais/02-demonstrativo-e-conciliacao.ipynb) | conferir o que a operadora pagou |
-| [TUSS e SP/SADT](docs/tutoriais/03-tuss-e-sp-sadt.ipynb) | buscar códigos e montar a guia |
-| [Gerar e corrigir um lote](docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb) | sair do JSON para o XML válido |
-| [Regras por operadora](docs/tutoriais/05-regras-por-operadora.ipynb) | auditar com regras publicadas |
-| [Operadora simulada](docs/tutoriais/06-operadora-simulada.ipynb) | testar envios e glosas |
+| [Validar um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/01-validar-um-lote.ipynb) | ler achados e corrigir |
+| [Demonstrativo e conciliação](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/02-demonstrativo-e-conciliacao.ipynb) | conferir o que a operadora pagou |
+| [TUSS e SP/SADT](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/03-tuss-e-sp-sadt.ipynb) | buscar códigos e montar a guia |
+| [Gerar e corrigir um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb) | sair do JSON para o XML válido |
+| [Regras por operadora](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/05-regras-por-operadora.ipynb) | auditar com regras publicadas |
+| [Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb) | testar envios e glosas |
 
 ## API HTTP
 
@@ -194,7 +195,7 @@ curl https://tiss-api.voa.health/v1/validate \
 ```
 
 Consulte o [OpenAPI](https://tiss-api.voa.health/openapi.json) e o
-[catálogo de operações](docs/api.md).
+[catálogo de operações](https://github.com/Voa-Health/tiss/blob/main/docs/api.md).
 
 Sem chave, só as operações do sandbox respondem. Para as demais, entre com a
 conta Voa em [tiss-api.voa.health/chaves](https://tiss-api.voa.health/chaves) e
@@ -267,7 +268,7 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 
 | Campo | Significado |
 | --- | --- |
-| `code` | Código estável em [docs/codigos.md](docs/codigos.md) |
+| `code` | Código estável em [docs/codigos.md](https://github.com/Voa-Health/tiss/blob/main/docs/codigos.md) |
 | `severity` | `error` ou `warning` |
 | `guia` | Identificador da guia, quando houver |
 | `xpath` | Localização no XML, quando houver |
@@ -282,8 +283,8 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 
 ## Mais
 
-- [Esquemas JSON](schemas/) · [Fontes de dados](DATA_SOURCES.md) ·
-  [Changelog](CHANGELOG.md)
-- [Contribuição](CONTRIBUTING.md) · [Código de conduta](CODE_OF_CONDUCT.md) ·
-  [Segurança](SECURITY.md)
-- [Licença Apache-2.0](LICENSE)
+- [Esquemas JSON](https://github.com/Voa-Health/tiss/tree/main/schemas/) · [Fontes de dados](https://github.com/Voa-Health/tiss/blob/main/DATA_SOURCES.md) ·
+  [Changelog](https://github.com/Voa-Health/tiss/blob/main/CHANGELOG.md)
+- [Contribuição](https://github.com/Voa-Health/tiss/blob/main/CONTRIBUTING.md) · [Código de conduta](https://github.com/Voa-Health/tiss/blob/main/CODE_OF_CONDUCT.md) ·
+  [Segurança](https://github.com/Voa-Health/tiss/blob/main/SECURITY.md)
+- [Licença Apache-2.0](https://github.com/Voa-Health/tiss/blob/main/LICENSE)
