@@ -25,6 +25,7 @@ from ._keys import LIMITS, LOGIN_URL, authorize
 from ._mcp import create_mcp
 from ._ops import OPS, call
 from ._quota import seconds_until_reset
+from ._waitlist import register_waitlist
 
 _logger = logging.getLogger("voa_tiss.server")
 _HTTP_SERVICE_UNAVAILABLE = 503
@@ -180,13 +181,14 @@ def _endpoint(operation: Any) -> Any:
 
 def _operation_openapi_extra(operation: Any) -> dict[str, Any]:
     request_body = None
+    properties = operation.input_schema.get("properties", {})
     if operation.method != "GET":
+        content = {"application/json": {"schema": operation.input_schema}}
+        if "xml" in properties:
+            content["application/xml"] = {"schema": {"type": "string"}}
         request_body = {
             "required": True,
-            "content": {
-                "application/json": {"schema": operation.input_schema},
-                "application/xml": {"schema": {"type": "string"}},
-            },
+            "content": content,
         }
     extra: dict[str, Any] = {
         "responses": {
@@ -201,7 +203,6 @@ def _operation_openapi_extra(operation: Any) -> dict[str, Any]:
         extra["responses"]["503"] = {"description": "Rede hospitalar indisponível."}
     if request_body is not None:
         extra["requestBody"] = request_body
-    properties = operation.input_schema.get("properties", {})
     path_parameters = re.findall(r"\{([^}]+)\}", operation.route)
     parameters = [
         {
@@ -258,6 +259,7 @@ def create_app() -> FastAPI:
     app.middleware("http")(_request_context)
     _register_ops(app)
     register_auth(app)
+    register_waitlist(app)
     app.add_api_route("/v1/limits", _limits, methods=["GET"], name="limits")
     app.router.routes.append(Route("/mcp", _MCPApp(mcp_manager), methods=["GET", "POST", "DELETE"]))
     return app

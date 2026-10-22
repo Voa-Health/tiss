@@ -15,6 +15,7 @@ from voa_tiss import rede
 from voa_tiss.operadoras import lookup
 from voa_tiss.server._http import create_app
 from voa_tiss.server._keys import issue_key
+from voa_tiss.server._ops import OPS, token_estimate
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -141,11 +142,17 @@ def test_rede_rotas_http(
     with TestClient(app, headers={"Authorization": f"Bearer {token}"}) as cliente:
         resposta = cliente.get("/v1/rede", params={"cnes": "0123456", "limite": 1})
         assert resposta.status_code == 200
+        assert token_estimate(resposta.json()) <= next(
+            op.max_tokens for op in OPS if op.name == "rede"
+        )
         assert resposta.json()["total"] == 1
         assert resposta.json()["operadoras"][0]["registro_ans"] == "000515"
 
         resposta = cliente.get("/v1/operadoras/000515/rede", params={"uf": "rj", "limite": 1})
         assert resposta.status_code == 200
+        assert token_estimate(resposta.json()) <= next(
+            op.max_tokens for op in OPS if op.name == "operadora_rede"
+        )
         assert resposta.json()["registro_ans"] == "000515"
         assert resposta.json()["total"] == 2
         assert len(resposta.json()["estabelecimentos"]) == 1

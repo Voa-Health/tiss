@@ -20,9 +20,9 @@ import {
   Typography,
 } from "antd";
 import { useState } from "react";
-import { site } from "@/lib/site";
+import { apiBase, site } from "@/lib/site";
+import { track } from "@/lib/analytics";
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 const scenarios = [
   { value: "aprovado", label: "Aprovado" },
   { value: "duplicidade", label: "Duplicidade" },
@@ -174,8 +174,13 @@ function ValidationTab({
         headers,
         body: JSON.stringify({ xml }),
       });
-      setReport(result as ValidationReport);
+      const validation = result as ValidationReport;
+      track("tiss_playground_validate", {
+        resultado: validation.findings.length ? "com_achados" : "valido",
+      });
+      setReport(validation);
     } catch (failure) {
+      track("tiss_playground_validate", { resultado: "erro" });
       setError(failure);
     } finally {
       setLoading(false);
