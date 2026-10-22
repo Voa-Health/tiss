@@ -35,7 +35,7 @@ def _entrada(formato: str, pasta: Path) -> Path:
     ("formato", "cenario", "glosas"),
     [
         ("csv", "carteirinha_vencida", {("0001", "1017"), ("0002", "1017"), ("0003", "1017")}),
-        ("xlsx", "sem_autorizacao", {("0001", "1402")}),
+        ("xlsx", "sem_autorizacao", {("0001", "1818")}),
         ("json", "aprovado", set()),
     ],
 )

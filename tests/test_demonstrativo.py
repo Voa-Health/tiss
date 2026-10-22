@@ -42,7 +42,7 @@ def test_demonstrativo_parse_and_return_decisions():
         and partial.valor_glosa_cents == PARTIAL_GLOSS_CENTS
     )
     assert official == Decisao(
-        "0001", Decision.GLOSA_PARCIAL, "1702", "RET-0001", "10101012", 4000, 6000
+        "0001", Decision.GLOSA_PARCIAL, "3209", "RET-0001", "10101012", 4000, 6000
     )
     with pytest.raises(ValueError):
         parse_demonstrativo("<not-closed>")

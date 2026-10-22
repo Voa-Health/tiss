@@ -12,7 +12,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 
 from .ferramentas import extrair_codigo_glosa
 
-_CLASSES_POR_GRUPO = {"10": "elegibilidade", "14": "autorizacao", "17": "cobranca"}
+_CLASSES_POR_GRUPO = {"10": "elegibilidade", "18": "autorizacao", "32": "cobranca"}
 
 
 def _resultados(mensagens: Sequence[BaseMessage]) -> list[tuple[str, dict[str, Any]]]:
