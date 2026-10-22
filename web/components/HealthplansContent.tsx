@@ -88,7 +88,7 @@ export function HealthplansContent({ packs }: { packs: RulePack[] }) {
             description="Contribua com regras públicas para operadoras."
             action={
               <Space wrap>
-                <Button href="/docs/regras-operadora">Como criar um pacote</Button>
+                <Button href={`${site.docsUrl}/regras-operadora`}>Como criar um pacote</Button>
                 <Button
                   type="primary"
                   href={site.healthplanContactUrl}

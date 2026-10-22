@@ -1,7 +1,7 @@
 import { readDocs, readOpenApi, readTutorials, tutorialMarkdown } from "@/lib/content";
 import { descricaoOperadora } from "@/lib/operadoras";
 import { fontePainel, readOperadoras, readSerie } from "@/lib/operadoras-dados";
-import { site } from "@/lib/site";
+import { docsPageUrl, site } from "@/lib/site";
 import { formatLaunchPrice, launchPrices, moduleContent, moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
 import { audiences } from "@/lib/audiences";
@@ -11,10 +11,10 @@ export const dynamic = "force-static";
 export function GET() {
   const docs = readDocs();
   const documentationIndex = docs
-    .map((doc) => `- [${doc.title}](${site.url}/docs/${doc.slug})`)
+    .map((doc) => `- [${doc.title}](${docsPageUrl(doc.slug)})`)
     .join("\n");
   const documentation = docs
-    .map((doc) => `# [${doc.title}](${site.url}/docs/${doc.slug})\n\n${doc.content}`)
+    .map((doc) => `# [${doc.title}](${docsPageUrl(doc.slug)})\n\n${doc.content}`)
     .join("\n\n---\n\n");
   const tutorialData = readTutorials();
   const tutorialIndex = tutorialData
@@ -55,7 +55,10 @@ export function GET() {
         "",
         summary,
         "",
-        ...items.map(({ label, description, href }) => `- [${label}](${site.url}${href}): ${description}`),
+        ...items.map(
+          ({ label, description, href }) =>
+            `- [${label}](${new URL(href, site.url)}): ${description}`,
+        ),
         ...slugs.map((slug) => `- [${moduleContent[slug].title}](${site.url}${moduleContent[slug].href}): ${formatLaunchPrice(launchPrices[slug])}`),
       ].join("\n"),
     )

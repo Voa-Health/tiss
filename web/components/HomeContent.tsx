@@ -29,7 +29,7 @@ export function HomeContent() {
         </Typography.Paragraph>
         <Space wrap>
           <Button type="primary" size="large" href="/playground">Experimentar playground</Button>
-          <Button size="large" href="/docs">Consultar documentação</Button>
+          <Button size="large" href={site.docsUrl}>Consultar documentação</Button>
         </Space>
       </section>
 
@@ -121,7 +121,7 @@ export function HomeContent() {
       </Row>
       <Space wrap aria-label="Recursos">
         {[
-          { href: "/docs", label: "Docs" },
+          { href: site.docsUrl, label: "Docs" },
           { href: "/tutoriais", label: "Tutoriais" },
           { href: "/api", label: "API" },
           { href: "/playground", label: "Playground" },

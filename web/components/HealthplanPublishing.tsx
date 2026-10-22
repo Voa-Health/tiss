@@ -39,7 +39,10 @@ export function HealthplanPublishing() {
         <ol>
           <li>
             Crie um pacote JSON no formato{" "}
-            <Link href="/docs/regras-operadora">schemas/rules.schema.json</Link> e salve em{" "}
+            <Link href={`${site.github}/blob/main/schemas/rules.schema.json`}>
+              schemas/rules.schema.json
+            </Link>{" "}
+            e salve em{" "}
             <code>src/voa_tiss/rules/NNNNNN.json</code>, com o registro ANS de seis dígitos no nome.
           </li>
           <li>
