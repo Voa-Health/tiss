@@ -26,9 +26,13 @@ def legivel(resultado: dict[str, Any]) -> str:
         f"protocolo={lote['numero_protocolo']} correções={lote['rodadas_de_correcao']}",
     ]
     for glosa in resultado["glosas"]:
-        valor = (glosa["valor_glosa_cents"] or 0) / 100
+        valor = (
+            "valor somado à glosa anterior"
+            if glosa["valor_glosa_cents"] is None
+            else f"R$ {glosa['valor_glosa_cents'] / 100:.2f}"
+        )
         descricao = glosa["descricao"] or "código fora da tabela 38"
-        linhas.append(f"Glosa guia {glosa['guia']} {glosa['codigo']} R$ {valor:.2f}: {descricao}")
+        linhas.append(f"Glosa guia {glosa['guia']} {glosa['codigo']} {valor}: {descricao}")
     for recurso in resultado["recursos"]:
         linhas.append(
             f"Recurso guia {recurso['guia']} ({recurso['classe']}): needs="
