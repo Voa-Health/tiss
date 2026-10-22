@@ -6,8 +6,10 @@ import asyncio
 import io
 import json
 import logging
+import re
 import socket
 import urllib.request
+from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from typing import Any
 
@@ -18,14 +20,15 @@ from mcp.client.session import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 
 import voa_tiss
-from voa_tiss import examples, operadoras
-from voa_tiss.codes import CODES
+from voa_tiss import dominio, examples, operadoras
+from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import SandboxError, demonstrativo, enviar_lote
-from voa_tiss.server import _auth
+from voa_tiss.server import _auth, _docs
 from voa_tiss.server._auth import CLIENT_DOCUMENT, BackendError
+from voa_tiss.server._docs import search_docs
 from voa_tiss.server._http import create_app
 from voa_tiss.server._keys import LIMITS, issue_key, read_key, sign
-from voa_tiss.server._ops import OPS, token_estimate
+from voa_tiss.server._ops import OPS, _docs_corpus, token_estimate
 from voa_tiss.server._quota import set_counter
 from voa_tiss.server._telemetry import set_sink
 from voa_tiss.tuss import lookup, search
@@ -38,7 +41,6 @@ HTTP_NOT_FOUND = 404
 HTTP_TOO_MANY = 429
 HTTP_UNPROCESSABLE = 422
 HTTP_UNAVAILABLE = 503
-TUSS_PAGE_SIZE = 200
 PROTOCOL_NUMBER_LENGTH = 12
 
 
@@ -60,13 +62,22 @@ def _bearer(tier: str = "verified") -> dict[str, str]:
 
 
 def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
-    lote = examples.load("lote-valido").decode()
+    xml = examples.load("lote-valido")
+    lote = voa_tiss.parse_lote(xml)
+    fix_lote = json.loads(
+        (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
+    )
+    fix_report = voa_tiss.check(fix_lote).to_dict()
+    audit_context = {"tabela_operadora": {"procedimentos": []}}
+    audit_report = voa_tiss.audit(lote, contexto=audit_context).to_dict()
+    assert audit_report["findings"]
+    built = voa_tiss.build_lote(lote)
     demonstrativo_oficial = (ROOT / "tests/fixtures/demonstrativo-oficial.xml").read_bytes()
     parsed = voa_tiss.parse_demonstrativo(demonstrativo_oficial)
     reconciliation = voa_tiss.plan_reconciliation([], [])
-    sandbox_result = enviar_lote(lote)
+    sandbox_result = enviar_lote(xml)
     return [
-        ("validate", {"xml": lote}, voa_tiss.validate(lote).to_dict()),
+        ("validate", {"lote": lote}, voa_tiss.check(lote).to_dict()),
         (
             "parse_demonstrativo",
             {"xml": demonstrativo_oficial.decode()},
@@ -98,7 +109,7 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         ),
         ("sadt_catalog", {}, voa_tiss.sadt_catalog()),
         ("operadora_perfil", {"registro_ans": "005711"}, operadoras.perfil("005711")),
-        ("sandbox_enviar_lote", {"xml": lote}, sandbox_result),
+        ("sandbox_enviar_lote", {"xml": xml.decode()}, sandbox_result),
         (
             "sandbox_demonstrativo",
             {"protocolo": sandbox_result["protocolo"]},
@@ -106,6 +117,48 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
                 "protocolo": sandbox_result["protocolo"],
                 "xml": demonstrativo(sandbox_result["protocolo"]).decode(),
             },
+        ),
+        (
+            "build",
+            {"lote": lote},
+            {"xml": built.decode("ISO-8859-1"), "hash": voa_tiss.hash_epilogo(built)},
+        ),
+        (
+            "hash",
+            {"xml": xml.decode("ISO-8859-1")},
+            {"hash": voa_tiss.hash_epilogo(xml)},
+        ),
+        (
+            "audit",
+            {"lote": lote, "contexto": audit_context},
+            audit_report,
+        ),
+        (
+            "apply_fixes",
+            {"lote": fix_lote, "report": fix_report},
+            {"lote": voa_tiss.apply_fixes(fix_lote, fix_report)},
+        ),
+        ("glosa_explain", {"codigo": "1801"}, glosa("1801")),
+        ("dominio", {}, {"tabelas": dominio.tables()}),
+        (
+            "dominio",
+            {"tabela": "38", "codigo": "1801"},
+            {"resultados": dominio.lookup("38", "1801", include_expired=True)},
+        ),
+        (
+            "dominio",
+            {"texto": "glosa", "tabela": "38", "limite": 5},
+            {"resultados": dominio.search("glosa", tabela="38", include_expired=False)[:5]},
+        ),
+        (
+            "operadora_lookup",
+            {"texto": "005711"},
+            {"resultados": operadoras.search("005711", limit=10)},
+        ),
+        (
+            "buscar_docs",
+            {"texto": "MCP"},
+            {"resultados": search_docs(_docs_corpus(), "MCP", 3)},
         ),
     ]
 
@@ -127,53 +180,20 @@ def _factory(app: Any):
     return create_client
 
 
-async def _mcp_cases(app: Any, cases: list[tuple[str, dict[str, Any], dict[str, Any]]]):
-    async with (
-        app.router.lifespan_context(app),
-        streamablehttp_client(
-            "http://test/mcp", headers=_bearer(), httpx_client_factory=_factory(app)
-        ) as (
-            read_stream,
-            write_stream,
-            _,
-        ),
-        ClientSession(read_stream, write_stream) as session,
-    ):
-        initialized = await session.initialize()
-        assert initialized.serverInfo.name == "voa-tiss"
-        tools = await session.list_tools()
-        definitions = {tool.name: tool for tool in tools.tools}
-        assert set(definitions) == {op.tool_name for op in OPS}
-        for name, entrada, expected in cases:
-            op = next(operation for operation in OPS if operation.name == name)
-            tool = definitions[op.tool_name]
-            assert tool.inputSchema == op.input_schema
-            assert tool.outputSchema == op.output_schema
-            result = await session.call_tool(op.tool_name, entrada)
-            assert result.isError is False
-            assert result.structuredContent == expected
-        code_resource = await session.read_resource("tiss://codigos")
-        assert json.loads(code_resource.contents[0].text) == CODES
-        sadt_resource = await session.read_resource("tiss://sadt/catalogo")
-        assert json.loads(sadt_resource.contents[0].text) == voa_tiss.sadt_catalog()
-        tuss_resource = await session.read_resource("tiss://tuss/22/1")
-        page = json.loads(tuss_resource.contents[0].text)
-        assert page["tabela"] == "22"
-        assert page["pagina"] == 1
-        assert len(page["resultados"]) <= TUSS_PAGE_SIZE
-        templates = await session.list_resource_templates()
-        assert [item.uriTemplate for item in templates.resourceTemplates] == [
-            "tiss://tuss/{tabela}/{pagina}"
-        ]
-        readme_resource = await session.read_resource("tiss://docs/readme")
-        assert readme_resource.contents[0].text
-        api_resource = await session.read_resource("tiss://docs/api")
-        assert "sandbox_enviar_lote" in api_resource.contents[0].text
-
-
-def test_http_mcp_parity_and_token_budgets():
+def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
     """Compara respostas HTTP, MCP e os limites de tokens."""
+
+    def missing_metadata(package: str) -> Any:
+        raise PackageNotFoundError(package)
+
+    monkeypatch.setattr(_docs, "metadata", missing_metadata)
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert readme.strip()
+    assert _docs._load_readme() == readme
     cases = _cases()
+    assert {name for name, _, _ in cases} == {
+        op.name for op in OPS if op.name not in {"rede", "operadora_rede"}
+    }
     app = create_app()
     routes = {op.name: op for op in OPS}
     with TestClient(app, headers=_bearer()) as client:
@@ -181,11 +201,18 @@ def test_http_mcp_parity_and_token_budgets():
             operation = routes[name]
             assert token_estimate(expected) <= operation.max_tokens
             if operation.method == "GET":
-                response = client.get(operation.route.format(**entrada))
+                path_parameters = re.findall(r"\{([^}]+)\}", operation.route)
+                route = operation.route.format(**{name: entrada[name] for name in path_parameters})
+                params = {
+                    name: value for name, value in entrada.items() if name not in path_parameters
+                }
+                response = client.get(route, params=params)
             else:
                 response = client.post(operation.route, json=entrada)
-            assert response.status_code == HTTP_OK
+            assert response.status_code == HTTP_OK, (name, response.json())
             assert response.json() == expected
+            if name == "buscar_docs":
+                assert all(len(item["trecho"]) <= 1200 for item in expected["resultados"])
         xml = examples.load("lote-valido")
         response = client.post(
             "/v1/validate",
@@ -194,7 +221,15 @@ def test_http_mcp_parity_and_token_budgets():
         )
         assert response.status_code == HTTP_OK
         assert response.json() == voa_tiss.validate(xml).to_dict()
-        assert client.get("/openapi.json").status_code == HTTP_OK
+        openapi_response = client.get("/openapi.json")
+        assert openapi_response.status_code == HTTP_OK
+        openapi = openapi_response.json()
+        assert (
+            "application/xml" in openapi["paths"]["/v1/validate"]["post"]["requestBody"]["content"]
+        )
+        assert (
+            "application/xml" not in openapi["paths"]["/v1/build"]["post"]["requestBody"]["content"]
+        )
         mcp_headers = {"Accept": "application/json, text/event-stream"}
         initialize = client.post(
             "/mcp",
@@ -217,11 +252,24 @@ def test_http_mcp_parity_and_token_budgets():
             json={"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}},
         )
         assert tools.status_code == HTTP_OK
-        assert len(tools.json()["result"]["tools"]) == 12
+        assert len(tools.json()["result"]["tools"]) == len(OPS)
         assert client.get("/v1/limits").json() == LIMITS
         assert client.post("/v1/validate", json={"xml": 3}).status_code == HTTP_UNPROCESSABLE
         assert client.get("/v1/operadoras/999999").status_code == HTTP_NOT_FOUND
         assert client.get("/v1/operadoras/abc").status_code == HTTP_UNPROCESSABLE
+        assert client.get("/v1/glosas/9999").status_code == HTTP_NOT_FOUND
+        assert client.get("/v1/glosas/abc").status_code == HTTP_UNPROCESSABLE
+        assert (
+            client.get("/v1/dominio", params={"tabela": "999", "codigo": "1"}).status_code
+            == HTTP_UNPROCESSABLE
+        )
+        assert (
+            client.get("/v1/dominio", params={"codigo": "1801"}).status_code == HTTP_UNPROCESSABLE
+        )
+        assert (
+            client.get("/v1/dominio", params={"codigo": "1801", "texto": "glosa"}).status_code
+            == HTTP_UNPROCESSABLE
+        )
         transient = client.post(
             "/v1/sandbox/lotes",
             json={"xml": xml.decode(), "cenario": "falha_transitoria"},
@@ -241,7 +289,8 @@ def test_http_mcp_parity_and_token_budgets():
             client.post("/mcp", headers={"Authorization": "Bearer invalid"}).status_code
             == HTTP_UNAUTHORIZED
         )
-    asyncio.run(_mcp_cases(create_app(), cases))
+    mcp_app = create_app()
+    asyncio.run(mcp_cases(mcp_app, cases, _factory(mcp_app), _bearer()))
 
 
 def _fake_backend(calls: list[tuple[str, dict[str, str] | None]]):
@@ -379,6 +428,61 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         assert marker not in str(properties)
         off = {**_bearer(), "X-Voa-Telemetry": "off"}
         assert client.post("/v1/validate", json={"xml": xml}, headers=off).status_code == HTTP_OK
+        assert not events
+        marked_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        marked_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
+        marked_xml = voa_tiss.build_lote(marked_lote).decode("ISO-8859-1")
+        fix_lote = json.loads(
+            (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
+        )
+        fix_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
+        fix_report = voa_tiss.check(fix_lote).to_dict()
+        privacy_inputs = [
+            ("build", {"lote": marked_lote}),
+            ("hash", {"xml": marked_xml}),
+            ("audit", {"lote": marked_lote}),
+            ("apply_fixes", {"lote": fix_lote, "report": fix_report}),
+            ("glosa_explain", {"codigo": "1801"}),
+            ("dominio", {"texto": marker, "tabela": "38"}),
+            ("operadora_lookup", {"texto": marker}),
+            ("buscar_docs", {"texto": marker}),
+        ]
+        expected_keys = {
+            "operacao",
+            "codigos",
+            "registro_ans",
+            "versao_tiss",
+            "data",
+            "$process_person_profile",
+            "$geoip_disable",
+        }
+        for name, entrada in privacy_inputs:
+            operation = next(op for op in OPS if op.name == name)
+            if operation.method == "GET":
+                path_parameters = re.findall(r"\{([^}]+)\}", operation.route)
+                route = operation.route.format(**{key: entrada[key] for key in path_parameters})
+                params = {
+                    key: value for key, value in entrada.items() if key not in path_parameters
+                }
+                response = client.get(route, params=params, headers=_bearer())
+            else:
+                response = client.post(operation.route, json=entrada, headers=_bearer())
+            assert response.status_code == HTTP_OK, (name, response.json())
+            event_name, properties = events.pop()
+            assert event_name == "tiss_operacao"
+            assert set(properties) == expected_keys
+            assert marker not in str(properties)
+            if "lote" in entrada:
+                assert properties["registro_ans"] == entrada["lote"]["operadora"]["registro_ans"]
+        events.clear()
+        assert (
+            client.post(
+                "/v1/build",
+                json={"lote": marked_lote},
+                headers={**_bearer(), "X-Voa-Telemetry": "off"},
+            ).status_code
+            == HTTP_OK
+        )
         assert not events
         monkeypatch.delenv("VOA_TISS_KEY_SECRET")
         assert client.get("/v1/auth/login").status_code == HTTP_UNAVAILABLE

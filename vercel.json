@@ -8,7 +8,7 @@
       "buildCommand": "PYTHONPATH=src python -m voa_tiss.rede src/voa_tiss/rede/_data/rede.sqlite || echo 'rede indisponível no build'",
       "functions": {
         "api/index.py": {
-          "includeFiles": "src/voa_tiss/**"
+          "includeFiles": "{src/voa_tiss/**,README.md}"
         }
       }
     },
