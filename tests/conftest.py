@@ -71,8 +71,8 @@ def mcp_cases():
                 "tabelas": dominio.tables(),
                 "fonte": dominio.info(),
             }
-            operator_resource = await session.read_resource("tiss://operadoras")
-            assert json.loads(operator_resource.contents[0].text) == operadoras.info()
+            healthplan_resource = await session.read_resource("tiss://operadoras")
+            assert json.loads(healthplan_resource.contents[0].text) == operadoras.info()
             rules_resource = await session.read_resource("tiss://regras/schema")
             assert json.loads(rules_resource.contents[0].text) == voa_tiss.json_schema("rules")
             lote_schema_resource = await session.read_resource("tiss://schemas/lote")
@@ -84,8 +84,8 @@ def mcp_cases():
             assert len(page["resultados"]) <= TUSS_PAGE_SIZE
             domain_table = await session.read_resource("tiss://dominio/23")
             assert json.loads(domain_table.contents[0].text)["tabela"] == "23"
-            operator_profile = await session.read_resource("tiss://operadoras/005711")
-            assert json.loads(operator_profile.contents[0].text) == operadoras.perfil("005711")
+            healthplan_profile = await session.read_resource("tiss://operadoras/005711")
+            assert json.loads(healthplan_profile.contents[0].text) == operadoras.perfil("005711")
             simulated_rules = await session.read_resource("tiss://regras/000000")
             assert json.loads(simulated_rules.contents[0].text) == json.loads(
                 (ROOT / "src/voa_tiss/rules/000000.json").read_text()
@@ -138,7 +138,7 @@ def mcp_cases():
 
 
 @pytest.fixture
-def operator_rules():
+def healthplan_rules():
     path = ROOT / "tests/fixtures/rules/000000.json"
     package = json.loads(path.read_text(encoding="utf-8"))
 

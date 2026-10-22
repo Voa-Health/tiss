@@ -75,7 +75,7 @@ def _domain(value: dict[str, Any]) -> dict[str, Any]:
     return {"tabelas": dominio.tables()}
 
 
-def _operator_lookup(value: dict[str, Any]) -> dict[str, Any]:
+def _healthplan_lookup(value: dict[str, Any]) -> dict[str, Any]:
     return {"resultados": operadoras.search(value["texto"], limit=value.get("limite", 10))}
 
 
@@ -118,7 +118,7 @@ CONSULTA_OPS = (
     ),
     Op(
         "operadora_lookup",
-        _operator_lookup,
+        _healthplan_lookup,
         _object(
             {
                 "texto": _string(),

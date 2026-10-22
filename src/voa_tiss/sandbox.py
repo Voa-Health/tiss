@@ -213,8 +213,8 @@ def _make_demonstrativo(data: dict[str, Any]) -> bytes:
     )
     _element(header, "Padrao", "4.03.00")
 
-    operator = _element(root, "operadoraParaPrestador", "")
-    returns = _element(operator, "demonstrativosRetorno", "")
+    healthplan = _element(root, "operadoraParaPrestador", "")
+    returns = _element(healthplan, "demonstrativosRetorno", "")
     statement = _element(returns, "demonstrativoAnaliseConta", "")
     statement_header = _element(statement, "cabecalhoDemonstrativo", "")
     _element(statement_header, "registroANS", summary["registro_ans"])

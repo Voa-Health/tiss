@@ -105,7 +105,7 @@ def _search(value: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _operator_profile(value: dict[str, Any]) -> dict[str, Any]:
+def _healthplan_profile(value: dict[str, Any]) -> dict[str, Any]:
     result = operadoras.perfil(value["registro_ans"])
     if result is None:
         raise LookupError(f"Operadora não encontrada: {value['registro_ans']}")
@@ -434,7 +434,7 @@ _BASE_OPS = (
     ),
     Op(
         "operadora_perfil",
-        _operator_profile,
+        _healthplan_profile,
         _object({"registro_ans": {"type": "string", "pattern": "^[0-9]{5,6}$"}}, ["registro_ans"]),
         _object(
             {

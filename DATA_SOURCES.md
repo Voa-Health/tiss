@@ -51,7 +51,7 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
   (https://dados.gov.br/dados/conjuntos-dados/operadoras-de-planos-de-saude-ativas);
   licença: CC BY, atribuição à ANS.
 - Tamanhos distribuídos: `glosas.json` 285,670 bytes; domínio após incluir Tabela 38
-  varia com a versão do PDA; `operators.json` 371,829 bytes.
+  varia com a versão do PDA; `healthplans.json` 371,829 bytes.
 
 ## Painel de Indicadores de Glosa
 

@@ -17,7 +17,7 @@ def _read(name: str) -> dict[str, Any]:
 
 @lru_cache(maxsize=1)
 def _data() -> dict[str, Any]:
-    return _read("operators.json")
+    return _read("healthplans.json")
 
 
 @lru_cache(maxsize=1)

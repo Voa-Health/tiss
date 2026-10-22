@@ -70,7 +70,7 @@ Prefere testar no navegador? Abra o
 | --- | --- |
 | **Prestador** (hospital, clínica, laboratório) | pegar o erro antes da operadora e entender por que uma guia foi glosada |
 | **Profissional de saúde** | conferir guias e códigos TUSS sem decorar o manual |
-| **Operadora** | auditar lotes com as suas regras e publicá-las para quem envia |
+| **Operadora** | checar lotes na entrada com as suas regras, offline; ver o mapa de rejeição por prestador; oferecer sandbox com as suas regras; validar autorizações TISS; publicar regras com selo Oficial; e, nos módulos com agente, analisar contas e autorizações prévias |
 | **Paciente** | entender em linguagem simples o que uma glosa significa |
 | **Gestor do SUS ou do governo** | consultar dados abertos da ANS sobre operadoras, glosas e rede hospitalar |
 
