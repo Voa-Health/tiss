@@ -505,7 +505,7 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         fix_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
         fix_report = voa_tiss.check(fix_lote).to_dict()
         cpf = "12345678909"
-        secret = "segredo-sintetico-2026"
+        secret = "s" * 16
         cpf_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
         cpf_lote["prestador"] = {"cpf": cpf}
         cpf_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker

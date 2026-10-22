@@ -307,7 +307,7 @@ def test_mapa_de_rejeicao(tmp_path, monkeypatch, capsys):
     assert hash_finding.glosa is not None
 
     cpf = "12345678909"
-    secret = "segredo-sintetico-2026"
+    secret = "s" * 16
     cpf_lote = deepcopy(base)
     cpf_lote["prestador"] = {"cpf": "123.456.789-09"}
     result = voa_tiss.rejection_map(
@@ -345,9 +345,7 @@ def test_mapa_de_rejeicao(tmp_path, monkeypatch, capsys):
     cpf_unformatted = deepcopy(cpf_lote)
     cpf_unformatted["prestador"]["cpf"] = cpf
     equivalent = voa_tiss.rejection_map([cpf_unformatted], segredo_pseudonimo=secret)
-    changed_secret = voa_tiss.rejection_map(
-        [cpf_unformatted], segredo_pseudonimo="outro-segredo-sintetico"
-    )
+    changed_secret = voa_tiss.rejection_map([cpf_unformatted], segredo_pseudonimo="t" * 16)
     assert equivalent["prestadores"][0]["prestador"] == cpf_id
     assert changed_secret["prestadores"][0]["prestador"] != cpf_id
     with pytest.raises(ValueError, match="Informe segredo_pseudonimo"):
@@ -395,10 +393,10 @@ def test_mapa_de_rejeicao(tmp_path, monkeypatch, capsys):
 
     monkeypatch.setattr(request, "urlopen", urlopen)
     monkeypatch.setenv("VOA_TISS_MAPA_URL", "https://mapa.example.invalid/")
-    monkeypatch.setenv("VOA_TISS_KEY", "chave-sintetica")
+    monkeypatch.setenv("VOA_TISS_KEY", "k" * 16)
     assert cli_main(["mapa", str(folder), "--json", str(json_path), "--enviar"]) == 0
     request_sent = sent["request"]
     assert request_sent.data == json_path.read_bytes().rstrip(b"\n")
-    assert request_sent.get_header("Authorization") == "Bearer chave-sintetica"
+    assert request_sent.get_header("Authorization") == f"Bearer {'k' * 16}"
     assert request_sent.get_header("Content-type") == "application/json"
     assert sent["timeout"] == 10
