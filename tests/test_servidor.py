@@ -23,7 +23,7 @@ import voa_tiss
 from scripts._manutencao_ans import _DOMINIOS_GENERICOS
 from voa_tiss import dominio, examples, operadoras
 from voa_tiss._glosa import glosa
-from voa_tiss.sandbox import SandboxError, demonstrativo, enviar_lote
+from voa_tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
 from voa_tiss.server import _auth, _docs
 from voa_tiss.server._auth import CLIENT_DOCUMENT, BackendError
 from voa_tiss.server._docs import search_docs
@@ -659,9 +659,9 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
     ("scenario", "expected", "code"),
     [
         ("aprovado", "pago", ""),
-        ("duplicidade", "glosado", "1702"),
+        ("duplicidade", "glosado", "3209"),
         ("carteirinha_vencida", "glosado", "1017"),
-        ("sem_autorizacao", "glosado", "1402"),
+        ("sem_autorizacao", "glosado", "1818"),
     ],
 )
 def test_simulated_statement_round_trip(scenario, expected, code, monkeypatch):
@@ -687,6 +687,7 @@ def test_simulated_statement_round_trip(scenario, expected, code, monkeypatch):
 
     if scenario != "aprovado":
         return
+    assert all(glosa(code)["descricao"] == text for code, text in _GLOSAS.values())
     with pytest.raises(SandboxError, match="temporária") as transient:
         enviar_lote(lote, cenario="falha_transitoria")
     assert transient.value.codigo == "sandbox.falha_transitoria"

@@ -1,0 +1,38 @@
+[project]
+name = "faturista"
+version = "0.1.0"
+description = "Agente de referência que fatura lotes TISS pelo MCP do voa-tiss."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+  "deepagents>=0.7.30,<0.8",
+  "httpx>=0.27",
+  "langchain-anthropic>=1.7,<2",
+  "langchain-core>=1.6,<2",
+  "langchain-openai>=1.7,<2",
+  "mcp>=1.20,<2",
+  "openpyxl>=3.1",
+  "voa-tiss[server]>=0.3",
+]
+
+[project.scripts]
+faturista = "faturista.__main__:main"
+
+[dependency-groups]
+dev = ["mypy>=1.13", "pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+voa-tiss = { path = "../..", editable = true }
+
+[tool.mypy]
+strict = true
+files = ["faturista", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["openpyxl", "openpyxl.*"]
+ignore_missing_imports = true
