@@ -159,6 +159,14 @@ def test_doctype_encoding_version_and_input_contract():
     assert any(finding.code.startswith("xsd.") for finding in invalid_402.findings)
     with pytest.raises(TypeError):
         voa_tiss.validate(42)  # type: ignore[arg-type]
+    prefix = b'<?xml version="1.0" encoding="ISO-8859-1"?><root xmlns:ans="'
+    namespace = b"http://www.ans.gov.br/padroes/tiss/schemas"
+    suffix = b'"><value>Jo\xe3o</value><ans:hash>old</ans:hash></root>'
+    without_comment = prefix + namespace + suffix
+    comment = b'"><value>Jo\xe3o</value><!-- not a value --><ans:hash>old</ans:hash></root>'
+    expected = hashlib.md5("João".encode("iso-8859-1")).hexdigest()
+    assert voa_tiss.hash_epilogo(without_comment) == expected
+    assert voa_tiss.hash_epilogo(prefix + namespace + comment) == expected
 
 
 @pytest.mark.parametrize(
@@ -267,15 +275,6 @@ def test_operator_rule_cases(valid_lote, operator_rules, case, fails):
 
 
 def test_mapa_de_rejeicao(tmp_path, monkeypatch, capsys):
-    prefix = b'<?xml version="1.0" encoding="ISO-8859-1"?><root xmlns:ans="'
-    namespace = b"http://www.ans.gov.br/padroes/tiss/schemas"
-    suffix = b'"><value>Jo\xe3o</value><ans:hash>old</ans:hash></root>'
-    without_comment = prefix + namespace + suffix
-    comment = b'"><value>Jo\xe3o</value><!-- not a value --><ans:hash>old</ans:hash></root>'
-    expected = hashlib.md5("João".encode("iso-8859-1")).hexdigest()
-    assert voa_tiss.hash_epilogo(without_comment) == expected
-    assert voa_tiss.hash_epilogo(prefix + namespace + comment) == expected
-
     base = voa_tiss.parse_lote(examples.load("lote-valido"))
     base["transacao"]["data_registro_transacao"] = "2026-10-21"
     for guide in base["guias"]:
