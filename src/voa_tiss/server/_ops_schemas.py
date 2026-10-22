@@ -1,6 +1,32 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
+
+
+@dataclass(frozen=True)
+class Op:
+    name: str
+    run: Callable[[dict[str, Any]], dict[str, Any]]
+    input_schema: dict[str, Any]
+    output_schema: dict[str, Any]
+    description: str
+    max_tokens: int
+    method: str = "POST"
+    path: str | None = None
+
+    @property
+    def route(self) -> str:
+        return self.path or f"/v1/{self.name}"
+
+    @property
+    def tool_name(self) -> str:
+        return (
+            self.name
+            if self.name.startswith(("tuss_", "operadora_", "glosa_", "buscar_"))
+            else f"tiss_{self.name}"
+        )
 
 
 def _object(
@@ -25,6 +51,10 @@ def _array(item: dict[str, Any]) -> dict[str, Any]:
 
 def _string() -> dict[str, Any]:
     return {"type": "string"}
+
+
+_LOTE_OBJECT_SCHEMA = _object({}, additional=True)
+_LOTE_OBJECT_SCHEMA["description"] = "Schema estrutural disponível em tiss://schemas/lote."
 
 
 _STRING_ITEMS = _array(_string())

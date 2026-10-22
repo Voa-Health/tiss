@@ -114,6 +114,9 @@ def operation_event(
     if telemetry_off:
         return
     registry, version = _xml_values(entrada.get("xml"))
+    lote = entrada.get("lote")
+    operadora = lote.get("operadora") if isinstance(lote, dict) else None
+    lote_registry = operadora.get("registro_ans") if isinstance(operadora, dict) else None
     properties = {
         "operacao": operation,
         "codigos": sorted(
@@ -123,7 +126,7 @@ def operation_event(
                 if isinstance(item, dict) and item.get("code")
             }
         ),
-        "registro_ans": registry or entrada.get("registro_ans"),
+        "registro_ans": registry or entrada.get("registro_ans") or lote_registry,
         "versao_tiss": result.get("version") or version,
         "data": datetime.now(timezone.utc).date().isoformat(),
         "$process_person_profile": False,

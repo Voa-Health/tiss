@@ -3,8 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import logging
-from collections.abc import Callable
-from dataclasses import dataclass
+from functools import cache
 from typing import Any
 
 import jsonschema
@@ -18,40 +17,28 @@ from voa_tiss.sandbox import SandboxError
 from voa_tiss.tuss import lookup, search
 
 from ._context import CallContext
+from ._docs import _load_readme, search_docs
+from ._docs import render_api_docs as _render_api_docs
 from ._keys import KEY_TTL_SECONDS
+from ._mcp_data import RESOURCE_DEFINITIONS, RESOURCE_TEMPLATE_DEFINITIONS
+from ._ops_consulta import CONSULTA_OPS
+from ._ops_lote import LOTE_OPS
 from ._ops_schemas import (
     _ESTABELECIMENTO_ITEM,
     _LIMIT,
+    _LOTE_OBJECT_SCHEMA,
     _REDE_ITEM,
     _STRING_ITEMS,
+    Op,
     _array,
     _object,
     _string,
 )
+from ._prompts import PROMPTS
 from ._quota import admit
 from ._telemetry import operation_event
 
 logger = logging.getLogger("voa_tiss.server")
-
-
-@dataclass(frozen=True)
-class Op:
-    name: str
-    run: Callable[[dict[str, Any]], dict[str, Any]]
-    input_schema: dict[str, Any]
-    output_schema: dict[str, Any]
-    description: str
-    max_tokens: int
-    method: str = "POST"
-    path: str | None = None
-
-    @property
-    def route(self) -> str:
-        return self.path or f"/v1/{self.name}"
-
-    @property
-    def tool_name(self) -> str:
-        return self.name if self.name.startswith(("tuss_", "operadora_")) else f"tiss_{self.name}"
 
 
 def _decision(value: dict[str, Any]) -> Decisao:
@@ -205,16 +192,85 @@ _SANDBOX_SEND = _object(
 )
 _XML_INPUT = _object({"xml": _string()}, ["xml"])
 _EMPTY = _object({})
+_AUDIT_CONTEXT_SCHEMA = {
+    key: value
+    for key, value in voa_tiss.json_schema("audit_context").items()
+    if key not in {"$schema", "title"}
+}
+_VALIDATE_INPUT = _object(
+    {
+        "xml": _string(),
+        "lote": _LOTE_OBJECT_SCHEMA,
+        "operadora": {"type": "string", "pattern": "^[0-9]{5,6}$"},
+        "contexto": _AUDIT_CONTEXT_SCHEMA,
+        "data": {"type": "string", "format": "date"},
+    }
+)
+_VALIDATE_INPUT["oneOf"] = [{"required": ["xml"]}, {"required": ["lote"]}]
 
-OPS = (
+
+def _validate(value: dict[str, Any]) -> dict[str, Any]:
+    if "xml" in value:
+        return voa_tiss.validate(value["xml"], operadora=value.get("operadora")).to_dict()
+    return voa_tiss.check(
+        value["lote"],
+        contexto=value.get("contexto"),
+        operadora=value.get("operadora"),
+        at=value.get("data"),
+    ).to_dict()
+
+
+def _buscar_docs(value: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "resultados": search_docs(
+            _docs_corpus(),
+            value["texto"],
+            value.get("limite", 3),
+        )
+    }
+
+
+buscar_docs_op = Op(
+    "buscar_docs",
+    _buscar_docs,
+    _object(
+        {
+            "texto": _string(),
+            "limite": {"type": "integer", "minimum": 1, "maximum": 10, "default": 3},
+        },
+        ["texto"],
+    ),
+    _object(
+        {
+            "resultados": _array(
+                _object(
+                    {"uri": _string(), "titulo": _string(), "trecho": _string()},
+                    ["uri", "titulo", "trecho"],
+                )
+            )
+        },
+        ["resultados"],
+    ),
+    (
+        "Busca trechos da documentação local da biblioteca. "
+        "Quando usar: para encontrar instruções e referências da API. "
+        "Quando não usar: para consultar dados clínicos ou códigos específicos."
+    ),
+    2000,
+    method="GET",
+    path="/v1/docs",
+)
+
+_BASE_OPS = (
     Op(
         "validate",
-        lambda value: voa_tiss.validate(value["xml"]).to_dict(),
-        _XML_INPUT,
+        _validate,
+        _VALIDATE_INPUT,
         _REPORT,
         (
-            "Valida um XML TISS. Quando usar: antes de enviar um lote. "
-            "Quando não usar: para interpretar glosas."
+            "Valida XML TISS ou lote em JSON. Quando usar: antes de gerar ou enviar um lote. "
+            "Quando não usar: para corrigir achados sem aplicar o ciclo "
+            "validar → tiss_apply_fixes → validar de novo."
         ),
         2500,
     ),
@@ -330,7 +386,11 @@ OPS = (
             },
             ["atualizado_em", "fonte", "total", "operadoras"],
         ),
-        "Consulta as operadoras vinculadas a um CNPJ ou CNES.",
+        (
+            "Consulta as operadoras vinculadas a um CNPJ ou CNES. "
+            "Quando usar: para identificar vínculos de um estabelecimento. "
+            "Quando não usar: para buscar o cadastro geral; use operadora_lookup."
+        ),
         20000,
         method="GET",
         path="/v1/rede",
@@ -364,7 +424,11 @@ OPS = (
                 "estabelecimentos",
             ],
         ),
-        "Consulta os estabelecimentos vinculados a uma operadora.",
+        (
+            "Consulta os estabelecimentos vinculados a uma operadora. "
+            "Quando usar: para identificar unidades da rede por UF. "
+            "Quando não usar: para buscar o cadastro geral; use operadora_lookup."
+        ),
         20000,
         method="GET",
         path="/v1/operadoras/{registro}/rede",
@@ -439,6 +503,7 @@ OPS = (
         path="/v1/sandbox/lotes/{protocolo}/demonstrativo",
     ),
 )
+OPS = (*_BASE_OPS, *LOTE_OPS, *CONSULTA_OPS, buscar_docs_op)
 
 _VALIDATORS = {
     op.name: jsonschema.Draft202012Validator(
@@ -502,48 +567,19 @@ def token_estimate(value: Any) -> int:
     return (len(json_bytes(value)) + 3) // 4
 
 
-def _escape_markdown(value: str) -> str:
-    return value.replace("|", "\\|")
-
-
 def render_api_docs() -> str:
-    rows = """# API HTTP e MCP
-
-Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
-
-| Operação | Rota HTTP | Tool MCP | Descrição | Orçamento |
-| --- | --- | --- | --- | ---: |""".splitlines()
-    rows.extend(
-        f"| `{op.name}` | `{op.method} {op.route}` | `{op.tool_name}` | "
-        f"{_escape_markdown(op.description)} | {op.max_tokens} |"
-        for op in OPS
+    return _render_api_docs(
+        OPS,
+        PROMPTS,
+        RESOURCE_DEFINITIONS,
+        RESOURCE_TEMPLATE_DEFINITIONS,
+        KEY_TTL_SECONDS,
     )
-    rows.extend(
-        [
-            "",
-            "## Acesso",
-            "",
-            (
-                "Sem chave, as operações `sandbox_*` e a lista de espera respondem. "
-                "As demais exigem a chave"
-            ),
-            "do login Voa em `Authorization: Bearer`. Não há limite diário.",
-            "Chave inválida ou expirada retorna `401`.",
-            f"A chave vale {KEY_TTL_SECONDS // 3600} h e é renovada com o `refresh_token`.",
-            "",
-            "| Rota HTTP | Descrição |",
-            "| --- | --- |",
-            "| `GET /v1/auth/login` | Inicia o login Voa. |",
-            "| `GET /v1/auth/callback` | Emite a chave e volta para `/chaves`. |",
-            "| `POST /v1/keys/refresh` | Troca o `refresh_token` por uma chave nova. |",
-            "| `GET /v1/limits` | Regras de acesso. |",
-            "| `GET /oauth/client.json` | Metadados do cliente OAuth. |",
-            "",
-            "## Lista de espera",
-            "",
-            "`POST /v1/lista-de-espera` recebe `modulo`, `email`, `empresa`, `volume_mensal`",
-            "e, para o extrator, `tipos_documento`. Retorna `202`, `422`, `429` ou `503`.",
-            "Nada é gravado; o pedido vai para a ferramenta de análise do produto.",
-        ]
-    )
-    return "\n".join(rows) + "\n"
+
+
+@cache
+def _docs_corpus() -> dict[str, str]:
+    return {
+        "tiss://docs/readme": _load_readme(),
+        "tiss://docs/api": render_api_docs(),
+    }
