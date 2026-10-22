@@ -20,6 +20,7 @@ from mcp.client.session import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 
 import voa_tiss
+from scripts._manutencao_ans import _DOMINIOS_GENERICOS
 from voa_tiss import dominio, examples, operadoras
 from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import SandboxError, demonstrativo, enviar_lote
@@ -509,7 +510,11 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
         set_counter(lambda key, ttl: 1)
         events.clear()
-        domain, registros = next(iter(operadoras._data()["dominios"].items()))
+        dominios = operadoras._data()["dominios"]
+        assert not (_DOMINIOS_GENERICOS & dominios.keys())
+        for generic_domain in ("gmail.com.br", "hotmail.com.br", "uol.com"):
+            assert operadoras.por_email(f"x@{generic_domain}") == []
+        domain, registros = next(iter(dominios.items()))
         base = {
             "modulo": "recurso",
             "email": f" Teste@{domain} ",

@@ -78,6 +78,23 @@ _DOMINIOS_GENERICOS = {
     "bol.com.br",
     "terra.com.br",
     "ig.com.br",
+    "aol.com",
+    "globo.com",
+    "globomail.com",
+    "gmail.com.br",
+    "hotmail.com.br",
+    "infonet.com.br",
+    "live.com.br",
+    "me.com",
+    "netsite.com.br",
+    "outlook.com.br",
+    "passosnet.com.br",
+    "proton.me",
+    "protonmail.com",
+    "r7.com",
+    "uol.com",
+    "yahoo.com.ar",
+    "zipmail.com.br",
 }
 
 
