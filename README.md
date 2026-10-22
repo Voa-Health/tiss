@@ -169,6 +169,7 @@ No Cursor, adicione ao `mcp.json`:
 | [Gerar e corrigir um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb) | sair do JSON para o XML válido |
 | [Regras por operadora](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/05-regras-por-operadora.ipynb) | auditar com regras publicadas |
 | [Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb) | testar envios e glosas |
+| [Mapa de rejeição](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/07-mapa-de-rejeicao.ipynb) | agregar achados por prestador |
 
 ## API HTTP
 

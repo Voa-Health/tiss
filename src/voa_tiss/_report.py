@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 from ._audit_schema import audit_context_schema
 from ._lote_codec import json_schema as lote_json_schema
+from ._mapa_schema import rejection_map_schema
 from ._rules_schema import rules_schema
 from .codes import CODES
 
@@ -62,7 +63,7 @@ class Report:
 
 
 def json_schema(
-    kind: Literal["finding", "report", "lote", "audit_context", "rules"],
+    kind: Literal["finding", "report", "lote", "audit_context", "rules", "rejection_map"],
 ) -> dict[str, Any]:
     """Retorna o esquema JSON de um tipo suportado."""
 
@@ -132,4 +133,8 @@ def json_schema(
         if kind == "audit_context":
             return audit_context_schema()
         return rules_schema()
-    raise ValueError("kind deve ser 'finding', 'report', 'lote', 'audit_context' ou 'rules'")
+    if kind == "rejection_map":
+        return rejection_map_schema()
+    raise ValueError(
+        "kind deve ser 'finding', 'report', 'lote', 'audit_context', 'rules' ou 'rejection_map'"
+    )

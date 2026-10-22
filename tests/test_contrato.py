@@ -56,6 +56,7 @@ def test_public_api_and_example_contract():
         "parse_lote",
         "parse_demonstrativo",
         "plan_reconciliation",
+        "rejection_map",
         "render_sadt",
         "sadt_catalog",
         "sadt_missing",

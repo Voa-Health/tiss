@@ -27,6 +27,9 @@ Calcule o hash com `tiss_hash` ou `hash_epilogo`; leia demonstrativos com
 `tiss_parse_demonstrativo` e explique glosas com `glosa_explain`. Teste envios
 com `tiss_sandbox_*` ou `voa_tiss.sandbox`.
 
+Para operadoras, use `tiss_rejection_map` ou `rejection_map` para agregar achados
+por prestador com CPF pseudonimizado.
+
 Atende operadoras, prestadores (hospitais, clínicas e laboratórios),
 profissionais de saúde, pacientes e gestores do SUS e do governo que consultam
 dados abertos da ANS sobre perfil de operadoras, glosas e rede hospitalar.
