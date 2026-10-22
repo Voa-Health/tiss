@@ -1,41 +1,38 @@
 import type { Metadata } from "next";
-import { OrgBackoffice } from "@/components/OrgBackoffice";
-import { OrgPageHeading } from "@/components/OrgPageHeading";
-import { orgMock, type OrgDemoState } from "@/lib/org-mock";
+import { cookies } from "next/headers";
+import { OrgApp } from "@/components/org/OrgApp";
+import { COOKIE_DA_ORG, lerPar, urlDoBackend } from "@/lib/org/credencial";
 import { readRulePacks } from "@/lib/rule-packs";
 
 export const metadata: Metadata = {
   title: "Organização",
-  description: "Visão geral, chaves e uso da organização.",
+  description: "Chaves, uso, membros e configurações da organização.",
   robots: { index: false, follow: false },
 };
 
-type SearchParams = {
-  secao?: string | string[];
-  papel?: string | string[];
-  estado?: string | string[];
-};
+export const dynamic = "force-dynamic";
 
-export default async function OrgPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
+type SearchParams = { secao?: string | string[]; painel?: string | string[]; nova?: string | string[] };
+
+const primeiro = (valor?: string | string[]) => (Array.isArray(valor) ? valor[0] : valor);
+
+export default async function OrgPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
-  const first = (value?: string | string[]) => Array.isArray(value) ? value[0] : value;
-  const state = first(params.estado);
-  const demoState: OrgDemoState =
-    state === "erro" || state === "vazio" ? state : "normal";
+  const conectado = lerPar((await cookies()).get(COOKIE_DA_ORG)?.value) !== null;
+  const pacotes = readRulePacks().map((pack) => ({
+    registro: pack.mantenedor.registro_ans ?? pack.operadora,
+    razaoSocial: pack.razaoSocial,
+    regras: pack.regras.length,
+  }));
 
   return (
-    <>
-      <OrgPageHeading name={orgMock.org.nome} />
-      <OrgBackoffice
-        packs={readRulePacks()}
-        section={first(params.secao)}
-        role={first(params.papel) === "membro" ? "membro" : "admin"}
-        demoState={demoState}
-      />
-    </>
+    <OrgApp
+      configurado={urlDoBackend() !== null}
+      conectado={conectado}
+      secao={primeiro(params.secao)}
+      painel={primeiro(params.painel) === "assistente"}
+      nova={primeiro(params.nova) === "1"}
+      pacotes={pacotes}
+    />
   );
 }
