@@ -86,6 +86,7 @@ def test_packaged_data_and_catalog_glosas():
         "audit.autorizacao_vencida": "1414",
         "audit.carteirinha_ausente": "1001",
         "guia.carteirinha_ausente": "1001",
+        "regra.exige_autorizacao": "1818",
         "audit.carteirinha_vencida": "1017",
         "guia.executante_ausente": "1311",
         "guia.sequencial": "3167",

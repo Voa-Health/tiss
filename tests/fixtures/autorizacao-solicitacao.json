@@ -1,0 +1,51 @@
+{
+  "versao": "4.03.00",
+  "transacao": {
+    "sequencial_transacao": "1",
+    "data_registro_transacao": "2026-10-21",
+    "hora_registro_transacao": "10:00:00"
+  },
+  "prestador": {
+    "cnpj": "00000000000000"
+  },
+  "operadora": {
+    "registro_ans": "000000"
+  },
+  "solicitacao": {
+    "cabecalho_solicitacao": {
+      "registro_ans": "000000",
+      "numero_guia_prestador": "AUT-0001"
+    },
+    "tipo_etapa_autorizacao": "1",
+    "dados_beneficiario": {
+      "numero_carteira": "CARTEIRA-0001",
+      "atendimento_rn": "N"
+    },
+    "dados_solicitante": {
+      "contratado_solicitante": {
+        "codigo_prestador_na_operadora": "PRESTADOR-01"
+      },
+      "nome_contratado_solicitante": "CLINICA FICTICIA",
+      "profissional_solicitante": {
+        "nome_profissional": "MEDICO FICTICIO",
+        "conselho_profissional": "06",
+        "numero_conselho_profissional": "12345",
+        "uf": "35",
+        "cbos": "225125"
+      }
+    },
+    "carater_atendimento": "1",
+    "data_solicitacao": "2026-10-21",
+    "indicacao_clinica": "Avaliação clínica sintética.",
+    "procedimentos_solicitados": [
+      {
+        "procedimento": {
+          "codigo_tabela": "22",
+          "codigo_procedimento": "10101012",
+          "descricao_procedimento": "CONSULTA"
+        },
+        "quantidade_solicitada": "1"
+      }
+    ]
+  }
+}

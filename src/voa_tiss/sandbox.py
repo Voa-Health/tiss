@@ -5,13 +5,17 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import re
 import zlib
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from lxml import etree
 
-from ._lote_codec import hash_epilogo
+from ._autorizacao_xml import build_autorizacao, parse_autorizacao
+from ._glosa import glosa
+from ._lote_codec import hash_epilogo, parse_lote
+from ._rules import _package, rule_findings
 from ._schema import NS, parser
 from ._validate import validate
 
@@ -154,7 +158,12 @@ def _decode(protocolo: str) -> dict[str, Any]:
         value = json.loads(decoded)
     except (ValueError, zlib.error, json.JSONDecodeError) as exc:
         raise ValueError("Protocolo inválido") from exc
-    if not isinstance(value, dict) or set(value) != {"cenario", "resumo"}:
+    if not isinstance(value, dict) or set(value) not in (
+        {"cenario", "resumo"},
+        {"cenario", "resumo", "regras"},
+    ):
+        raise ValueError("Protocolo inválido")
+    if "regras" in value and not isinstance(value["regras"], list):
         raise ValueError("Protocolo inválido")
     return value
 
@@ -232,6 +241,12 @@ def _make_demonstrativo(data: dict[str, Any]) -> bytes:
     total_released = Decimal("0.00")
     total_glosa = Decimal("0.00")
     code, description = _GLOSAS.get(scenario, ("", ""))
+    rule_findings_by_guide: dict[int, list[dict[str, Any]]] = {}
+    for finding in data.get("regras", []):
+        pointer = finding.get("pointer", "")
+        match = re.fullmatch(r"/guias/(\d+)/dados_autorizacao", pointer)
+        if match:
+            rule_findings_by_guide.setdefault(int(match.group(1)), []).append(finding)
     for guide_index, guide in enumerate(summary["guias"]):
         relation = _element(protocol_data, "relacaoGuias", "")
         _element(relation, "numeroGuiaPrestador", guide["numero_guia_prestador"])
@@ -241,13 +256,23 @@ def _make_demonstrativo(data: dict[str, Any]) -> bytes:
             summary["data_envio"],
         )
         _element(relation, "dataInicioFat", first_date)
-        glosar = scenario in {"duplicidade", "carteirinha_vencida"} or (
+        scenario_glosa = scenario in {"duplicidade", "carteirinha_vencida"} or (
             scenario == "sem_autorizacao" and guide_index == 0
         )
-        if glosar and description:
+        reasons: list[tuple[str, str]] = []
+        if scenario_glosa and description:
+            reasons.append((code, description))
+        for finding in rule_findings_by_guide.get(guide_index, []):
+            rule = finding.get("rule") or {}
+            rule_code = finding.get("glosa")
+            rule_id = rule.get("id")
+            if rule_code and rule_id:
+                reasons.append((rule_code, f"{finding['message']} (regra {rule_id})"))
+        glosar = bool(reasons)
+        for reason_code, reason_description in reasons:
             reason = _element(relation, "motivoGlosaGuia", "")
-            _element(reason, "codigoGlosa", code)
-            _element(reason, "descricaoGlosa", description)
+            _element(reason, "codigoGlosa", reason_code)
+            _element(reason, "descricaoGlosa", reason_description)
         _element(relation, "situacaoGuia", "4" if glosar else "3")
         guide_informed = Decimal("0.00")
         guide_released = Decimal("0.00")
@@ -270,7 +295,7 @@ def _make_demonstrativo(data: dict[str, Any]) -> bytes:
             if item_glosa:
                 reason = _element(detail, "relacaoGlosa", "")
                 _element(reason, "valorGlosa", _amount_text(item_glosa))
-                _element(reason, "tipoGlosa", code)
+                _element(reason, "tipoGlosa", reasons[0][0])
             guide_informed += informed
             guide_released += released
             guide_glosa += item_glosa
@@ -295,7 +320,11 @@ def _make_demonstrativo(data: dict[str, Any]) -> bytes:
 
 
 def enviar_lote(
-    xml: str | bytes, *, cenario: str = "aprovado", tentativa: int = 1
+    xml: str | bytes,
+    *,
+    cenario: str = "aprovado",
+    tentativa: int = 1,
+    registro_ans: str | None = None,
 ) -> dict[str, Any]:
     """Envio e protocolo de lote no cenário escolhido."""
     if cenario not in _SCENARIOS:
@@ -323,9 +352,20 @@ def enviar_lote(
         [summary["registro_ans"], summary["prestador"]["valor"], summary["numero_lote"]]
     )
     protocol_number = str(int(hashlib.sha256(identity.encode()).hexdigest(), 16) % 10**12).zfill(12)
-    payload = {"cenario": cenario, "resumo": {**summary, "numero_protocolo": protocol_number}}
+    package = _package(registro_ans) if registro_ans is not None else None
+    findings = (
+        rule_findings(dict(parse_lote(xml)), registro_ans)
+        if package is not None and registro_ans is not None
+        else []
+    )
+    payload: dict[str, Any] = {
+        "cenario": cenario,
+        "resumo": {**summary, "numero_protocolo": protocol_number},
+    }
+    if package is not None:
+        payload["regras"] = [finding.to_dict() for finding in findings]
     protocol = _token(payload)
-    return {
+    result = {
         "aceito": True,
         "protocolo": protocol,
         "numero_protocolo": protocol_number,
@@ -334,6 +374,9 @@ def enviar_lote(
         "resumo": summary,
         "findings": [],
     }
+    if package is not None:
+        result["regras"] = [finding.to_dict() for finding in findings]
+    return result
 
 
 def _invalid_lot_number(xml: str | bytes) -> str | None:
@@ -349,4 +392,71 @@ def demonstrativo(protocolo: str) -> bytes:
     return _make_demonstrativo(_decode(protocolo))
 
 
-__all__ = ["SandboxError", "demonstrativo", "enviar_lote"]
+def responder_autorizacao(
+    solicitacao: dict[str, Any] | bytes | str, *, cenario: str = "aprovado"
+) -> bytes:
+    """Gera resposta SP/SADT sintética no cenário escolhido."""
+    if cenario not in {"aprovado", "pendente", "negado"}:
+        raise ValueError(f"Cenário desconhecido: {cenario}")
+    request = (
+        parse_autorizacao(solicitacao) if isinstance(solicitacao, (bytes, str)) else solicitacao
+    )
+    if not isinstance(request, dict) or "solicitacao" not in request:
+        raise ValueError("A mensagem deve conter uma solicitação SP/SADT")
+    body = request["solicitacao"]
+    identity = json.dumps(request, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
+    approved = cenario == "aprovado"
+    authorization_data: dict[str, Any] = {
+        "numero_guia_prestador": body["cabecalho_solicitacao"]["numero_guia_prestador"],
+        "numero_guia_operadora": f"OP{digest[:12]}",
+    }
+    if approved:
+        authorization_data.update(
+            {
+                "data_autorizacao": body["data_solicitacao"],
+                "senha": f"S{digest[12:24]}",
+                "data_validade_senha": body["data_solicitacao"],
+            }
+        )
+    procedures = [
+        {
+            "sequencial_item": str(index),
+            "procedimento": item["procedimento"],
+            "quantidade_solicitada": item["quantidade_solicitada"],
+            "quantidade_autorizada": item["quantidade_solicitada"] if approved else "0",
+        }
+        for index, item in enumerate(body.get("procedimentos_solicitados", []), start=1)
+    ]
+    response: dict[str, Any] = {
+        "versao": request["versao"],
+        "transacao": request["transacao"],
+        "prestador": request["prestador"],
+        "operadora": request["operadora"],
+        "autorizacao": {
+            "dados_autorizacao": authorization_data,
+            "tipo_etapa_autorizacao": body["tipo_etapa_autorizacao"],
+            "dados_beneficiario": body["dados_beneficiario"],
+            "nome_beneficiario": "BENEFICIARIO SINTETICO",
+            "status_solicitacao": {"aprovado": "1", "pendente": "5", "negado": "3"}[cenario],
+            "servicos_autorizados": procedures,
+        },
+    }
+    if cenario == "negado":
+        denial_code = "3217"
+        if glosa(denial_code) is None:
+            raise ValueError("Código de glosa clínica não catalogado")
+        response["autorizacao"]["motivos_negativa"] = [denial_code]
+        response["autorizacao"]["observacao"] = (
+            "Negativa sintética por justificativa clínica ausente ou insuficiente "
+            "pela operadora simulada."
+        )
+    return build_autorizacao(response)
+
+
+__all__ = [
+    "SandboxError",
+    "demonstrativo",
+    "enviar_lote",
+    "responder_autorizacao",
+]

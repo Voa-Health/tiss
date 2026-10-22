@@ -33,6 +33,7 @@ from voa_tiss.codes import CODES
 def test_public_api_and_example_contract():
     assert set(voa_tiss.__all__) == {
         "AuditContext",
+        "AutorizacaoError",
         "BundleError",
         "Decision",
         "Decisao",
@@ -48,13 +49,16 @@ def test_public_api_and_example_contract():
         "apply_fixes",
         "audit",
         "build_lote",
+        "build_autorizacao",
         "check",
+        "check_autorizacao",
         "hash_epilogo",
         "glosa",
         "examples",
         "json_schema",
         "parse_lote",
         "parse_demonstrativo",
+        "parse_autorizacao",
         "plan_reconciliation",
         "rejection_map",
         "render_sadt",
@@ -65,9 +69,34 @@ def test_public_api_and_example_contract():
         "validate",
     }
     assert set(voa_tiss.json_schema("finding")["properties"]["code"]["enum"]) == set(CODES)
-    assert voa_tiss.examples.names() == ["lote-valido", "lote-com-erros", "demonstrativo"]
+    assert voa_tiss.examples.names() == [
+        "lote-valido",
+        "lote-com-erros",
+        "demonstrativo",
+        "autorizacao-solicitacao",
+        "autorizacao-resposta",
+    ]
     with pytest.raises(ValueError):
         voa_tiss.examples.load("../unknown")
+    request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
+    authorization_xml = voa_tiss.build_autorizacao(request)
+    with pytest.raises(voa_tiss.AutorizacaoError):
+        voa_tiss.build_autorizacao({**request, "solicitacao": None, "autorizacao": {}})
+    with pytest.raises(voa_tiss.AutorizacaoError):
+        voa_tiss.build_autorizacao(
+            {key: value for key, value in request.items() if key != "solicitacao"}
+        )
+    with pytest.raises(voa_tiss.AutorizacaoError):
+        voa_tiss.build_autorizacao(
+            {
+                **request,
+                "solicitacao": {**request["solicitacao"], "campo_desconhecido": "x"},
+            }
+        )
+    with pytest.raises(voa_tiss.AutorizacaoError):
+        voa_tiss.parse_autorizacao(
+            authorization_xml.replace(b"SOLICITACAO_PROCEDIMENTOS", b"TIPO_INVALIDO")
+        )
 
 
 def test_generated_artifacts_and_golden_report_are_current():

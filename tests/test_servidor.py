@@ -21,7 +21,8 @@ from mcp.client.streamable_http import streamablehttp_client
 
 import voa_tiss
 from scripts._manutencao_ans import _DOMINIOS_GENERICOS
-from voa_tiss import dominio, examples, operadoras
+from voa_tiss import dominio, examples, operadoras, sandbox
+from voa_tiss import sandbox as sandbox_module
 from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
 from voa_tiss.server import _auth, _docs
@@ -72,13 +73,16 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
     )
     fix_report = voa_tiss.check(fix_lote).to_dict()
     audit_context = {"tabela_operadora": {"procedimentos": []}}
-    audit_report = voa_tiss.audit(lote, contexto=audit_context).to_dict()
+    audit_report = voa_tiss.audit(lote, contexto=audit_context, operadora="000000").to_dict()
     assert audit_report["findings"]
     built = voa_tiss.build_lote(lote)
     demonstrativo_oficial = (ROOT / "tests/fixtures/demonstrativo-oficial.xml").read_bytes()
     parsed = voa_tiss.parse_demonstrativo(demonstrativo_oficial)
     reconciliation = voa_tiss.plan_reconciliation([], [])
-    sandbox_result = enviar_lote(xml)
+    sandbox_result = enviar_lote(xml, registro_ans="000000")
+    request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
+    authorization_xml = voa_tiss.build_autorizacao(request)
+    authorization_response = sandbox.responder_autorizacao(request)
     return [
         ("validate", {"lote": lote}, voa_tiss.check(lote).to_dict()),
         (
@@ -112,7 +116,34 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         ),
         ("sadt_catalog", {}, voa_tiss.sadt_catalog()),
         ("operadora_perfil", {"registro_ans": "005711"}, operadoras.perfil("005711")),
-        ("sandbox_enviar_lote", {"xml": xml.decode()}, sandbox_result),
+        (
+            "sandbox_enviar_lote",
+            {"xml": xml.decode(), "registro_ans": "000000"},
+            sandbox_result,
+        ),
+        (
+            "autorizacao_build",
+            {"mensagem": request},
+            {
+                "xml": authorization_xml.decode("ISO-8859-1"),
+                "hash": voa_tiss.hash_epilogo(authorization_xml),
+            },
+        ),
+        (
+            "autorizacao_parse",
+            {"xml": authorization_xml.decode("ISO-8859-1")},
+            {"mensagem": voa_tiss.parse_autorizacao(authorization_xml)},
+        ),
+        (
+            "autorizacao_check",
+            {"solicitacao": request, "contexto": {"operadora": "000000"}},
+            voa_tiss.check_autorizacao(request, contexto={"operadora": "000000"}).to_dict(),
+        ),
+        (
+            "sandbox_autorizacao",
+            {"solicitacao": request, "cenario": "aprovado"},
+            {"xml": authorization_response.decode("ISO-8859-1")},
+        ),
         (
             "sandbox_demonstrativo",
             {"protocolo": sandbox_result["protocolo"]},
@@ -133,7 +164,7 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         ),
         (
             "audit",
-            {"lote": lote, "contexto": audit_context},
+            {"lote": lote, "contexto": audit_context, "operadora": "000000"},
             audit_report,
         ),
         (
@@ -499,6 +530,18 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         marked_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
         marked_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
         marked_xml = voa_tiss.build_lote(marked_lote).decode("ISO-8859-1")
+        marked_request = json.loads(
+            (ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text()
+        )
+        marked_request["solicitacao"]["dados_beneficiario"]["numero_carteira"] = "CARD-PRIVACY"
+        marked_request["solicitacao"]["dados_solicitante"]["profissional_solicitante"][
+            "nome_profissional"
+        ] = marker
+        marked_auth_xml = voa_tiss.build_autorizacao(marked_request).decode("ISO-8859-1")
+        marked_auth_response = sandbox_module.responder_autorizacao(marked_request)
+        auth_password = voa_tiss.parse_autorizacao(marked_auth_response)["autorizacao"][
+            "dados_autorizacao"
+        ]["senha"]
         fix_lote = json.loads(
             (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
         )
@@ -512,10 +555,21 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         privacy_inputs = [
             ("build", {"lote": marked_lote}),
             ("hash", {"xml": marked_xml}),
-            ("audit", {"lote": marked_lote}),
+            ("audit", {"lote": marked_lote, "operadora": "000000"}),
             (
                 "rejection_map",
                 {"lotes": [cpf_lote], "segredo_pseudonimo": secret},
+            ),
+            ("autorizacao_build", {"mensagem": marked_request}),
+            ("autorizacao_parse", {"xml": marked_auth_xml}),
+            ("autorizacao_parse", {"xml": marked_auth_response.decode("ISO-8859-1")}),
+            (
+                "autorizacao_check",
+                {"solicitacao": marked_request, "contexto": {"operadora": "000000"}},
+            ),
+            (
+                "sandbox_autorizacao",
+                {"solicitacao": marked_request, "cenario": "aprovado"},
             ),
             ("apply_fixes", {"lote": fix_lote, "report": fix_report}),
             ("glosa_explain", {"codigo": "1801"}),
@@ -548,6 +602,8 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
             assert event_name == "tiss_operacao"
             assert set(properties) == expected_keys
             assert marker not in str(properties)
+            assert "CARD-PRIVACY" not in str(properties)
+            assert auth_password not in str(properties)
             if "lote" in entrada:
                 assert properties["registro_ans"] == entrada["lote"]["operadora"]["registro_ans"]
             if name == "rejection_map":
@@ -711,24 +767,54 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
     asyncio.run(run_mcp())
     assert [event for event, _ in events] == ["tiss_operacao"]
     assert marker not in caplog.text
+    assert auth_password not in caplog.text
 
 
 @pytest.mark.parametrize(
-    ("scenario", "expected", "code"),
+    ("scenario", "expected", "code", "registry", "rule_id"),
     [
-        ("aprovado", "pago", ""),
-        ("duplicidade", "glosado", "3209"),
-        ("carteirinha_vencida", "glosado", "1017"),
-        ("sem_autorizacao", "glosado", "1818"),
+        ("aprovado", "pago", "", None, None),
+        ("duplicidade", "glosado", "3209", None, None),
+        ("carteirinha_vencida", "glosado", "1017", None, None),
+        ("sem_autorizacao", "glosado", "1818", None, None),
+        ("aprovado", "glosado", "1818", "000000", "exige-autorizacao-consulta"),
+        ("aprovado", "pago", "", "999999", None),
+        ("autorizacao.aprovado", "1", "", None, None),
+        ("autorizacao.pendente", "5", "", None, None),
+        ("autorizacao.negado", "3", "3217", None, None),
     ],
 )
-def test_simulated_statement_round_trip(scenario, expected, code, monkeypatch):
+def test_simulated_statement_round_trip(scenario, expected, code, registry, rule_id, monkeypatch):
     """Valida demonstrativos simulados de aprovação e glosa."""
+    if scenario.startswith("autorizacao."):
+        cenario = scenario.split(".", 1)[1]
+        request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
+        xml = sandbox.responder_autorizacao(request, cenario=cenario)
+        assert voa_tiss.validate(xml).valid
+        response = voa_tiss.parse_autorizacao(xml)["autorizacao"]
+        assert response["status_solicitacao"] == expected
+        assert response["dados_autorizacao"]["numero_guia_operadora"]
+        assert xml == sandbox.responder_autorizacao(request, cenario=cenario)
+        for procedure in response["servicos_autorizados"]:
+            assert procedure["quantidade_autorizada"] == (
+                procedure["quantidade_solicitada"] if cenario == "aprovado" else "0"
+            )
+        if cenario == "negado":
+            [denial_code] = response["motivos_negativa"]
+            assert denial_code == code
+            assert glosa(denial_code) is not None
+            assert "sintética" in response["observacao"]
+        return
+
     lote = examples.load("lote-valido")
-    response = enviar_lote(lote, cenario=scenario)
+    arguments = {"registro_ans": registry} if registry else {}
+    response = enviar_lote(lote, cenario=scenario, **arguments)
     assert response["aceito"] is True
     assert len(response["numero_protocolo"]) == PROTOCOL_NUMBER_LENGTH
-    assert response["protocolo"] == enviar_lote(lote, cenario=scenario)["protocolo"]
+    assert response["protocolo"] == enviar_lote(lote, cenario=scenario, **arguments)["protocolo"]
+    assert ("regras" in response) is (registry == "000000")
+    if rule_id:
+        assert any(item["rule"]["id"] == rule_id for item in response["regras"])
 
     xml = demonstrativo(response["protocolo"])
     assert voa_tiss.validate(xml).valid

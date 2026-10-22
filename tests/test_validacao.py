@@ -5,6 +5,7 @@ import io
 import json
 from copy import deepcopy
 from datetime import date
+from decimal import Decimal
 from urllib import request
 
 import jsonschema
@@ -16,7 +17,7 @@ import voa_tiss
 from voa_tiss import examples
 from voa_tiss.__main__ import main as cli_main
 from voa_tiss._mapa_html import render_rejection_map_html
-from voa_tiss._rules import validate_package
+from voa_tiss._rules import _package, validate_package
 from voa_tiss._schema import parser
 from voa_tiss.codes import CODES
 
@@ -37,9 +38,73 @@ from voa_tiss.codes import CODES
         ("guia-consulta", set()),
         ("hash-divergente", set()),
         ("hash-ausente", set()),
+        ("autorizacao.aprovar-json", "aprovar_por_regra"),
+        ("autorizacao.pendente-json", "pendente"),
+        ("autorizacao.auditoria-xml", "encaminhar_auditor"),
+        ("autorizacao.sem-regra-xml", "encaminhar_auditor"),
+        ("autorizacao.carteirinha-json", "encaminhar_auditor"),
     ],
 )
 def test_example_reports(name, expected):
+    if name.startswith("autorizacao."):
+        case = name.split(".", 1)[1]
+        request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
+        package = _package("000000")
+        assert package is not None
+        context = {"operadora": package}
+        source = request
+        if case == "aprovar-json":
+            package["regras"][0]["check"]["codigos"] = ["99999999"]
+        elif case == "pendente-json":
+            request["solicitacao"].pop("indicacao_clinica")
+        elif case == "auditoria-xml":
+            source = voa_tiss.build_autorizacao(request)
+        elif case == "sem-regra-xml":
+            source = voa_tiss.build_autorizacao(request)
+            context = {}
+        elif case == "carteirinha-json":
+            package["regras"][0]["check"]["codigos"] = ["99999999"]
+            context["carteirinhas"] = {"AUT-0001": {"ativa": False}}
+        result = voa_tiss.check_autorizacao(source, contexto=context)
+        assert result.decisao is not None
+        assert result.decisao["tipo"] == expected
+        assert expected in {"aprovar_por_regra", "pendente", "encaminhar_auditor"}
+        assert (
+            "negar"
+            not in voa_tiss.json_schema("report")["properties"]["decisao"]["properties"]["tipo"][
+                "enum"
+            ]
+        )
+        assert "negar" not in result.to_json()
+        if case == "aprovar-json":
+            assert result.decisao["rules"]
+            for example in ("autorizacao-solicitacao", "autorizacao-resposta"):
+                xml = examples.load(example)
+                assert voa_tiss.build_autorizacao(voa_tiss.parse_autorizacao(xml)) == xml
+                assert voa_tiss.validate(xml).valid
+                hash_start = xml.index(b"<ans:hash>") + len(b"<ans:hash>")
+                replacement = b"0" if xml[hash_start : hash_start + 1] != b"0" else b"1"
+                assert "lote.hash_divergente" in {
+                    finding.code
+                    for finding in voa_tiss.validate(
+                        xml[:hash_start] + replacement + xml[hash_start + 1 :]
+                    ).findings
+                }
+        elif case == "pendente-json":
+            assert result.decisao["needs"] == ["/solicitacao/indicacao_clinica"]
+        elif case == "auditoria-xml":
+            assert any(
+                finding.code == "autorizacao.exige_auditoria"
+                and finding.rule
+                and finding.rule["id"] == "exige-autorizacao-consulta"
+                for finding in result.findings
+            )
+        elif case == "sem-regra-xml":
+            assert any(finding.code == "autorizacao.sem_regra" for finding in result.findings)
+            assert result.decisao["rules"] == []
+        elif case == "carteirinha-json":
+            assert any(finding.code == "autorizacao.carteirinha" for finding in result.findings)
+        return
     if name == "guia-consulta":
         lote = voa_tiss.parse_lote(examples.load("lote-valido"))
         lote["numero_lote"] = "TISS-001"
@@ -159,14 +224,6 @@ def test_doctype_encoding_version_and_input_contract():
     assert any(finding.code.startswith("xsd.") for finding in invalid_402.findings)
     with pytest.raises(TypeError):
         voa_tiss.validate(42)  # type: ignore[arg-type]
-    prefix = b'<?xml version="1.0" encoding="ISO-8859-1"?><root xmlns:ans="'
-    namespace = b"http://www.ans.gov.br/padroes/tiss/schemas"
-    suffix = b'"><value>Jo\xe3o</value><ans:hash>old</ans:hash></root>'
-    without_comment = prefix + namespace + suffix
-    comment = b'"><value>Jo\xe3o</value><!-- not a value --><ans:hash>old</ans:hash></root>'
-    expected = hashlib.md5("João".encode("iso-8859-1")).hexdigest()
-    assert voa_tiss.hash_epilogo(without_comment) == expected
-    assert voa_tiss.hash_epilogo(prefix + namespace + comment) == expected
 
 
 @pytest.mark.parametrize(
@@ -247,6 +304,8 @@ def test_xpaths_resolve_with_prefixed_and_default_namespaces():
         ("max_itens.invalido", True),
         ("combinacao_proibida.valido", False),
         ("combinacao_proibida.invalido", True),
+        ("exige_autorizacao.valido", False),
+        ("exige_autorizacao.invalido", True),
         ("official.comunidade.false", False),
         ("official.operadora.true", False),
         ("official.comunidade.true", True),
@@ -272,9 +331,25 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
         finding for finding in voa_tiss.check(lote, operadora=package).findings if finding.rule
     ]
     assert bool(findings) is fails
+    if case == "exige_autorizacao.invalido":
+        assert findings[0].glosa == "1818"
+        audit_findings = [
+            finding for finding in voa_tiss.audit(lote, operadora=package).findings if finding.rule
+        ]
+        assert audit_findings[0].rule["id"] == case
+        assert audit_findings[0].glosa == "1818"
 
 
-def test_mapa_de_rejeicao(tmp_path, monkeypatch, capsys):
+def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys):
+    prefix = b'<?xml version="1.0" encoding="ISO-8859-1"?><root xmlns:ans="'
+    namespace = b"http://www.ans.gov.br/padroes/tiss/schemas"
+    suffix = b'"><value>Jo\xe3o</value><ans:hash>old</ans:hash></root>'
+    without_comment = prefix + namespace + suffix
+    comment = b'"><value>Jo\xe3o</value><!-- not a value --><ans:hash>old</ans:hash></root>'
+    expected = hashlib.md5("João".encode("iso-8859-1")).hexdigest()
+    assert voa_tiss.hash_epilogo(without_comment) == expected
+    assert voa_tiss.hash_epilogo(prefix + namespace + comment) == expected
+
     base = voa_tiss.parse_lote(examples.load("lote-valido"))
     base["transacao"]["data_registro_transacao"] = "2026-10-21"
     for guide in base["guias"]:
@@ -400,3 +475,34 @@ def test_mapa_de_rejeicao(tmp_path, monkeypatch, capsys):
     assert request_sent.get_header("Authorization") == f"Bearer {'k' * 16}"
     assert request_sent.get_header("Content-type") == "application/json"
     assert sent["timeout"] == 10
+
+    authorization_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+    authorization_lote["prestador"] = {"codigo_prestador_na_operadora": "CLINICA-AUTORIZACAO"}
+    authorization_lote["guias"] = [authorization_lote["guias"][0]]
+    authorization_guide = authorization_lote["guias"][0]
+    authorization_guide["procedimentos_executados"][0]["procedimento"]["codigo_procedimento"] = (
+        "10101012"
+    )
+    authorization_guide.pop("dados_autorizacao", None)
+    authorization_findings = voa_tiss.check(authorization_lote, operadora="000000").findings
+    authorization_finding = next(
+        finding
+        for finding in authorization_findings
+        if finding.rule and finding.rule["id"] == "exige-autorizacao-consulta"
+    )
+    authorization_map = voa_tiss.rejection_map([authorization_lote], operadora="000000")
+    authorization_line = next(
+        item
+        for item in authorization_map["linhas"]
+        if item["rule_id"] == authorization_finding.rule["id"]
+    )
+    guide_total = (
+        Decimal(authorization_guide["valor_total"]["valor_total_geral"]) / Decimal(100)
+    ).quantize(Decimal("0.01"))
+    assert authorization_finding.code == "regra.exige_autorizacao"
+    assert authorization_finding.glosa == "1818"
+    assert authorization_line["codigo"] == authorization_finding.code
+    assert authorization_line["rule_id"] == "exige-autorizacao-consulta"
+    assert authorization_line["glosa"] == authorization_finding.glosa
+    assert authorization_line["guias"] == 1
+    assert authorization_line["valor_afetado"] == f"{guide_total:.2f}"

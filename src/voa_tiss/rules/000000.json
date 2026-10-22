@@ -1,0 +1,43 @@
+{
+  "operadora": "Operadora simulada",
+  "mantenedor": {
+    "tipo": "comunidade"
+  },
+  "official": false,
+  "versao_tiss": "4.03.00",
+  "regras": [
+    {
+      "id": "exige-autorizacao-consulta",
+      "descricao": "Procedimento exige autorização prévia.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas da operadora simulada",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "warning",
+      "glosa": "1818",
+      "check": {
+        "tipo": "exige_autorizacao",
+        "codigos": [
+          "10101012"
+        ]
+      }
+    },
+    {
+      "id": "registro-ans-obrigatorio",
+      "descricao": "Registro ANS presente.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas da operadora simulada",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "obrigatorio",
+        "pointer": "/operadora/registro_ans"
+      }
+    }
+  ]
+}

@@ -95,7 +95,7 @@ que foi cobrado. Para testar sem operadora real, use a
   auditoria, demonstrativos, TUSS, operadoras e rede hospitalar.
 - **[API HTTP](#api-http)**: as mesmas operações em
   `https://tiss-api.voa.health`, com [OpenAPI](https://tiss-api.voa.health/openapi.json).
-- **[MCP remoto](#conectar-agentes)**: 20 ferramentas e 3 prompts para agentes,
+- **[MCP remoto](#conectar-agentes)**: 24 ferramentas e 3 prompts para agentes,
   no [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss).
 - **[Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)**: envie
   lotes e receba protocolo, demonstrativo e glosas sem tocar em produção.
@@ -169,7 +169,8 @@ No Cursor, adicione ao `mcp.json`:
 | [Gerar e corrigir um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb) | sair do JSON para o XML válido |
 | [Regras por operadora](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/05-regras-por-operadora.ipynb) | auditar com regras publicadas |
 | [Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb) | testar envios e glosas |
-| [Mapa de rejeição](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/07-mapa-de-rejeicao.ipynb) | agregar achados por prestador |
+| [Autorização SP/SADT](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/07-autorizacao.ipynb) | solicitar e analisar autorizações |
+| [Mapa de rejeição](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/08-mapa-de-rejeicao.ipynb) | agregar achados por prestador |
 
 ## API HTTP
 

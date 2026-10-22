@@ -16,6 +16,10 @@ Os códigos abaixo fazem parte dos contratos públicos de validação e auditori
 | `audit.tabela_fora_de_vigencia` | Tabela fora de vigência |
 | `audit.tabela_sem_procedimentos` | Tabela sem procedimentos |
 | `audit.valor_nao_positivo` | Valor não positivo |
+| `autorizacao.carteirinha` | Carteirinha inativa ou vencida. |
+| `autorizacao.dado_ausente` | Dado necessário para analisar a autorização ausente. |
+| `autorizacao.exige_auditoria` | Procedimento exige autorização prévia. |
+| `autorizacao.sem_regra` | Sem regra da operadora para decidir a autorização. |
 | `guia.carteirinha_ausente` | Carteirinha ausente |
 | `guia.executante_ausente` | Dados do executante ausentes |
 | `guia.sequencial` | Sequencial de itens inválido |
@@ -29,6 +33,7 @@ Os códigos abaixo fazem parte dos contratos públicos de validação e auditori
 | `lote.valor_total_geral` | Total geral divergente |
 | `lote.vazio` | Lote sem guias |
 | `regra.combinacao_proibida` | Combinação proibida pela operadora |
+| `regra.exige_autorizacao` | Procedimento exige autorização prévia |
 | `regra.max_itens` | Limite de itens da operadora excedido |
 | `regra.obrigatorio` | Campo obrigatório ausente |
 | `regra.padrao` | Valor fora do padrão da operadora |

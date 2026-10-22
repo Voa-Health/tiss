@@ -7,7 +7,9 @@ from typing import Any, TypedDict
 
 from ._audit_rules import _day, _matches, _money
 from ._audit_schema import audit_context_schema
+from ._lote import _procedure_records
 from ._report import Finding, Report
+from ._rules import rule_findings
 from .codes import CODE_CATALOG
 from .tuss import lookup
 
@@ -16,32 +18,6 @@ class AuditContext(TypedDict, total=False):
     tabela_operadora: dict[str, Any]
     carteirinhas: dict[str, Any]
     autorizacoes: dict[str, Any]
-
-
-def _procedure_records(guide: dict[str, Any]) -> list[tuple[str, dict[str, Any], Any, Any]]:
-    result: list[tuple[str, dict[str, Any], Any, Any]] = []
-    if guide.get("tipo") == "consulta":
-        procedure = guide.get("dados_atendimento", {}).get("procedimento")
-        if isinstance(procedure, dict):
-            result.append(
-                (
-                    "/dados_atendimento/procedimento",
-                    procedure,
-                    procedure.get("valor_procedimento"),
-                    guide.get("dados_atendimento", {}).get("data_atendimento"),
-                )
-            )
-    for index, item in enumerate(guide.get("procedimentos_executados", [])):
-        if isinstance(item, dict):
-            result.append(
-                (
-                    f"/procedimentos_executados/{index}/procedimento",
-                    item.get("procedimento", {}),
-                    item.get("valor_total"),
-                    item.get("data_execucao"),
-                )
-            )
-    return result
 
 
 def _lookup_context(
@@ -92,6 +68,7 @@ def audit(
     *,
     contexto: AuditContext | None = None,
     at: datetime.date | str | None = None,
+    operadora: Any = None,
 ) -> Report:
     """Verifica regras locais e regras do contexto informado."""
     context = contexto or {}
@@ -330,6 +307,8 @@ def audit(
                             "Carteirinha vencida na data do atendimento.",
                         )
                     )
+    if operadora is not None:
+        findings.extend(rule_findings(lote, operadora))
     unique: dict[tuple[Any, ...], Finding] = {}
     for finding in findings:
         unique[(finding.code, finding.guia, finding.pointer)] = finding

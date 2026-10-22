@@ -51,6 +51,7 @@ def _audit(value: dict[str, Any]) -> dict[str, Any]:
         value["lote"],
         contexto=value.get("contexto"),
         at=value.get("data"),
+        operadora=value.get("operadora"),
     ).to_dict()
 
 
@@ -104,6 +105,10 @@ LOTE_OPS = (
                 "lote": _OBJECT_INPUT,
                 "contexto": _AUDIT_CONTEXT_SCHEMA,
                 "data": {"type": "string", "format": "date"},
+                "operadora": {
+                    "type": ["string", "object"],
+                    "pattern": "^[0-9]{5,6}$",
+                },
             },
             ["lote"],
         ),

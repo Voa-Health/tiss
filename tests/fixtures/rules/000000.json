@@ -185,6 +185,40 @@
           ]
         }
       }
+    },
+    {
+      "id": "exige_autorizacao.invalido",
+      "descricao": "Procedimento exige autorização.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "exige_autorizacao",
+        "codigos": [
+          "10101012"
+        ]
+      }
+    },
+    {
+      "id": "exige_autorizacao.valido",
+      "descricao": "Procedimento sem necessidade de autorização.",
+      "source": {
+        "url": "https://example.org/regras",
+        "titulo": "Regras sintéticas",
+        "data": "2026-01-01",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "exige_autorizacao",
+        "codigos": [
+          "99999999"
+        ]
+      }
     }
   ]
 }

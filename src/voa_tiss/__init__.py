@@ -5,6 +5,8 @@ from typing import Any
 
 from . import dominio, examples, operadoras
 from ._audit import AuditContext, audit
+from ._autorizacao import check_autorizacao
+from ._autorizacao_xml import AutorizacaoError, build_autorizacao, parse_autorizacao
 from ._check import check
 from ._completeness import missing_mandatory
 from ._glosa import glosa
@@ -40,6 +42,7 @@ def sadt_missing(values: dict[str, Any]) -> list[str]:
 
 __all__ = [
     "AuditContext",
+    "AutorizacaoError",
     "BundleError",
     "Decisao",
     "Decision",
@@ -54,14 +57,17 @@ __all__ = [
     "RetornoError",
     "apply_fixes",
     "audit",
+    "build_autorizacao",
     "build_lote",
     "check",
+    "check_autorizacao",
     "dominio",
     "examples",
     "glosa",
     "hash_epilogo",
     "json_schema",
     "operadoras",
+    "parse_autorizacao",
     "parse_demonstrativo",
     "parse_lote",
     "plan_reconciliation",
