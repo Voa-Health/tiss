@@ -2,7 +2,7 @@ export const site = {
   name: "voa-tiss",
   url: "https://tiss-api.voa.health",
   github: "https://github.com/Voa-Health/tiss",
-  operatorContactUrl: "https://github.com/Voa-Health/tiss/issues/new?template=regra-de-operadora.yml",
+  healthplanContactUrl: "https://github.com/Voa-Health/tiss/issues/new?template=regra-de-operadora.yml",
   pypi: "https://pypi.org/project/voa-tiss/",
   installCommand: "pip install voa-tiss",
   mcpCommand: "claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp",

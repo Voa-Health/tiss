@@ -30,7 +30,7 @@ export function GET() {
         .map(([method, operation]) => `${method.toUpperCase()} ${path}: ${operation.summary ?? ""}`),
     )
     .join("\n");
-  const operators = readOperadoras()
+  const healthplans = readOperadoras()
     .map((operadora) => `- ${descricaoOperadora(operadora, readSerie(operadora.registro_ans))} ${site.url}/operadoras/${operadora.registro_ans}`)
     .join("\n");
   const fonte = fontePainel();
@@ -89,7 +89,7 @@ export function GET() {
     "",
     "## Operadoras",
     `Fonte: ${fonte.titulo} (${fonte.licenca}), ${fonte.url}`,
-    operators,
+    healthplans,
     "",
     agentGuidance,
     "",

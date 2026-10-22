@@ -11,7 +11,7 @@ import {
   type Semestre,
 } from "@/lib/operadoras";
 
-export function OperatorProfile({
+export function HealthplanProfile({
   operadora,
   serie,
   fonte,

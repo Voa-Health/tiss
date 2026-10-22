@@ -20,7 +20,7 @@ export function GET() {
         .map((method) => `- \`${method.toUpperCase()} ${path}\` — ${site.url}/api#${operationAnchor(method, path)}`),
     )
     .join("\n");
-  const operators = readOperadoras()
+  const healthplans = readOperadoras()
     .map((operadora) => `- [${operadora.razao_social} (${operadora.registro_ans})](${site.url}/operadoras/${operadora.registro_ans})`)
     .join("\n");
   const modules = moduleGroups
@@ -52,7 +52,7 @@ export function GET() {
     operations,
     "",
     "## Operadoras",
-    operators,
+    healthplans,
     "",
     agentGuidance,
     "",

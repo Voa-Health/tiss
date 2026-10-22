@@ -22,12 +22,12 @@ if __package__:
         DOMAIN_OUT,
         GLOSA_DOMAIN,
         GLOSA_OUT,
-        OPERATORS_OUT,
+        HEALTHPLANS_OUT,
         PDA_URL,
         TABELA38_URL,
         bake_domain,
         bake_glosas,
-        bake_operators,
+        bake_healthplans,
         write_outputs,
     )
     from ._manutencao_common import download, write_json
@@ -50,12 +50,12 @@ else:
         DOMAIN_OUT,
         GLOSA_DOMAIN,
         GLOSA_OUT,
-        OPERATORS_OUT,
+        HEALTHPLANS_OUT,
         PDA_URL,
         TABELA38_URL,
         bake_domain,
         bake_glosas,
-        bake_operators,
+        bake_healthplans,
         write_outputs,
     )
     from _manutencao_common import download, write_json
@@ -198,7 +198,7 @@ def main(argv: list[str] | None = None) -> int:
     domain.add_argument("--pda-zip", type=Path, required=True)
     domain.add_argument("--cadop-csv", type=Path, required=True)
     domain.add_argument("--domain-out", type=Path, default=DOMAIN_OUT)
-    domain.add_argument("--operators-out", type=Path, default=OPERATORS_OUT)
+    domain.add_argument("--healthplans-out", type=Path, default=HEALTHPLANS_OUT)
     table38 = commands.add_parser("tabela38", help="preparar glosas e tabela 38")
     table38.add_argument("--archive", type=Path, required=True)
     table38.add_argument("--out", type=Path, default=GLOSA_OUT)
@@ -243,7 +243,7 @@ def main(argv: list[str] | None = None) -> int:
         return descoberta(args.limite_usd, args.brutos, teto_chamada_usd=args.teto_chamada_usd)
     if args.command == "dominio":
         write_json(args.domain_out, bake_domain(args.pda_zip))
-        write_json(args.operators_out, bake_operators(args.cadop_csv))
+        write_json(args.healthplans_out, bake_healthplans(args.cadop_csv))
         return 0
     if args.command == "tabela38":
         write_outputs(bake_glosas(args.archive), args.out, args.domain_out)

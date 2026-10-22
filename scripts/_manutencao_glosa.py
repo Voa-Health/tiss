@@ -14,7 +14,7 @@ else:
 
 ROOT = Path(__file__).resolve().parents[1]
 INDICADORES_OUT = ROOT / "src/voa_tiss/operadoras/_data/indicadores.json"
-CADOP = ROOT / "src/voa_tiss/operadoras/_data/operators.json"
+CADOP = ROOT / "src/voa_tiss/operadoras/_data/healthplans.json"
 PAINEL_URL = "https://dadosabertos.ans.gov.br/FTP/PDA/painel_de_glosas-057/dados/"
 PAINEL_PAGINA = "https://dados.gov.br/dados/conjuntos-dados/painel-de-indicadores-de-glosa"
 PAINEL_ARQUIVOS = {

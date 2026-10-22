@@ -49,7 +49,7 @@ function HealthplanFeatures() {
   );
 }
 
-export function OperatorsContent({ packs }: { packs: RulePack[] }) {
+export function HealthplansContent({ packs }: { packs: RulePack[] }) {
   const { token } = theme.useToken();
   return (
     <>
@@ -91,7 +91,7 @@ export function OperatorsContent({ packs }: { packs: RulePack[] }) {
                 <Button href="/docs/regras-operadora">Como criar um pacote</Button>
                 <Button
                   type="primary"
-                  href={site.operatorContactUrl}
+                  href={site.healthplanContactUrl}
                   onClick={() => track("tiss_cta_github", { local: "operadoras" })}
                 >
                   Sugerir pacote

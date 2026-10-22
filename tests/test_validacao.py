@@ -239,8 +239,8 @@ def test_xpaths_resolve_with_prefixed_and_default_namespaces():
         ("official.operadora.false", True),
     ],
 )
-def test_operator_rule_cases(valid_lote, operator_rules, case, fails):
-    package = deepcopy(operator_rules)
+def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
+    package = deepcopy(healthplan_rules)
     assert not validate_package(package)
     if case.startswith("official."):
         _, maintainer, official = case.split(".")
