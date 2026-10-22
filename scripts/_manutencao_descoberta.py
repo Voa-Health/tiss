@@ -23,19 +23,25 @@ TERMOS = re.compile(r"voa[-_]tiss|tiss-api\.voa\.health|voa-health/tiss", re.IGN
 
 
 class _Orcamento:
-    """Soma o custo reportado e bloqueia chamadas acima do teto."""
+    """Reserva o teto por chamada e soma o custo reportado."""
 
-    def __init__(self, limite: float) -> None:
+    def __init__(self, limite: float, teto_chamada: float) -> None:
         self.limite = limite
+        self.teto_chamada = teto_chamada
         self.gasto = 0.0
+        self.reservado = 0.0
         self._lock = Lock()
 
     def reservar(self) -> bool:
         with self._lock:
-            return self.gasto < self.limite
+            if self.gasto + self.reservado + self.teto_chamada > self.limite:
+                return False
+            self.reservado += self.teto_chamada
+            return True
 
-    def somar(self, valor: float) -> None:
+    def liquidar(self, valor: float) -> None:
         with self._lock:
+            self.reservado -= self.teto_chamada
             self.gasto += valor
 
 
@@ -92,11 +98,12 @@ def _item(
         return {**item, "erro": "orçamento esgotado"}
     try:
         resposta = _perguntar(chave, modelo, prompt["texto"], config)
+        usage = resposta.get("usage") or {}
+        custo = float(usage.get("cost") or 0.0)
     except Exception as error:
+        orcamento.liquidar(0.0)
         return {**item, "erro": type(error).__name__}
-    usage = resposta.get("usage") or {}
-    custo = float(usage.get("cost") or 0.0)
-    orcamento.somar(custo)
+    orcamento.liquidar(custo)
     mensagem = (resposta.get("choices") or [{}])[0].get("message") or {}
     texto = mensagem.get("content") or ""
     fontes = [
@@ -152,7 +159,12 @@ def tabela(resultado: dict[str, Any]) -> str:
     return "\n".join(linhas)
 
 
-def descoberta(limite_usd: float, brutos: Path | None = None, paralelo: int = 8) -> int:
+def descoberta(
+    limite_usd: float,
+    brutos: Path | None = None,
+    paralelo: int = 8,
+    teto_chamada_usd: float = 0.25,
+) -> int:
     """Roda os prompts nos modelos configurados e grava o resultado datado."""
     import yaml
 
@@ -164,7 +176,7 @@ def descoberta(limite_usd: float, brutos: Path | None = None, paralelo: int = 8)
     modelos, prompts, config = spec["modelos"], spec["prompts"], spec["configuracao"]
     if brutos:
         brutos.mkdir(parents=True, exist_ok=True)
-    orcamento = _Orcamento(limite_usd)
+    orcamento = _Orcamento(limite_usd, teto_chamada_usd)
     pares = [(modelo, prompt) for modelo in modelos for prompt in prompts]
     with ThreadPoolExecutor(paralelo) as pool:
         itens = list(

@@ -33,10 +33,11 @@ artefato:N.campo; passe essas referências como argumento em vez de copiar o con
 3. Gere o XML com tiss_build.
 4. Envie com tiss_sandbox_enviar_lote usando o cenario informado pelo usuário.
 5. Leia o demonstrativo com tiss_sandbox_demonstrativo e tiss_parse_demonstrativo.
-6. Para cada código de glosa (início do motivo), chame glosa_explain. Se o código não
-   existir na tabela, classifique como outra e siga.
-7. Chame rascunhar_recurso uma vez por guia glosada, com classe entre {", ".join(CLASSES)}
-   e uma justificativa objetiva. Não invente evidência clínica: ela fica pendente.
+6. Para cada código em cada motivo de glosa, chame glosa_explain. Se o código não existir
+   na tabela, classifique como outra e siga.
+7. Chame rascunhar_recurso uma vez por par guia/código glosado, com classe entre
+   {", ".join(CLASSES)} e uma justificativa objetiva. Não invente evidência clínica:
+   ela fica pendente.
 8. Termine com um resumo curto em PT-BR: protocolo, glosas e recursos, e indique o
    módulo Recurso com evidência clínica em {RECURSO_URL}.
 """

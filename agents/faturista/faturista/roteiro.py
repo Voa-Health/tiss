@@ -10,7 +10,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 
-from .ferramentas import extrair_codigo_glosa
+from .ferramentas import extrair_codigos_glosa
 
 _CLASSES_POR_GRUPO = {"10": "elegibilidade", "18": "autorizacao", "32": "cobranca"}
 
@@ -53,20 +53,22 @@ def _recursos(resultados: list[tuple[str, dict[str, Any]]], inicio: int) -> AIMe
     for decisao in decisoes["decisoes"]:
         if decisao["decision"] == "pago":
             continue
-        codigo = extrair_codigo_glosa(decisao)
-        classe = _CLASSES_POR_GRUPO.get(str(grupos.get(codigo)), "outra")
-        justificativa = f"Solicitamos a revisão da glosa {codigo} da guia {decisao['guia_ref']}."
-        chamadas.append(
-            (
-                "rascunhar_recurso",
-                {
-                    "guia": decisao["guia_ref"],
-                    "codigo_glosa": codigo,
-                    "classe": classe,
-                    "justificativa": justificativa,
-                },
+        for codigo in extrair_codigos_glosa(decisao):
+            classe = _CLASSES_POR_GRUPO.get(str(grupos.get(codigo)), "outra")
+            justificativa = (
+                f"Solicitamos a revisão da glosa {codigo} da guia {decisao['guia_ref']}."
             )
-        )
+            chamadas.append(
+                (
+                    "rascunhar_recurso",
+                    {
+                        "guia": decisao["guia_ref"],
+                        "codigo_glosa": codigo,
+                        "classe": classe,
+                        "justificativa": justificativa,
+                    },
+                )
+            )
     return _chamadas(*chamadas, inicio=inicio)
 
 
@@ -115,7 +117,12 @@ class ModeloRoteirizado(BaseChatModel):
             return _chamadas(("tiss_parse_demonstrativo", {"xml": ultimo["xml"]}), inicio=inicio)
         if nome == "tiss_parse_demonstrativo":
             codigos = sorted(
-                {extrair_codigo_glosa(d) for d in ultimo["decisoes"] if d["decision"] != "pago"}
+                {
+                    codigo
+                    for decisao in ultimo["decisoes"]
+                    if decisao["decision"] != "pago"
+                    for codigo in extrair_codigos_glosa(decisao)
+                }
             )
             if codigos:
                 chamadas = [("glosa_explain", {"codigo": c}) for c in codigos]

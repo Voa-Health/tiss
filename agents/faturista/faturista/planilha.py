@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -27,7 +28,21 @@ def _linhas(caminho: Path) -> list[dict[str, Any]]:
         planilha = load_workbook(caminho, read_only=True, data_only=True).active
         if planilha is None:
             return []
-        linhas = [list(linha) for linha in planilha.iter_rows(values_only=True)]
+        linhas = []
+        for linha in planilha.iter_rows():
+            valores = []
+            for celula in linha:
+                valor = celula.value
+                if (
+                    isinstance(valor, (int, float))
+                    and not isinstance(valor, bool)
+                    and float(valor).is_integer()
+                ):
+                    inteiro = str(int(valor))
+                    formato = celula.number_format
+                    valor = inteiro.zfill(len(formato)) if re.fullmatch(r"0+", formato) else inteiro
+                valores.append(valor)
+            linhas.append(valores)
         cabecalho = [str(coluna) for coluna in linhas[0]]
         return [dict(zip(cabecalho, linha, strict=False)) for linha in linhas[1:] if any(linha)]
     if sufixo == ".json":
@@ -78,7 +93,7 @@ def _guia(numero: str, linhas: list[dict[str, Any]]) -> dict[str, Any]:
         },
         "dados_solicitante": {
             "contratado_solicitante": contratado,
-            "nome_contratado_solicitante": "CLINICA EXEMPLO",
+            "nome_contratado_solicitante": str(primeira["nome_contratado"]),
             "profissional_solicitante": _profissional(primeira),
         },
         "dados_solicitacao": {"carater_atendimento": "1"},

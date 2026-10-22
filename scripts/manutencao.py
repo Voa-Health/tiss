@@ -216,6 +216,7 @@ def main(argv: list[str] | None = None) -> int:
     rede.add_argument("--manifesto", type=Path, default=REDE_MANIFEST)
     avaliacao = commands.add_parser("descoberta", help="medir descoberta do voa-tiss em modelos")
     avaliacao.add_argument("--limite-usd", type=float, default=10.0)
+    avaliacao.add_argument("--teto-chamada-usd", type=float, default=0.25)
     avaliacao.add_argument("--brutos", type=Path, help="pasta fora do repo para respostas")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -239,7 +240,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verificar":
         return verificar()
     if args.command == "descoberta":
-        return descoberta(args.limite_usd, args.brutos)
+        return descoberta(args.limite_usd, args.brutos, teto_chamada_usd=args.teto_chamada_usd)
     if args.command == "dominio":
         write_json(args.domain_out, bake_domain(args.pda_zip))
         write_json(args.operators_out, bake_operators(args.cadop_csv))

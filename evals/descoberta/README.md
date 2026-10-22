@@ -9,7 +9,7 @@ profissionais de saúde, pacientes, operadoras e gestores do SUS e do governo.
 
 ```sh
 export OPENROUTER_API_KEY=...
-uv run python scripts/manutencao.py descoberta --limite-usd 10
+uv run python scripts/manutencao.py descoberta --limite-usd 10 --teto-chamada-usd 0.25
 ```
 
 Cada pergunta vai a cada modelo de `prompts.yaml` pelo OpenRouter, sem
@@ -19,7 +19,9 @@ o texto casa com `voa[-_]tiss|tiss-api\.voa\.health|voa-health/tiss`; as
 fontes citadas pela busca são medidas à parte. O resultado datado vai para
 `resultados/<data>.json`, sem o texto das respostas. `--brutos <pasta>` grava as
 respostas completas numa pasta fora do repositório. O comando para antes de
-passar de `--limite-usd`. Repita uma vez por mês, com a mesma configuração.
+passar de `--limite-usd`. Cada chamada reserva o teto antes de iniciar; o gasto
+só pode passar de `--limite-usd` se uma chamada custar mais que
+`--teto-chamada-usd`. Repita uma vez por mês, com a mesma configuração.
 
 ## Linha de base — 2026-10-22
 
