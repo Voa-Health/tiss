@@ -30,7 +30,7 @@ const sample = `{
 export function OperatorPublishing() {
   const { token } = theme.useToken();
   return (
-    <Card title="Para operadoras: publique suas regras">
+    <Card id="publicar-regras" title="Publique suas regras com selo Oficial">
       <Flex vertical gap={token.margin}>
         <Typography.Paragraph>
           Prestadores validam as guias com as regras da operadora antes do envio, reduzindo glosas
