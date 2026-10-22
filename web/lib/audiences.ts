@@ -1,5 +1,5 @@
 import { type ModuleSlug } from "@/lib/modules";
-import { docsPageUrl, operationAnchor, site, tutorialUrl } from "@/lib/site";
+import { docsPageUrl, site, tutorialUrl } from "@/lib/site";
 
 export type TerminalDemo = { src: string; alt: string; width: number; height: number };
 export type AudienceItem = {
@@ -129,7 +129,7 @@ export const audiences: Audience[] = [
       {
         label: "Entender uma glosa",
         description: "glosa_explain explica em linguagem simples cada código da Tabela 38 da ANS.",
-        href: `/api#${operationAnchor("get", "/v1/glosas/{codigo}")}`,
+        href: docsPageUrl("api"),
         linkLabel: "Ver glosa_explain",
       },
       {

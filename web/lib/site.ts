@@ -13,7 +13,7 @@ export const site = {
   navigation: [
     { href: docsUrl, label: "Documentação" },
     { href: tutorialUrl(), label: "Tutoriais" },
-    { href: "/api", label: "API" },
+    { href: docsPageUrl("api"), label: "API" },
     { href: "/playground", label: "Playground" },
     { href: "/operadoras", label: "Operadoras" },
   ],
@@ -26,13 +26,13 @@ export function tutorialUrl(slug?: string): string {
 export function docsPageUrl(slug?: string): string {
   switch (slug) {
     case "api":
-      return `${site.docsUrl}/api`;
+      return `${docsUrl}/api`;
     case "regras-operadora":
-      return `${site.docsUrl}/regras-operadora`;
+      return `${docsUrl}/regras-operadora`;
     case "codigos":
       return `${site.github}/blob/main/docs/codigos.md`;
     default:
-      return site.docsUrl;
+      return docsUrl;
   }
 }
 
@@ -66,10 +66,6 @@ export function formatDateTimeShort(unixTimestamp: number): string {
 
 export function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("pt-BR", { timeZone: "UTC" });
-}
-
-export function operationAnchor(method: string, route: string): string {
-  return `${method}-${route}`.replace(/[^a-z0-9-]+/gi, "-").toLowerCase();
 }
 
 export function loginSimulationEnabled(): boolean {

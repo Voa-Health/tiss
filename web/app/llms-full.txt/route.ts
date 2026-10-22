@@ -85,7 +85,7 @@ export function GET() {
     modules,
     "",
     "## API, OpenAPI e MCP",
-    `- [Referência HTTP](${site.url}/api)`,
+    `- [Referência HTTP](${docsPageUrl("api")})`,
     `- [OpenAPI](${site.url}/openapi.json)`,
     `- [MCP](${site.url}/mcp)`,
     operations,

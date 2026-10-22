@@ -8,7 +8,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const paths = [
     "",
-    "/api",
     "/playground",
     "/operadoras",
     ...moduleLinks.map(({ href }) => href),

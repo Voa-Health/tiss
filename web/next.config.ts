@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       { source: "/docs", destination: site.docsUrl, permanent: true },
       { source: "/tutoriais", destination: tutorialUrl(), permanent: true },
       { source: "/tutoriais/:slug", destination: tutorialUrl(":slug"), permanent: true },
+      { source: "/api", destination: docsPageUrl("api"), permanent: true },
       { source: "/docs/api", destination: docsPageUrl("api"), permanent: true },
       {
         source: "/docs/regras-operadora",
