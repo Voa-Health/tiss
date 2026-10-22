@@ -9,6 +9,7 @@ import logging
 import re
 import socket
 import urllib.request
+from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +23,7 @@ import voa_tiss
 from voa_tiss import dominio, examples, operadoras
 from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import SandboxError, demonstrativo, enviar_lote
-from voa_tiss.server import _auth
+from voa_tiss.server import _auth, _docs
 from voa_tiss.server._auth import CLIENT_DOCUMENT, BackendError
 from voa_tiss.server._docs import search_docs
 from voa_tiss.server._http import create_app
@@ -179,8 +180,16 @@ def _factory(app: Any):
     return create_client
 
 
-def test_http_mcp_parity_and_token_budgets(mcp_cases):
+def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
     """Compara respostas HTTP, MCP e os limites de tokens."""
+
+    def missing_metadata(package: str) -> Any:
+        raise PackageNotFoundError(package)
+
+    monkeypatch.setattr(_docs, "metadata", missing_metadata)
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert readme.strip()
+    assert _docs._load_readme() == readme
     cases = _cases()
     assert {name for name, _, _ in cases} == {
         op.name for op in OPS if op.name not in {"rede", "operadora_rede"}

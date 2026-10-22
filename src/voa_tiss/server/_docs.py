@@ -3,7 +3,8 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections.abc import Sequence
-from importlib.metadata import metadata
+from importlib.metadata import PackageNotFoundError, metadata
+from pathlib import Path
 from typing import Any, cast
 
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*$")
@@ -11,7 +12,15 @@ _WORDS = re.compile(r"\w+")
 
 
 def _load_readme() -> str:
-    return metadata("voa-tiss")["Description"] or ""
+    try:
+        return metadata("voa-tiss")["Description"] or ""
+    except PackageNotFoundError:
+        # Vercel runs from source without package metadata.
+        readme = Path(__file__).resolve().parents[3] / "README.md"
+        try:
+            return readme.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            return ""
 
 
 def _fold(text: str) -> str:
