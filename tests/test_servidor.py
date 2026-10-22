@@ -30,6 +30,7 @@ from voa_tiss.server._docs import search_docs
 from voa_tiss.server._http import create_app
 from voa_tiss.server._keys import ANONYMOUS_LIMIT, LIMITS, issue_key, read_key, sign
 from voa_tiss.server._ops import OPS, _docs_corpus, token_estimate
+from voa_tiss.server._prompts import PROMPTS
 from voa_tiss.server._quota import set_counter
 from voa_tiss.server._telemetry import set_sink
 from voa_tiss.tuss import lookup, search
@@ -257,6 +258,23 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
         tool_names = [tool["name"] for tool in tools.json()["result"]["tools"]]
         assert len(tool_names) == len(OPS)
         assert set(tool_names) == {operation.tool_name for operation in OPS}
+        reference_files = [
+            ROOT / "AGENTS.md",
+            *sorted((ROOT / "skills").rglob("*.md")),
+            ROOT / ".claude-plugin" / "plugin.json",
+            ROOT / "plugin.json",
+        ]
+        tool_pattern = re.compile(r"`((?:tiss|tuss|glosa|operadora|buscar)_[a-z_]+)`")
+        referenced_names = {
+            name
+            for path in reference_files
+            for name in tool_pattern.findall(path.read_text(encoding="utf-8"))
+        }
+        assert referenced_names, "Nenhuma referência MCP encontrada."
+        invalid_names = referenced_names - set(tool_names) - set(PROMPTS)
+        assert not invalid_names, (
+            f"Referências MCP sem ferramenta ou prompt: {sorted(invalid_names)}"
+        )
         assert not any("lista_de_espera" in name for name in tool_names)
         assert all(operation.route != "/v1/lista-de-espera" for operation in OPS)
         assert client.get("/v1/limits").json() == LIMITS

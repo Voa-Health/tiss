@@ -1,10 +1,12 @@
 # voa-tiss
 
-[![CI](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml)
+[![CI](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml) [![PyPI](https://img.shields.io/pypi/v/voa-tiss)](https://pypi.org/project/voa-tiss/) · [MCP](https://tiss-api.voa.health/mcp) · [Skill: `npx skills add Voa-Health/tiss`](https://github.com/Voa-Health/tiss/tree/main/skills/voa-tiss) · [Claude Code: `claude plugin marketplace add Voa-Health/tiss`](https://github.com/Voa-Health/tiss) + `claude plugin install voa-tiss@voa-tiss` · [Codex: `codex plugin marketplace add Voa-Health/tiss`](https://github.com/Voa-Health/tiss)
 
-**English:** Offline Python tools for ANS TISS documents.
-
-Biblioteca Python para validar lotes TISS, ler demonstrativos e consultar TUSS sem rede.
+Biblioteca Python offline para documentos TISS, API HTTP e MCP remoto para
+validar e operar documentos TISS e consultar TUSS e dados abertos da ANS.
+Atende operadoras, prestadores (hospitais, clínicas e laboratórios),
+profissionais de saúde, pacientes e gestores do SUS e do governo que consultam
+dados ANS sobre operadoras, glosas e rede hospitalar.
 
 Requer Python 3.10+.
 
@@ -16,6 +18,11 @@ Site técnico: [tiss-api.voa.health](https://tiss-api.voa.health).
 pip install voa-tiss
 pip install "voa-tiss[pdf]"  # renderização SP/SADT
 ```
+
+## Para agentes
+
+Use o [AGENTS.md](AGENTS.md) e a [skill voa-tiss](skills/voa-tiss/SKILL.md)
+para integrar MCP ou biblioteca Python sem gerar XML TISS de cabeça.
 
 ## Início rápido
 

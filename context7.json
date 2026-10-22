@@ -1,0 +1,12 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "voa-tiss",
+  "description": "Biblioteca Python, API HTTP e MCP para documentos TISS e dados abertos da ANS, para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo.",
+  "folders": ["docs"],
+  "excludeFolders": ["web/node_modules", "tests", "schemas", "infra", "api", "scripts", "evals"],
+  "rules": [
+    "Valide, aplique correções determinísticas e revalide.",
+    "Não gere XML TISS de cabeça.",
+    "Calcule o hash do epílogo com hash_epilogo."
+  ]
+}
