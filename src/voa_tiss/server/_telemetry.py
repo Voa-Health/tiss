@@ -137,6 +137,7 @@ def operation_event(
 
 def key_issued(
     tier: str,
+    organizacao: str,
     *,
     telemetry_off: bool,
     background_tasks: Any | None = None,
@@ -145,7 +146,12 @@ def key_issued(
         return
     _submit(
         "tiss_chave_emitida",
-        {"tier": tier, "$process_person_profile": False, "$geoip_disable": True},
+        {
+            "tier": tier,
+            "organizacao": organizacao,
+            "$process_person_profile": False,
+            "$geoip_disable": True,
+        },
         background_tasks,
     )
 

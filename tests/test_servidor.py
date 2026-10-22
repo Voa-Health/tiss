@@ -392,7 +392,12 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         assert _auth._challenge(token_form["code_verifier"]) == query["code_challenge"]
         assert events.pop() == (
             "tiss_chave_emitida",
-            {"tier": "verified", "$process_person_profile": False, "$geoip_disable": True},
+            {
+                "tier": "verified",
+                "organizacao": "org-1",
+                "$process_person_profile": False,
+                "$geoip_disable": True,
+            },
         )
         refreshes = [
             ({"refresh_token": fragment["refresh_token"]}, HTTP_OK),

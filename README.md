@@ -165,8 +165,9 @@ curl https://tiss-api.voa.health/v1/keys/refresh \
 ```
 
 O serviço não armazena nem registra payloads e não os usa para treinar modelos.
-Quando ativada por `POSTHOG_KEY`, a telemetria agregada contém apenas operação,
-códigos de achados, registro ANS, versão TISS e data. Envie
+Quando ativada por `POSTHOG_KEY`, a telemetria agregada contém operação,
+códigos de achados, registro ANS, versão TISS e data; na emissão de chave,
+inclui nível e identificador da organização, sem e-mail. Envie
 `X-Voa-Telemetry: off` para desativá-la. A biblioteca local permanece offline e
 nunca envia telemetria. `VOA_TISS_API_KEY` é a variável que clientes HTTP locais
 podem ler para enviar uma chave de acesso.
