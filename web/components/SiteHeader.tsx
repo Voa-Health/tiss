@@ -12,7 +12,7 @@ export function SiteHeader() {
   const screens = Grid.useBreakpoint();
   const { token } = theme.useToken();
   const [open, setOpen] = useState(false);
-  const navigation = [...site.navigation, { href: "/org", label: "Organização" }];
+  const navigation = site.navigation;
   const links = navigation.map((item) => (
     <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
       {item.label}

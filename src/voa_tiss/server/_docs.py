@@ -82,7 +82,6 @@ def render_api_docs(
     prompts: dict[str, dict[str, object]],
     resources: Sequence[dict[str, str]],
     templates: Sequence[dict[str, str]],
-    key_ttl_seconds: int,
 ) -> str:
     rows = """# API HTTP e MCP
 
@@ -100,18 +99,27 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
             "",
             "## Acesso",
             "",
-            "Sem chave, respondem `sandbox_*` e a lista de espera. As demais exigem a chave",
-            "do login Voa em `Authorization: Bearer`. Não há limite diário.",
-            "Chave inválida ou expirada retorna `401`.",
-            f"A chave vale {key_ttl_seconds // 3600} h e é renovada com o `refresh_token`.",
+            "Sem chave, respondem `sandbox_*` e a lista de espera. As demais exigem uma chave",
+            "`sk_tiss_` da organização em `Authorization: Bearer`, criada no painel",
+            "`/org`. Não há limite diário.",
+            "Chave inválida ou revogada retorna `401`; a revogação vale em até 60 s.",
+            "Chave sem o escopo da operação retorna `403`. Cada chamada com chave entra",
+            "no uso da organização, por operação e por chave.",
+            "",
+            "| Escopo | Operações |",
+            "| --- | --- |",
+        ]
+    )
+    scopes: dict[str, list[str]] = {}
+    for op in ops:
+        scopes.setdefault(op.scope or "qualquer chave", []).append(f"`{op.name}`")
+    rows.extend(f"| `{scope}` | {', '.join(names)} |" for scope, names in sorted(scopes.items()))
+    rows.extend(
+        [
             "",
             "| Rota HTTP | Descrição |",
             "| --- | --- |",
-            "| `GET /v1/auth/login` | Inicia o login Voa. |",
-            "| `GET /v1/auth/callback` | Emite a chave e volta para `/chaves`. |",
-            "| `POST /v1/keys/refresh` | Troca o `refresh_token` por uma chave nova. |",
             "| `GET /v1/limits` | Regras de acesso. |",
-            "| `GET /oauth/client.json` | Metadados do cliente OAuth. |",
         ]
     )
     rows.extend(

@@ -47,6 +47,7 @@ AUTORIZACAO_OPS = (
         "Gera XML TISS 4.03.00 para solicitação ou resposta de autorização SP/SADT.",
         1500,
         path="/v1/autorizacoes/build",
+        scope="tiss:authorization",
     ),
     Op(
         "autorizacao_parse",
@@ -56,6 +57,7 @@ AUTORIZACAO_OPS = (
         "Interpreta solicitações e respostas de autorização SP/SADT.",
         1500,
         path="/v1/autorizacoes/parse",
+        scope="tiss:authorization",
     ),
     Op(
         "autorizacao_check",
@@ -71,6 +73,7 @@ AUTORIZACAO_OPS = (
         "Valida uma solicitação SP/SADT e retorna uma decisão explicável.",
         2000,
         path="/v1/autorizacoes/check",
+        scope="tiss:authorization",
     ),
     Op(
         "sandbox_autorizacao",
@@ -86,6 +89,7 @@ AUTORIZACAO_OPS = (
         "Gera uma resposta SP/SADT sintética nos cenários disponíveis.",
         1500,
         path="/v1/sandbox/autorizacoes",
+        scope="tiss:sandbox",
     ),
 )
 
