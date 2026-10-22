@@ -81,7 +81,7 @@ export function keyFragmentUrl(credentials: KeyCredentials): string {
 }
 
 export function indexingEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_INDEXAR === "1";
+  return process.env.VERCEL_ENV === "production" && process.env.NEXT_PUBLIC_INDEXAR !== "0";
 }
 
 export function robotsPolicy() {
