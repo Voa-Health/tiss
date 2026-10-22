@@ -2,7 +2,7 @@
   "info": {
     "description": "API HTTP e MCP para documentos TISS.",
     "title": "voa-tiss",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "openapi": "3.1.0",
   "paths": {

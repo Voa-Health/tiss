@@ -28,7 +28,7 @@ from ._rules import validate_package
 from ._sadt import BundleError, MissingExtraError, load_bundle, render_sadt
 from ._validate import validate
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 def sadt_catalog() -> dict[str, Any]:
