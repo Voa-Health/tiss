@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import type { ReactNode } from "react";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { Analytics } from "@/components/Analytics";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ContentWrapper } from "@/components/ui/ContentWrapper";
 import { robotsPolicy, site } from "@/lib/site";
 import "./globals.css";
 
@@ -40,9 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <ThemeProvider>
           <Analytics />
-          <SiteHeader />
-          <ContentWrapper>{children}</ContentWrapper>
-          <SiteFooter />
+          {children}
         </ThemeProvider>
       </body>
     </html>
