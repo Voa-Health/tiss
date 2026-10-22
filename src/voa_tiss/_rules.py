@@ -41,42 +41,78 @@ def validate_package(package: Any) -> list[str]:
         errors.append("regras deve ser uma lista.")
         return errors
     for index, rule in enumerate(rules):
-        if not isinstance(rule, dict) or not isinstance(rule.get("check"), dict):
-            errors.append(f"regras/{index}: regra ou check inválido.")
-            continue
-        check = rule["check"]
-        if check.get("tipo") not in {
-            "obrigatorio",
-            "padrao",
-            "valores",
-            "max_itens",
-            "combinacao_proibida",
-            "exige_autorizacao",
-        }:
-            errors.append(f"regras/{index}: primitiva não suportada.")
-            continue
-        if check["tipo"] == "padrao":
-            regex = check.get("regex")
-            if not isinstance(regex, str) or len(regex) > 200:
-                errors.append(f"regras/{index}: regex deve ter até 200 caracteres.")
-            else:
-                try:
-                    re.compile(regex)
-                except re.error:
-                    errors.append(f"regras/{index}: regex inválida.")
-        elif check["tipo"] == "exige_autorizacao":
-            codes = check.get("codigos")
-            if (
-                not isinstance(codes, list)
-                or not codes
-                or any(not isinstance(code, str) for code in codes)
-                or "pointer" in check
-            ):
-                errors.append(
-                    f"regras/{index}: exige_autorizacao requer codigos não vazios "
-                    "e não aceita pointer."
-                )
+        errors.extend(f"regras/{index}: {error}" for error in _rule_errors(rule))
     return errors
+
+
+def _rule_errors(rule: Any) -> list[str]:
+    if not isinstance(rule, dict) or not isinstance(rule.get("check"), dict):
+        return ["regra ou check inválido."]
+    errors = [
+        f"{field} deve ser um texto não vazio."
+        for field in ("id", "descricao")
+        if not isinstance(rule.get(field), str) or not rule[field]
+    ]
+    source = rule.get("source")
+    if not isinstance(source, dict) or any(
+        not isinstance(source.get(field), str) for field in ("url", "titulo", "data", "acesso")
+    ):
+        errors.append("source requer url, titulo, data e acesso.")
+    if rule.get("severity") not in {"error", "warning"}:
+        errors.append("severity deve ser error ou warning.")
+    if rule.get("glosa") is not None and not isinstance(rule["glosa"], str):
+        errors.append("glosa deve ser um texto.")
+    if "tipo_guia" in rule and rule["tipo_guia"] not in {"consulta", "sp_sadt"}:
+        errors.append("tipo_guia deve ser consulta ou sp_sadt.")
+    return errors + _check_errors(rule["check"])
+
+
+def _check_errors(check: dict[str, Any]) -> list[str]:
+    kind = check.get("tipo")
+    if kind not in {
+        "obrigatorio",
+        "padrao",
+        "valores",
+        "max_itens",
+        "combinacao_proibida",
+        "exige_autorizacao",
+    }:
+        return ["primitiva não suportada."]
+    if kind == "exige_autorizacao":
+        codes = check.get("codigos")
+        if (
+            not isinstance(codes, list)
+            or not codes
+            or any(not isinstance(code, str) for code in codes)
+            or "pointer" in check
+        ):
+            return ["exige_autorizacao requer codigos não vazios e não aceita pointer."]
+        return []
+    if kind == "combinacao_proibida":
+        if any(
+            not isinstance(check.get(field), dict)
+            or not isinstance(check[field].get("pointer"), str)
+            for field in ("se", "entao_proibido")
+        ):
+            return ["combinacao_proibida requer se e entao_proibido com pointer."]
+        return []
+    if not isinstance(check.get("pointer"), str):
+        return [f"{kind} requer pointer."]
+    if kind == "padrao":
+        regex = check.get("regex")
+        if not isinstance(regex, str) or len(regex) > 200:
+            return ["regex deve ter até 200 caracteres."]
+        try:
+            re.compile(regex)
+        except re.error:
+            return ["regex inválida."]
+    elif kind == "valores" and not isinstance(check.get("permitidos"), list):
+        return ["valores requer permitidos como lista."]
+    elif kind == "max_itens":
+        maximum = check.get("max")
+        if not isinstance(maximum, int) or isinstance(maximum, bool) or maximum < 0:
+            return ["max_itens requer max inteiro não negativo."]
+    return []
 
 
 def _package(value: Any) -> dict[str, Any] | None:

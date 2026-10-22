@@ -291,6 +291,18 @@ def test_xpaths_resolve_with_prefixed_and_default_namespaces():
     assert sets[0] == sets[1]
 
 
+_MALFORMED_RULES = {
+    "sem_source": ("obrigatorio.invalido", "source", None),
+    "source_sem_url": ("obrigatorio.invalido", "source.url", None),
+    "sem_id": ("obrigatorio.invalido", "id", ""),
+    "severity": ("obrigatorio.invalido", "severity", "fatal"),
+    "sem_pointer": ("obrigatorio.invalido", "check.pointer", None),
+    "permitidos": ("valores.invalido", "check.permitidos", "AB"),
+    "max_booleano": ("max_itens.invalido", "check.max", True),
+    "se_sem_pointer": ("combinacao_proibida.invalido", "check.se.pointer", None),
+}
+
+
 @pytest.mark.parametrize(
     ("case", "fails"),
     [
@@ -310,6 +322,7 @@ def test_xpaths_resolve_with_prefixed_and_default_namespaces():
         ("official.operadora.true", False),
         ("official.comunidade.true", True),
         ("official.operadora.false", True),
+        *((f"malformado.{name}", True) for name in _MALFORMED_RULES),
     ],
 )
 def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
@@ -321,6 +334,23 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
         package["official"] = official == "true"
         package["regras"] = []
         assert bool(validate_package(package)) is fails
+        return
+    if case.startswith("malformado."):
+        rule_id, field, value = _MALFORMED_RULES[case.removeprefix("malformado.")]
+        package["regras"] = [rule for rule in package["regras"] if rule["id"] == rule_id]
+        target = package["regras"][0]
+        *parents, key = field.split(".")
+        for parent in parents:
+            target = target[parent]
+        if value is None:
+            del target[key]
+        else:
+            target[key] = value
+        assert voa_tiss.validate_package(package)
+        findings = voa_tiss.check(valid_lote, operadora=package).findings
+        assert [finding.message for finding in findings if finding.code == "regra.padrao"] == [
+            "Pacote de regras inválido."
+        ]
         return
     package["regras"] = [rule for rule in package["regras"] if rule["id"] == case]
     assert not validate_package(package)
