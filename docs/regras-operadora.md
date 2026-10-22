@@ -5,8 +5,12 @@ Cada regra declara a origem, a severidade, o caminho e uma primitiva segura.
 O caractere `*` percorre itens de listas. Padrões usam `re.fullmatch` e têm
 limite de 200 caracteres.
 
-Primitivas: `obrigatorio`, `padrao`, `valores`, `max_itens` e
-`combinacao_proibida`. Pacotes não executam código Python.
+Primitivas: `obrigatorio`, `padrao`, `valores`, `max_itens`,
+`combinacao_proibida` e `exige_autorizacao`. Pacotes não executam código Python.
+
+`exige_autorizacao` declara os códigos TUSS em `codigos`. Se um procedimento
+executado corresponder a um desses códigos e a guia não tiver
+`dados_autorizacao.senha`, a auditoria sinaliza a guia com glosa padrão 1818.
 
 ```mermaid
 flowchart LR

@@ -178,3 +178,32 @@ _LIST_TAGS = {
     "equipe_sadt": "equipeSadt",
     "procedimentos_executados": "procedimentoExecutado",
 }
+
+
+def _procedure_records(guide: dict[str, Any]) -> list[tuple[str, dict[str, Any], Any, Any]]:
+    result: list[tuple[str, dict[str, Any], Any, Any]] = []
+    if guide.get("tipo") == "consulta":
+        attendance = guide.get("dados_atendimento", {})
+        procedure = attendance.get("procedimento") if isinstance(attendance, dict) else None
+        if isinstance(procedure, dict):
+            result.append(
+                (
+                    "/dados_atendimento/procedimento",
+                    procedure,
+                    procedure.get("valor_procedimento"),
+                    attendance.get("data_atendimento"),
+                )
+            )
+    items = guide.get("procedimentos_executados", [])
+    if isinstance(items, list):
+        for index, item in enumerate(items):
+            if isinstance(item, dict):
+                result.append(
+                    (
+                        f"/procedimentos_executados/{index}/procedimento",
+                        item.get("procedimento", {}),
+                        item.get("valor_total"),
+                        item.get("data_execucao"),
+                    )
+                )
+    return result

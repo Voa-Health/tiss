@@ -3,6 +3,8 @@
 O endpoint remoto usa Streamable HTTP: `https://tiss-api.voa.health/mcp`.
 Sem chave, estão disponíveis apenas as ferramentas `tiss_sandbox_*`. Para as
 demais, envie `Authorization: Bearer <chave>` obtida no serviço.
+Para autorizações SP/SADT, use `tiss_autorizacao_build`,
+`tiss_autorizacao_parse`, `tiss_autorizacao_check` e `tiss_sandbox_autorizacao`.
 
 ## Exemplos de chamadas
 
