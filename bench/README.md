@@ -3,6 +3,10 @@
 Benchmark público e reproduzível de tarefas sintéticas TISS 4.03.00 para comparar
 agentes de código com e sem as ferramentas MCP do `voa-tiss`.
 
+As transcrições completas ficam fora do repositório em `.bench/transcricoes/`,
+diretório ignorado pelo Git. O repositório mantém apenas `resumo.jsonl` por data
+em `bench/resultados/`.
+
 ## Tarefas
 
 São 40 tarefas determinísticas:
@@ -33,8 +37,9 @@ ao modelo por tarefa.
 
 ```sh
 uv run python -m bench gerar
-uv run python -m bench run --modelo provedor/modelo --modo sem_mcp --saida bench/resultados
+uv run python -m bench run --modelo provedor/modelo --modo sem_mcp --saida .bench/transcricoes
 uv run python -m bench run --modelo provedor/modelo --modo com_mcp --tarefas hash-01
+uv run python -m bench resumir --transcricoes .bench/transcricoes
 uv run python -m bench tabela bench/resultados
 ```
 
