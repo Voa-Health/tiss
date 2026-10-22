@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuOutlined } from "@ant-design/icons";
+import { DownOutlined, MenuOutlined } from "@ant-design/icons";
 import { Button, Drawer, Dropdown, Flex, Grid, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,7 +39,23 @@ export function SiteHeader() {
           <Flex align="center" gap={token.marginLG} className="site-nav">
             {links}
             <Dropdown menu={{ items: moduleItems }} trigger={["click"]}>
-              <Button type="text">Módulos</Button>
+              <Button
+                type="link"
+                style={{
+                  height: "auto",
+                  paddingInline: 0,
+                  fontSize: "inherit",
+                  fontWeight: "inherit",
+                }}
+              >
+                Módulos
+                <DownOutlined
+                  style={{
+                    marginInlineStart: token.marginXXS,
+                    fontSize: token.fontSizeSM,
+                  }}
+                />
+              </Button>
             </Dropdown>
           </Flex>
         ) : (

@@ -27,6 +27,16 @@ export function startAnalytics(): void {
     disable_session_recording: true,
     persistence: "memory",
     person_profiles: "identified_only",
+    advanced_disable_flags: true,
+    disable_surveys: true,
+    before_send: (event) => {
+      for (const [key, value] of Object.entries(event.properties)) {
+        if (typeof value !== "string" || !/url|referrer/i.test(key)) continue;
+        const index = value.search(/[?#]/);
+        if (index !== -1) event.properties[key] = value.slice(0, index);
+      }
+      return event;
+    },
   });
   started = true;
 }
