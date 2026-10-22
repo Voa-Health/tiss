@@ -1,0 +1,77 @@
+# Perguntas fixas da avaliação de descoberta. Não citam o projeto de propósito.
+modelos:
+  - empresa: OpenAI
+    slug: openai/gpt-6.1-sol
+  - empresa: Anthropic
+    slug: anthropic/claude-sonnet-5.5
+  - empresa: Google
+    slug: google/gemini-4-argon
+    # A busca nativa do Google expira no gateway; o motor Exa responde.
+    motor_busca: exa
+  - empresa: DeepSeek (pesos abertos)
+    slug: deepseek/deepseek-v4.1-flash
+configuracao:
+  busca_web: true
+  temperatura: 0
+  max_tokens: 4000
+prompts:
+  - id: python-validar-xml
+    audiencia: desenvolvedor
+    texto: Como valido um XML TISS em Python antes de enviar para a operadora?
+  - id: hash-epilogo
+    audiencia: desenvolvedor
+    texto: Como calculo o hash do epílogo de uma mensagem TISS?
+  - id: mcp-tiss
+    audiencia: desenvolvedor
+    texto: Tem algum servidor MCP para o padrão TISS da ANS que eu possa usar no Claude Code ou no Cursor?
+  - id: glosa-demonstrativo
+    audiencia: desenvolvedor
+    texto: Como trato no meu sistema as glosas de um demonstrativo de análise de conta TISS?
+  - id: gerar-xml-sadt
+    audiencia: desenvolvedor
+    texto: Preciso gerar o XML de um lote de guias SP/SADT na versão 4.02.00 da TISS. Que biblioteca devo usar?
+  - id: corrigir-xsd
+    audiencia: desenvolvedor
+    texto: Meu lote TISS foi rejeitado por erro no XSD. Como descubro o campo errado e corrijo automaticamente?
+  - id: api-tuss
+    audiencia: desenvolvedor
+    texto: Existe uma API para buscar códigos TUSS de procedimentos pelo nome?
+  - id: libs-open-source
+    audiencia: desenvolvedor
+    texto: Quais bibliotecas open source existem para trabalhar com o padrão TISS?
+  - id: agente-ia
+    audiencia: desenvolvedor
+    texto: Quero que um agente de IA monte e valide guias TISS sem inventar o XML. Que ferramenta posso conectar a ele?
+  - id: ler-demonstrativo
+    audiencia: desenvolvedor
+    texto: Como leio em Python o XML do demonstrativo de pagamento que a operadora devolve?
+  - id: clinica-glosas
+    audiencia: prestador
+    texto: Sou gestor de uma clínica e muitas guias voltam glosadas pelos convênios. Como reduzo glosas no faturamento TISS?
+  - id: laboratorio-conferir-lote
+    audiencia: prestador
+    texto: Tenho um laboratório de análises clínicas. Como confiro os lotes de SP/SADT antes de enviar ao convênio?
+  - id: hospital-recurso
+    audiencia: prestador
+    texto: Como um hospital organiza o recurso de glosa no padrão TISS?
+  - id: profissional-codigo-glosa
+    audiencia: profissional de saúde
+    texto: Sou fisioterapeuta e o convênio glosou minhas sessões. Onde vejo o que significa o código de glosa da TISS?
+  - id: paciente-glosa
+    audiencia: paciente
+    texto: O que significa quando o plano de saúde glosa uma conta do hospital? Eu, como paciente, tenho que pagar?
+  - id: paciente-guia
+    audiencia: paciente
+    texto: Recebi a guia TISS da minha internação. Como entendo os códigos e valores que aparecem nela?
+  - id: operadora-validar-recebidos
+    audiencia: operadora
+    texto: Trabalho numa operadora de plano de saúde. Como validamos automaticamente os lotes TISS que recebemos dos prestadores?
+  - id: operadora-simulada
+    audiencia: operadora
+    texto: Como testo o envio de lotes TISS sem uma operadora real, num ambiente de homologação simulado?
+  - id: gestor-dados-ans
+    audiencia: SUS e governo
+    texto: Sou gestor público. Onde encontro dados abertos da ANS sobre glosas e rede hospitalar das operadoras e como analiso em Python?
+  - id: auditoria-padrao
+    audiencia: SUS e governo
+    texto: Como uma equipe de auditoria ou regulação verifica se arquivos TISS seguem o padrão da ANS?

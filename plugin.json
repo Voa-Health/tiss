@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "voa-tiss",
+  "version": "0.3.0",
+  "description": "Ferramentas para documentos TISS e dados abertos da ANS, para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo.",
+  "author": {
+    "name": "Voa Health",
+    "url": "https://voa.health"
+  },
+  "homepage": "https://tiss-api.voa.health",
+  "repository": "https://github.com/Voa-Health/tiss",
+  "license": "Apache-2.0",
+  "keywords": ["TISS", "TUSS", "SP/SADT", "glosa", "ANS"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "voa-tiss",
+        "shortDescription": "Documentos TISS e dados da ANS",
+        "developerName": "Voa Health",
+        "category": "Developer tools",
+        "websiteURL": "https://tiss-api.voa.health",
+        "defaultPrompt": "Use voa-tiss para validar e corrigir documentos TISS, consultar TUSS e operadoras, explicar glosas e ler demonstrativos. Não invente XML TISS."
+      }
+    }
+  }
+}

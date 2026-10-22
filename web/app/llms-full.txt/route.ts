@@ -3,15 +3,24 @@ import { descricaoOperadora } from "@/lib/operadoras";
 import { fontePainel, readOperadoras, readSerie } from "@/lib/operadoras-dados";
 import { site } from "@/lib/site";
 import { formatLaunchPrice, launchPrices, moduleContent, type ModuleSlug } from "@/lib/modules";
+import { agentGuidance } from "@/lib/agent-guidance";
 
 export const dynamic = "force-static";
 
 export function GET() {
-  const documentation = readDocs()
-    .map((doc) => `# ${doc.title}\n\n${doc.content}`)
+  const docs = readDocs();
+  const documentationIndex = docs
+    .map((doc) => `- [${doc.title}](${site.url}/docs/${doc.slug})`)
+    .join("\n");
+  const documentation = docs
+    .map((doc) => `# [${doc.title}](${site.url}/docs/${doc.slug})\n\n${doc.content}`)
     .join("\n\n---\n\n");
-  const tutorials = readTutorials()
-    .map((tutorial) => `# ${tutorial.title}\n\n${tutorialMarkdown(tutorial)}`)
+  const tutorialData = readTutorials();
+  const tutorialIndex = tutorialData
+    .map((tutorial) => `- [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})`)
+    .join("\n");
+  const tutorials = tutorialData
+    .map((tutorial) => `# [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})\n\n${tutorialMarkdown(tutorial)}`)
     .join("\n\n---\n\n");
   const operations = Object.entries(readOpenApi().paths)
     .flatMap(([path, methods]) =>
@@ -31,6 +40,36 @@ export function GET() {
     }),
     `### [Calculadora](${site.url}/calculadora)\n\nEstime o custo mensal dos recursos de glosa.`,
   ].join("\n\n");
-  const body = `# voa-tiss: documentação completa\n\n${documentation}\n\n${tutorials}\n\n## Módulos\n\n${modules}\n\n## Operações HTTP\n\n${operations}\n\n## Operadoras\n\nFonte: ${fonte.titulo} (${fonte.licenca}), ${fonte.url}\n\n${operators}\n`;
+  const body = [
+    "# voa-tiss: documentação completa",
+    "",
+    "> Para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo que usam TISS e dados abertos da ANS sobre operadoras, glosas e rede hospitalar.",
+    "",
+    "## Documentação",
+    documentationIndex,
+    "",
+    documentation,
+    "",
+    "## Tutoriais",
+    tutorialIndex,
+    "",
+    tutorials,
+    "",
+    "## Módulos",
+    modules,
+    "",
+    "## API, OpenAPI e MCP",
+    `- [Referência HTTP](${site.url}/api)`,
+    `- [OpenAPI](${site.url}/openapi.json)`,
+    `- [MCP](${site.url}/mcp)`,
+    operations,
+    "",
+    "## Operadoras",
+    `Fonte: ${fonte.titulo} (${fonte.licenca}), ${fonte.url}`,
+    operators,
+    "",
+    agentGuidance,
+    "",
+  ].join("\n");
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }
