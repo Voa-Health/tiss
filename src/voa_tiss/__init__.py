@@ -24,6 +24,7 @@ from ._retorno import (
     parse_demonstrativo,
     plan_reconciliation,
 )
+from ._rules import validate_package
 from ._sadt import BundleError, MissingExtraError, load_bundle, render_sadt
 from ._validate import validate
 
@@ -76,4 +77,5 @@ __all__ = [
     "sadt_catalog",
     "sadt_missing",
     "validate",
+    "validate_package",
 ]

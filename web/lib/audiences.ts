@@ -1,7 +1,18 @@
 import { type ModuleSlug } from "@/lib/modules";
-import { operationAnchor, site } from "@/lib/site";
+import { docsPageUrl, operationAnchor, site } from "@/lib/site";
 
-export type AudienceItem = { label: string; description: string; href: string; linkLabel: string };
+export type TerminalDemo = { src: string; alt: string; width: number; height: number };
+export type AudienceItem = {
+  label: string;
+  description: string;
+  href: string;
+  linkLabel: string;
+  demo?: TerminalDemo;
+};
+
+function terminalDemo(name: string, alt: string): TerminalDemo {
+  return { src: `/demos/${name}.gif`, alt, width: 1000, height: 640 };
+}
 export type Audience = {
   id: string;
   title: string;
@@ -21,15 +32,23 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Checagem com as suas regras",
     description:
       "Rode check com o seu pacote de regras na porta de recebimento, offline, na sua infraestrutura e sem enviar dado à Voa.",
-    href: `${site.docsUrl}/regras-operadora`,
+    href: docsPageUrl("regras-operadora"),
     linkLabel: "Ver regras por operadora",
+    demo: terminalDemo(
+      "checagem",
+      "Terminal: check com um pacote de regras da operadora aponta a carteira fora do padrão, com a regra e a fonte.",
+    ),
   },
   {
     label: "Mapa de rejeição por prestador",
     description:
       "Veja quais prestadores e quais regras geram mais retrabalho nos lotes recebidos, agregado por prestador e código.",
-    href: site.docsUrl,
-    linkLabel: "Ver documentação",
+    href: "/tutoriais/08-mapa-de-rejeicao",
+    linkLabel: "Ver tutorial",
+    demo: terminalDemo(
+      "mapa",
+      "Terminal: rejection_map agrega os achados de dois lotes por prestador e código, com o CPF pseudonimizado como cpf:hmac.",
+    ),
   },
   {
     label: "Sandbox com as suas regras",
@@ -37,6 +56,10 @@ export const healthplanFeatures: AudienceItem[] = [
       "O prestador envia o lote à operadora simulada com o seu pacote e recebe o demonstrativo que receberia de você.",
     href: sandbox,
     linkLabel: "Ver tutorial",
+    demo: terminalDemo(
+      "sandbox",
+      "Terminal: enviar_lote entrega o lote à operadora simulada com as regras dela e o demonstrativo mostra a glosa citando a regra.",
+    ),
   },
   {
     label: "Autorização TISS aberta",
@@ -44,6 +67,10 @@ export const healthplanFeatures: AudienceItem[] = [
       "Monte, leia e valide solicitação e resposta de autorização SP/SADT, com checagem determinística contra as suas regras.",
     href: site.docsUrl,
     linkLabel: "Ver documentação",
+    demo: terminalDemo(
+      "autorizacao",
+      "Terminal: check_autorizacao com as regras da operadora simulada encaminha a solicitação ao auditor e cita a regra de autorização prévia.",
+    ),
   },
   {
     label: "Regras publicadas com selo Oficial",
@@ -51,6 +78,10 @@ export const healthplanFeatures: AudienceItem[] = [
       "Publique o pacote de regras como dado aberto para que os prestadores validem com ele antes do envio.",
     href: "/operadoras#publicar-regras",
     linkLabel: "Como publicar",
+    demo: terminalDemo(
+      "oficial",
+      "Terminal: validate_package aceita o pacote oficial da operadora, recusa o selo para mantenedor comunidade e check cita a regra oficial.",
+    ),
   },
 ];
 

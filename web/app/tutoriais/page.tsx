@@ -15,6 +15,7 @@ export default function TutorialsIndex() {
       description="Exemplos executados com dados sintéticos."
       items={items}
       hrefPrefix="/tutoriais"
+      variant="grid"
     />
   );
 }

@@ -1,31 +1,58 @@
 "use client";
 
-import { Flex, theme } from "antd";
+import { Col, Flex, Row, Typography, theme } from "antd";
 import Link from "next/link";
-import { moduleLinks } from "@/lib/modules";
-import { site } from "@/lib/site";
+import { moduleGroups } from "@/lib/modules";
+import { site, siteContentWidth } from "@/lib/site";
 import { track } from "@/lib/analytics";
 
 export function SiteFooter() {
   const { token } = theme.useToken();
-  const linkStyle = { color: token.colorLink, textDecoration: "none" } as const;
+  const linkStyle = { color: token.colorTextSecondary } as const;
 
   return (
     <footer
       style={{
         borderTop: `${token.lineWidth}px ${token.lineType} ${token.colorBorderSecondary}`,
-        paddingBlock: token.paddingLG,
+        paddingBlock: token.paddingXL,
         paddingInline: token.padding,
       }}
     >
-      <Flex justify="center" align="center" gap={token.margin} wrap>
-        <Link href="/termos" style={linkStyle}>Termos</Link>
-        {moduleLinks.map((item) => (
-          <Link key={item.href} href={item.href} style={linkStyle}>{item.label}</Link>
+      <Row
+        gutter={[token.marginXL, token.marginLG]}
+        style={{ maxWidth: siteContentWidth, marginInline: "auto" }}
+      >
+        {moduleGroups.map((group) => (
+          <Col key={group.title} xs={24} sm={12} md={8}>
+            <Flex vertical gap={token.marginXS}>
+              <Typography.Text strong>{group.title}</Typography.Text>
+              {group.links.map((item) => (
+                <Link key={item.href} href={item.href} style={linkStyle}>
+                  {item.label}
+                </Link>
+              ))}
+            </Flex>
+          </Col>
         ))}
-        <a href={site.github} style={linkStyle} onClick={() => track("tiss_cta_github", { local: "footer" })}>GitHub</a>
-        <a href={site.pypi} style={linkStyle}>PyPI</a>
-      </Flex>
+        <Col xs={24} sm={12} md={8}>
+          <Flex vertical gap={token.marginXS}>
+            <Typography.Text strong>{site.name}</Typography.Text>
+            <a
+              href={site.github}
+              style={linkStyle}
+              onClick={() => track("tiss_cta_github", { local: "footer" })}
+            >
+              GitHub
+            </a>
+            <a href={site.pypi} style={linkStyle}>
+              PyPI
+            </a>
+            <Link href="/termos" style={linkStyle}>
+              Termos
+            </Link>
+          </Flex>
+        </Col>
+      </Row>
     </footer>
   );
 }

@@ -13,7 +13,7 @@ export function ContentWrapper({ children }: { children: ReactNode }) {
           width: "100%",
           maxWidth: siteContentWidth,
           marginInline: "auto",
-          padding: `${token.paddingLG}px ${token.padding}px`,
+          padding: `${token.paddingXL}px ${token.padding}px ${token.paddingXL * 2}px`,
           minHeight: "60vh",
         } as CSSProperties
       }

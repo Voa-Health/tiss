@@ -1,5 +1,5 @@
+import { PageStack } from "@/components/ui/PageStack";
 import type { Metadata } from "next";
-import { Flex } from "antd";
 import { HealthplanList } from "@/components/HealthplanList";
 import { HealthplansContent } from "@/components/HealthplansContent";
 import { HealthplanPublishing } from "@/components/HealthplanPublishing";
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
 export default function HealthplansPage() {
   const operadoras = readOperadoras().map(({ registro_ans, razao_social }) => ({ registro_ans, razao_social }));
   return (
-    <Flex vertical gap={24}>
+    <PageStack>
       <HealthplansContent packs={readRulePacks()} />
       <HealthplanPublishing />
       <HealthplanList operadoras={operadoras} />
-    </Flex>
+    </PageStack>
   );
 }
