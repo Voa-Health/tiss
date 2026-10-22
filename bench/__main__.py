@@ -49,7 +49,7 @@ def _run(args: argparse.Namespace) -> None:
                 selected,
             )
         )
-    with output_path.open("a", encoding="utf-8") as output:
+    with output_path.open("w", encoding="utf-8") as output:
         for result in sorted(results, key=lambda item: item["id"]):
             output.write(json.dumps(result, ensure_ascii=False, sort_keys=True) + "\n")
     print(output_path)
@@ -69,14 +69,19 @@ def _table(directory: Path) -> None:
         return
     categories = sorted({row["categoria"] for rows in runs.values() for row in rows})
     perspectives = sorted({row["perspectiva"] for rows in runs.values() for row in rows})
-    headers = ["Modelo", "Data", "Modo"]
+    headers = ["Modelo", "Data", "Modo", "Erros"]
     headers.extend(f"{category} (%)" for category in categories)
     headers.extend(f"{perspective} (%)" for perspective in perspectives)
     headers.extend(["Total (%)", "Custo (US$)"])
     print("| " + " | ".join(headers) + " |")
     print("| " + " | ".join("---" for _ in headers) + " |")
     for (model, run_date, mode, _filename), rows in sorted(runs.items()):
-        cells = [model, run_date, mode]
+        cells = [
+            model,
+            run_date,
+            mode,
+            str(sum(bool(row.get("erro")) for row in rows)),
+        ]
         for category in categories:
             subset = [row for row in rows if row["categoria"] == category]
             cells.append(_percentage(subset))

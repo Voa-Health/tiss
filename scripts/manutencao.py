@@ -31,6 +31,7 @@ if __package__:
         write_outputs,
     )
     from ._manutencao_common import download, write_json
+    from ._manutencao_descoberta import descoberta
     from ._manutencao_glosa import INDICADORES_OUT, baixar_painel, bake_painel, write_painel
     from ._manutencao_quality import normalise_notebooks
     from ._manutencao_quality import verificar as _verificar
@@ -58,6 +59,7 @@ else:
         write_outputs,
     )
     from _manutencao_common import download, write_json
+    from _manutencao_descoberta import descoberta
     from _manutencao_glosa import INDICADORES_OUT, baixar_painel, bake_painel, write_painel
     from _manutencao_quality import normalise_notebooks
     from _manutencao_quality import verificar as _verificar
@@ -212,6 +214,9 @@ def main(argv: list[str] | None = None) -> int:
     rede.add_argument("--zip", type=Path, required=True)
     rede.add_argument("--out", type=Path, default=REDE_OUT)
     rede.add_argument("--manifesto", type=Path, default=REDE_MANIFEST)
+    avaliacao = commands.add_parser("descoberta", help="medir descoberta do voa-tiss em modelos")
+    avaliacao.add_argument("--limite-usd", type=float, default=10.0)
+    avaliacao.add_argument("--brutos", type=Path, help="pasta fora do repo para respostas")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
@@ -233,6 +238,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if all(checks) else 1
     if args.command == "verificar":
         return verificar()
+    if args.command == "descoberta":
+        return descoberta(args.limite_usd, args.brutos)
     if args.command == "dominio":
         write_json(args.domain_out, bake_domain(args.pda_zip))
         write_json(args.operators_out, bake_operators(args.cadop_csv))

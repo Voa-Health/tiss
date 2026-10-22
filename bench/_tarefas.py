@@ -372,27 +372,17 @@ def _mutated_lote(xml: bytes, mutation: int) -> tuple[str, str]:
 
 
 def _correction_tasks() -> list[dict[str, Any]]:
-    mutations = [
-        "valor total do item",
-        "valor total geral",
-        "hash do epílogo",
-        "sequencial de item",
-        "valor do item e hash",
-        "valor contratado",
-        "número da carteira",
-    ]
     tasks = []
-    for index, label in enumerate(mutations):
+    for index in range(7):
         lote = _new_lote(1, [2] if index == 3 else [1])
         xml = _xml_lote(lote)
         incorrect, info = _mutated_lote(xml, index)
-        details = info or f"Corrija o campo calculado relacionado a {label}."
+        extra = f"{info}\n\n" if info else ""
         instruction = (
             "A operadora rejeitou o lote TISS 4.03.00 abaixo. Corrija-o sem alterar dados "
             "clínicos ou financeiros informados (carteira, procedimentos, quantidades, "
             "valores unitários) e devolva o XML completo corrigido, com o hash do epílogo "
-            "correto.\n\n"
-            f"{details}\n\nLote:\n{incorrect}\n\nResposta: apenas o XML."
+            f"correto.\n\n{extra}Lote:\n{incorrect}\n\nResposta: apenas o XML."
         )
         tasks.append(
             _task(

@@ -2,6 +2,7 @@ import { readDocs, readOpenApi, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
 import { operationAnchor, site } from "@/lib/site";
 import { moduleContent } from "@/lib/modules";
+import { agentGuidance } from "@/lib/agent-guidance";
 
 export const dynamic = "force-static";
 
@@ -34,7 +35,7 @@ export function GET() {
   const body = [
     "# voa-tiss",
     "",
-    "> Documentação técnica para validar lotes TISS antes do envio à operadora.",
+    "> Documentação técnica para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo que usam TISS e dados abertos da ANS sobre operadoras, glosas e rede hospitalar.",
     "",
     "## Documentação",
     docs,
@@ -45,7 +46,7 @@ export function GET() {
     "## Módulos",
     modules,
     "",
-    "## API",
+    "## API, OpenAPI e MCP",
     `- [Referência HTTP](${site.url}/api)`,
     `- [OpenAPI](${site.url}/openapi.json)`,
     `- [MCP](${site.url}/mcp)`,
@@ -53,6 +54,8 @@ export function GET() {
     "",
     "## Operadoras",
     operators,
+    "",
+    agentGuidance,
     "",
   ].join("\n");
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });

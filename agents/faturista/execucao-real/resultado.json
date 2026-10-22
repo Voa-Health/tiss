@@ -1,0 +1,84 @@
+{
+  "status": "concluido",
+  "lote": {
+    "numero_lote": "0042",
+    "aceito": true,
+    "numero_protocolo": "946256398820",
+    "cenario": "carteirinha_vencida",
+    "rodadas_de_correcao": 1,
+    "valido": true
+  },
+  "glosas": [
+    {
+      "guia": "0001",
+      "codigo": "1017",
+      "descricao": "DATA DE VALIDADE DA CARTEIRA VENCIDA",
+      "grupo": "10",
+      "valor_glosa_cents": 15000,
+      "recurso": true
+    },
+    {
+      "guia": "0002",
+      "codigo": "1017",
+      "descricao": "DATA DE VALIDADE DA CARTEIRA VENCIDA",
+      "grupo": "10",
+      "valor_glosa_cents": 3100,
+      "recurso": true
+    },
+    {
+      "guia": "0003",
+      "codigo": "1017",
+      "descricao": "DATA DE VALIDADE DA CARTEIRA VENCIDA",
+      "grupo": "10",
+      "valor_glosa_cents": 15000,
+      "recurso": true
+    }
+  ],
+  "recursos": [
+    {
+      "guia": "0001",
+      "codigo_glosa": "1017",
+      "classe": "elegibilidade",
+      "justificativa": "Glosa por carteira vencida (R$ 150,00). Solicita-se revisão mediante comprovação de elegibilidade do beneficiário na data do atendimento (cadastro/vigência do plano). Comprovantes pendentes de anexação.",
+      "needs": [
+        "evidencia_clinica"
+      ],
+      "cta": {
+        "texto": "Recurso com evidência clínica",
+        "url": "https://tiss-api.voa.health/recurso"
+      }
+    },
+    {
+      "guia": "0002",
+      "codigo_glosa": "1017",
+      "classe": "elegibilidade",
+      "justificativa": "Glosa por carteira vencida (R$ 31,00). Solicita-se revisão mediante comprovação de elegibilidade do beneficiário na data do atendimento (cadastro/vigência do plano). Comprovantes pendentes de anexação.",
+      "needs": [
+        "evidencia_clinica"
+      ],
+      "cta": {
+        "texto": "Recurso com evidência clínica",
+        "url": "https://tiss-api.voa.health/recurso"
+      }
+    },
+    {
+      "guia": "0003",
+      "codigo_glosa": "1017",
+      "classe": "elegibilidade",
+      "justificativa": "Glosa por carteira vencida (R$ 150,00). Solicita-se revisão mediante comprovação de elegibilidade do beneficiário na data do atendimento (cadastro/vigência do plano). Comprovantes pendentes de anexação.",
+      "needs": [
+        "evidencia_clinica"
+      ],
+      "cta": {
+        "texto": "Recurso com evidência clínica",
+        "url": "https://tiss-api.voa.health/recurso"
+      }
+    }
+  ],
+  "resumo": "**Resumo do faturamento**\n\n- **Validação:** o lote tinha 2 erros na guia 0002. O valor do item era 1305 e o correto é 1300. O total da guia era 3105 e o correto é 3100. Apliquei as correções e revalidei, e o lote ficou válido (TISS 4.03.00).\n- **Envio:** o lote 0042 foi aceito no cenário `carteirinha_vencida`. O protocolo é **946256398820**.\n- **Glosas:** as 3 guias foram glosadas pelo código **1017**, \"Data de validade da carteira vencida\" (Tabela 38).\n\n| Guia | Valor glosado |\n|---|---|\n| 0001 | R$ 150,00 |\n| 0002 | R$ 31,00 |\n| 0003 | R$ 150,00 |\n\n  O total glosado é de R$ 331,00, e nada foi liberado.\n- **Recursos:** criei 3 rascunhos, um por guia, na classe `elegibilidade`. Pedem revisão com comprovação de elegibilidade do beneficiário na data do atendimento. A evidência está pendente de anexação, e não inventei nenhuma.\n\nPara anexar a evidência clínica e os comprovantes, use o módulo Recurso: https://tiss-api.voa.health/recurso",
+  "uso": {
+    "chamadas_ao_modelo": 11,
+    "tokens_entrada": 82526,
+    "tokens_saida": 1669
+  }
+}

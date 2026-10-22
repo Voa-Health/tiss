@@ -30,7 +30,7 @@ do uso reportado pelo provedor.
 
 ```sh
 uv run python -m bench gerar
-uv run python -m bench run --modelo provedor/modelo --modo sem_mcp
+uv run python -m bench run --modelo provedor/modelo --modo sem_mcp --saida bench/resultados
 uv run python -m bench run --modelo provedor/modelo --modo com_mcp --tarefas hash-01
 uv run python -m bench tabela bench/resultados
 ```

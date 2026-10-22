@@ -27,9 +27,9 @@ _SCENARIOS = {
     "falha_permanente",
 }
 _GLOSAS = {
-    "duplicidade": ("1702", "Cobrança de procedimento em duplicidade."),
-    "carteirinha_vencida": ("1017", "Data de validade da carteira vencida."),
-    "sem_autorizacao": ("1402", "Procedimento não autorizado."),
+    "duplicidade": ("3209", "COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICIDADE"),
+    "carteirinha_vencida": ("1017", "DATA DE VALIDADE DA CARTEIRA VENCIDA"),
+    "sem_autorizacao": ("1818", "COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA"),
 }
 
 

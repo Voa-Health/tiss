@@ -48,6 +48,7 @@ dev = [
   "nbmake>=1.5",
   "pypdf>=5",
   "pytest>=8.3",
+  "pyyaml>=6.0.3",
   "ruff>=0.8",
   "types-jsonschema>=4.26.0.20261006",
   "vulture>=2.16",
@@ -95,6 +96,7 @@ allowed-confusables = ["×"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D", "PLR2004"]
+"agents/*/tests/**" = ["D", "PLR2004"]
 "scripts/**" = ["D", "PLR2004", "T20"]
 "bench/**" = ["D", "PLR0913", "PLR0917", "PLR2004", "T20"]
 "docs/**/*.ipynb" = ["D", "PLR2004"]

@@ -124,6 +124,10 @@ async def _call_mcp(name: str, arguments: dict[str, Any]) -> str:
 
 
 def _tool_result(name: str, arguments: Any, mcp_tools: set[str]) -> str:
+    if name == "responder":
+        if not isinstance(arguments, dict) or not isinstance(arguments.get("resposta"), str):
+            return "Erro: o campo resposta deve ser texto."
+        return ""
     if not isinstance(arguments, dict):
         return "Erro: os argumentos da ferramenta devem ser um objeto JSON."
     if name == "python":
@@ -199,58 +203,78 @@ def executar_tarefa(
     cost = 0.0
     answer = ""
     steps = 0
-    for _ in range(_MAX_STEPS):
-        request_body = {
-            "model": model,
-            "messages": messages,
-            "tools": tools,
-            **parameters,
-        }
-        response = _request_json(f"{_BASE_URL}/chat/completions", data=request_body)
-        steps += 1
-        usage = response.get("usage", {})
-        input_tokens += int(usage.get("prompt_tokens", 0) or 0)
-        output_tokens += int(usage.get("completion_tokens", 0) or 0)
-        cost += float(usage.get("cost", 0) or 0)
-        message = response["choices"][0]["message"]
-        messages.append(message)
-        calls = message.get("tool_calls") or []
-        if not calls:
-            answer = message.get("content") or ""
-            break
-        finished = False
-        for call in calls:
-            function = call.get("function", {})
-            name = function.get("name", "")
-            raw_arguments = function.get("arguments", "")
-            try:
-                arguments = json.loads(raw_arguments)
-                result = _tool_result(name, arguments, mcp_names)
-            except (json.JSONDecodeError, TypeError):
-                arguments = None
-                result = "Erro: argumentos da ferramenta não formam um objeto JSON válido."
-            if (
-                name == "responder"
-                and isinstance(arguments, dict)
-                and isinstance(arguments.get("resposta"), str)
-            ):
-                answer = arguments["resposta"]
-                finished = True
+    finish_reason = None
+    error_message = None
+    try:
+        for _ in range(_MAX_STEPS):
+            request_body = {
+                "model": model,
+                "messages": messages,
+                "tools": tools,
+                **parameters,
+            }
+            response = _request_json(f"{_BASE_URL}/chat/completions", data=request_body)
+            steps += 1
+            usage = response.get("usage", {})
+            input_tokens += int(usage.get("prompt_tokens", 0) or 0)
+            output_tokens += int(usage.get("completion_tokens", 0) or 0)
+            cost += float(usage.get("cost", 0) or 0)
+            choice = response["choices"][0]
+            finish_reason = choice.get("finish_reason")
+            message = choice["message"]
+            messages.append(message)
+            calls = message.get("tool_calls") or []
+            if not calls:
+                answer = message.get("content") or ""
                 break
-            messages.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": call.get("id", ""),
-                    "content": result,
-                }
-            )
-        if finished:
-            break
-        if steps == _MAX_STEPS:
-            answer = ""
-    from bench._verificar import verificar
+            finished = False
+            for call in calls:
+                function = call.get("function", {})
+                name = function.get("name", "")
+                raw_arguments = function.get("arguments", "")
+                try:
+                    arguments = json.loads(raw_arguments)
+                    result = _tool_result(name, arguments, mcp_names)
+                except (json.JSONDecodeError, TypeError):
+                    arguments = None
+                    result = (
+                        "Erro: o campo resposta deve ser texto."
+                        if name == "responder"
+                        else "Erro: argumentos da ferramenta não formam um objeto JSON válido."
+                    )
+                if (
+                    name == "responder"
+                    and isinstance(arguments, dict)
+                    and isinstance(arguments.get("resposta"), str)
+                ):
+                    answer = arguments["resposta"]
+                    finished = True
+                    break
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": call.get("id", ""),
+                        "content": result,
+                    }
+                )
+            if finished:
+                break
+            if steps == _MAX_STEPS:
+                answer = ""
+    except (
+        RuntimeError,
+        urllib.error.URLError,
+        json.JSONDecodeError,
+        KeyError,
+        IndexError,
+    ) as error:
+        error_message = f"Falha na API ({type(error).__name__})."
+    if error_message is None:
+        from bench._verificar import verificar
 
-    ok, reason = verificar(tarefa, answer)
+        ok, reason = verificar(tarefa, answer)
+    else:
+        ok, reason = False, "erro na API"
     return {
         "id": tarefa["id"],
         "categoria": tarefa["categoria"],
@@ -263,6 +287,8 @@ def executar_tarefa(
         "tokens_entrada": input_tokens,
         "tokens_saida": output_tokens,
         "custo_usd": cost,
+        "finish_reason": finish_reason,
+        "erro": error_message,
         "resposta": answer,
         "ok": ok,
         "motivo": reason,

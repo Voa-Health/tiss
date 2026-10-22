@@ -98,6 +98,7 @@ def _credentials(form: dict[str, str]) -> dict[str, Any]:
     context = CURRENT_CONTEXT.get() or CallContext()
     key_issued(
         identity["tier"],
+        str(organization["id"]),
         telemetry_off=context.telemetry_off,
         background_tasks=context.background_tasks,
     )

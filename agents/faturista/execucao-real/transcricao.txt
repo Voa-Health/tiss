@@ -1,0 +1,51 @@
+→ ler_atendimentos atendimentos.csv
+  ← {"artefato": "artefato:1", "lote": "artefato:1.lote", "guias": 3, "itens": 4}
+→ tiss_validate {"lote": "artefato:1.lote"}
+  ← {"artefato": "artefato:2", "valid": false, "version": "4.03.00", "findings": [{"code": "item.valor_divergente…
+→ tiss_apply_fixes {"lote": "artefato:1.lote", "report": "artefato:2"}
+  ← {"artefato": "artefato:3", "lote": "artefato:3.lote"}
+→ tiss_validate {"lote": "artefato:3.lote"}
+  ← {"artefato": "artefato:4", "valid": true, "version": "4.03.00", "findings": []}
+→ tiss_build {"lote": "artefato:3.lote"}
+  ← {"artefato": "artefato:5", "xml": "artefato:5.xml", "hash": "e82eae7d748ba9eabdbf00d531c0cf15"}
+→ tiss_sandbox_enviar_lote {"xml": "artefato:5.xml", "cenario": "carteirinha_vencida"}
+  ← {"artefato": "artefato:6", "aceito": true, "protocolo": "artefato:6.protocolo", "numero_protocolo": "94625639…
+→ tiss_sandbox_demonstrativo {"protocolo": "artefato:6.protocolo"}
+  ← {"artefato": "artefato:7", "protocolo": "artefato:7.protocolo", "xml": "artefato:7.xml"}
+→ tiss_parse_demonstrativo {"xml": "artefato:7.xml"}
+  ← {"artefato": "artefato:8", "decisoes": [{"guia_ref": "0001", "decision": "glosado", "motivo": "1017; 1017 - D…
+→ glosa_explain {"codigo": "1017"}
+  ← {"artefato": "artefato:9", "codigo": "1017", "descricao": "DATA DE VALIDADE DA CARTEIRA VENCIDA", "fonte": {"…
+→ rascunhar_recurso guia=0003 glosa=1017 classe=elegibilidade
+  ← {"artefato": "artefato:10", "registrado": true, "guia": "0003", "codigo_glosa": "1017", "classe": "elegibilid…
+→ rascunhar_recurso guia=0001 glosa=1017 classe=elegibilidade
+  ← {"artefato": "artefato:11", "registrado": true, "guia": "0001", "codigo_glosa": "1017", "classe": "elegibilid…
+→ rascunhar_recurso guia=0002 glosa=1017 classe=elegibilidade
+  ← {"artefato": "artefato:12", "registrado": true, "guia": "0002", "codigo_glosa": "1017", "classe": "elegibilid…
+Status: concluido
+Lote 0042: aceito=True protocolo=946256398820 correções=1
+Glosa guia 0001 1017 R$ 150.00: DATA DE VALIDADE DA CARTEIRA VENCIDA
+Glosa guia 0002 1017 R$ 31.00: DATA DE VALIDADE DA CARTEIRA VENCIDA
+Glosa guia 0003 1017 R$ 150.00: DATA DE VALIDADE DA CARTEIRA VENCIDA
+Recurso guia 0001 (elegibilidade): needs=evidencia_clinica → https://tiss-api.voa.health/recurso
+Recurso guia 0002 (elegibilidade): needs=evidencia_clinica → https://tiss-api.voa.health/recurso
+Recurso guia 0003 (elegibilidade): needs=evidencia_clinica → https://tiss-api.voa.health/recurso
+
+**Resumo do faturamento**
+
+- **Validação:** o lote tinha 2 erros na guia 0002. O valor do item era 1305 e o correto é 1300. O total da guia era 3105 e o correto é 3100. Apliquei as correções e revalidei, e o lote ficou válido (TISS 4.03.00).
+- **Envio:** o lote 0042 foi aceito no cenário `carteirinha_vencida`. O protocolo é **946256398820**.
+- **Glosas:** as 3 guias foram glosadas pelo código **1017**, "Data de validade da carteira vencida" (Tabela 38).
+
+| Guia | Valor glosado |
+|---|---|
+| 0001 | R$ 150,00 |
+| 0002 | R$ 31,00 |
+| 0003 | R$ 150,00 |
+
+  O total glosado é de R$ 331,00, e nada foi liberado.
+- **Recursos:** criei 3 rascunhos, um por guia, na classe `elegibilidade`. Pedem revisão com comprovação de elegibilidade do beneficiário na data do atendimento. A evidência está pendente de anexação, e não inventei nenhuma.
+
+Para anexar a evidência clínica e os comprovantes, use o módulo Recurso: https://tiss-api.voa.health/recurso
+
+JSON: resultado.json

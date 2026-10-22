@@ -1,10 +1,12 @@
 # voa-tiss
 
-[![CI](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml)
+[![CI](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voa-Health/tiss/actions/workflows/ci.yml) [![PyPI](https://img.shields.io/pypi/v/voa-tiss)](https://pypi.org/project/voa-tiss/) · [MCP](https://tiss-api.voa.health/mcp) · [Skill: `npx skills add Voa-Health/tiss`](https://github.com/Voa-Health/tiss/tree/main/skills/voa-tiss) · [Claude Code: `claude plugin marketplace add Voa-Health/tiss`](https://github.com/Voa-Health/tiss) + `claude plugin install voa-tiss@voa-tiss` · [Codex: `codex plugin marketplace add Voa-Health/tiss`](https://github.com/Voa-Health/tiss)
 
-**English:** Offline Python tools for ANS TISS documents.
-
-Biblioteca Python para validar lotes TISS, ler demonstrativos e consultar TUSS sem rede.
+Biblioteca Python offline para documentos TISS, API HTTP e MCP remoto para
+validar e operar documentos TISS e consultar TUSS e dados abertos da ANS.
+Atende operadoras, prestadores (hospitais, clínicas e laboratórios),
+profissionais de saúde, pacientes e gestores do SUS e do governo que consultam
+dados ANS sobre operadoras, glosas e rede hospitalar.
 
 Requer Python 3.10+.
 
@@ -16,6 +18,11 @@ Site técnico: [tiss-api.voa.health](https://tiss-api.voa.health).
 pip install voa-tiss
 pip install "voa-tiss[pdf]"  # renderização SP/SADT
 ```
+
+## Para agentes
+
+Use o [AGENTS.md](AGENTS.md) e a [skill voa-tiss](skills/voa-tiss/SKILL.md)
+para integrar MCP ou biblioteca Python sem gerar XML TISS de cabeça.
 
 ## Início rápido
 
@@ -158,8 +165,9 @@ curl https://tiss-api.voa.health/v1/keys/refresh \
 ```
 
 O serviço não armazena nem registra payloads e não os usa para treinar modelos.
-Quando ativada por `POSTHOG_KEY`, a telemetria agregada contém apenas operação,
-códigos de achados, registro ANS, versão TISS e data. Envie
+Quando ativada por `POSTHOG_KEY`, a telemetria agregada contém operação,
+códigos de achados, registro ANS, versão TISS e data; na emissão de chave,
+inclui nível e identificador da organização, sem e-mail. Envie
 `X-Voa-Telemetry: off` para desativá-la. A biblioteca local permanece offline e
 nunca envia telemetria. `VOA_TISS_API_KEY` é a variável que clientes HTTP locais
 podem ler para enviar uma chave de acesso.
@@ -172,7 +180,7 @@ podem ler para enviar uma chave de acesso.
 - [Gerar e corrigir um lote](docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb)
 - [Regras por operadora](docs/tutoriais/05-regras-por-operadora.ipynb)
 - [Operadora simulada](docs/tutoriais/06-operadora-simulada.ipynb)
-- [TISS-Bench](bench/README.md)
+- [Agente faturista](agents/faturista/README.md)
 - [Esquemas JSON](schemas/)
 - [Fontes de dados](DATA_SOURCES.md)
 - [Contribuição](CONTRIBUTING.md)

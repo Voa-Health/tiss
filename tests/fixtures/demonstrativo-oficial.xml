@@ -51,7 +51,7 @@
                 <ans:valorLiberado>60.00</ans:valorLiberado>
                 <ans:relacaoGlosa>
                   <ans:valorGlosa>40.00</ans:valorGlosa>
-                  <ans:tipoGlosa>1702</ans:tipoGlosa>
+                  <ans:tipoGlosa>3209</ans:tipoGlosa>
                 </ans:relacaoGlosa>
               </ans:detalhesGuia>
               <ans:valorInformadoGuia>100.00</ans:valorInformadoGuia>
@@ -72,5 +72,5 @@
       </ans:demonstrativoAnaliseConta>
     </ans:demonstrativosRetorno>
   </ans:operadoraParaPrestador>
-  <ans:epilogo><ans:hash>1a8bf1934fbae3b840a9d20eb19d6cfc</ans:hash></ans:epilogo>
+  <ans:epilogo><ans:hash>522592ceb052e506648fbd1e6ed69e7d</ans:hash></ans:epilogo>
 </ans:mensagemTISS>

@@ -20,12 +20,13 @@ LIMITES = {
     "comment_chars": 88,
     "comment_lines": 2,
     "module_lines": 600,
-    "test_files": 7,
-    "test_functions": 35,
+    "test_files": 8,
+    "test_functions": 36,
     "notebook_output_chars": 2000,
 }
 _SKIP_PATHS = {
     "uv.lock",
+    "agents/faturista/uv.lock",
     "LICENSE",
     "CODE_OF_CONDUCT.md",
     "scripts/manutencao.py",
@@ -113,7 +114,10 @@ def _check_readme_snippet() -> bool:
 
 def _python_files() -> list[Path]:
     return sorted(
-        path for folder in ("src", "scripts", "tests") for path in (ROOT / folder).rglob("*.py")
+        path
+        for folder in ("src", "scripts", "tests", "agents")
+        for path in (ROOT / folder).rglob("*.py")
+        if ".venv" not in path.parts
     )
 
 
@@ -231,7 +235,7 @@ def _check_python_limits() -> bool:
 
 def _check_test_limits() -> bool:
     clean = True
-    files = sorted((ROOT / "tests").glob("test_*.py"))
+    files = sorted([*ROOT.glob("tests/test_*.py"), *ROOT.glob("agents/*/tests/test_*.py")])
     if len(files) > LIMITES["test_files"]:
         _report_violation("tests", 1, f"arquivos {len(files)}/{LIMITES['test_files']}")
         clean = False
