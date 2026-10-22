@@ -1,5 +1,5 @@
 import { type ModuleSlug } from "@/lib/modules";
-import { operationAnchor } from "@/lib/site";
+import { operationAnchor, site } from "@/lib/site";
 
 export type AudienceItem = { label: string; description: string; href: string; linkLabel: string };
 export type Audience = {
@@ -21,14 +21,14 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Checagem com as suas regras",
     description:
       "Rode check com o seu pacote de regras na porta de recebimento, offline, na sua infraestrutura e sem enviar dado à Voa.",
-    href: "/docs/regras-operadora",
+    href: `${site.docsUrl}/regras-operadora`,
     linkLabel: "Ver regras por operadora",
   },
   {
     label: "Mapa de rejeição por prestador",
     description:
       "Veja quais prestadores e quais regras geram mais retrabalho nos lotes recebidos, agregado por prestador e código.",
-    href: "/docs",
+    href: site.docsUrl,
     linkLabel: "Ver documentação",
   },
   {
@@ -42,7 +42,7 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Autorização TISS aberta",
     description:
       "Monte, leia e valide solicitação e resposta de autorização SP/SADT, com checagem determinística contra as suas regras.",
-    href: "/docs",
+    href: site.docsUrl,
     linkLabel: "Ver documentação",
   },
   {

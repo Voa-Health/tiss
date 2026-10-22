@@ -1,6 +1,6 @@
 # Regras por operadora
 
-Pacotes JSON usam o contrato de [`schemas/rules.schema.json`](../schemas/rules.schema.json).
+Pacotes JSON usam o contrato de [`rules.schema.json`](https://github.com/Voa-Health/tiss/blob/main/schemas/rules.schema.json).
 Cada regra declara a origem, a severidade, o caminho e uma primitiva segura.
 O caractere `*` percorre itens de listas. Padrões usam `re.fullmatch` e têm
 limite de 200 caracteres.

@@ -23,7 +23,7 @@
 <div align="center">
   <a href="https://tiss-api.voa.health">Site</a> ·
   <a href="https://tiss-api.voa.health/playground">Playground</a> ·
-  <a href="https://tiss-api.voa.health/docs">Documentação</a> ·
+  <a href="https://docs.voa.health/integracao/voa-tiss">Documentação</a> ·
   <a href="https://tiss-api.voa.health/operadoras">Operadoras</a> ·
   <a href="https://github.com/Voa-Health/tiss/blob/main/bench/README.md">TISS-Bench</a>
 </div>

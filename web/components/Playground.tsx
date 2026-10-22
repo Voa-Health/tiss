@@ -360,7 +360,7 @@ export function Playground({
       </Form>
       <Tabs items={tabItems} style={{ minWidth: 0, maxWidth: "100%" }} />
       <Typography.Paragraph type="secondary" style={{ marginBlockStart: token.margin }}>
-        Consulte <a href={`${site.url}/docs`}>a documentação</a> para conhecer as operações.
+        Consulte <a href={site.docsUrl}>a documentação</a> para conhecer as operações.
       </Typography.Paragraph>
     </>
   );
