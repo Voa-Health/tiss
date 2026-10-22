@@ -66,6 +66,7 @@ def test_public_api_and_example_contract():
         "dominio",
         "operadoras",
         "validate",
+        "validate_package",
     }
     assert set(voa_tiss.json_schema("finding")["properties"]["code"]["enum"]) == set(CODES)
     assert voa_tiss.examples.names() == [

@@ -1,6 +1,6 @@
 import { readDocs, readOpenApi, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
-import { operationAnchor, site } from "@/lib/site";
+import { docsPageUrl, operationAnchor, site } from "@/lib/site";
 import { moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
 
@@ -8,7 +8,7 @@ export const dynamic = "force-static";
 
 export function GET() {
   const docs = readDocs()
-    .map((doc) => `- [${doc.title}](${site.url}/docs/${doc.slug})`)
+    .map((doc) => `- [${doc.title}](${docsPageUrl(doc.slug)})`)
     .join("\n");
   const tutorials = readTutorials()
     .map((tutorial) => `- [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})`)

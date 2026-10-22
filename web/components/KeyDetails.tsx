@@ -4,12 +4,13 @@ import { Alert, Button, Card, Descriptions, Flex, theme, Typography } from "antd
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { KeyCredentials } from "@/lib/site";
 import {
   createMockCredentials,
   formatDateTime,
   keyLevelLabel,
   loginSimulationEnabled,
+  site,
+  type KeyCredentials,
 } from "@/lib/site";
 
 const refreshStorageKey = "voa-tiss.refresh";
@@ -248,7 +249,7 @@ export function KeyDetails() {
         ) : (
           <Button type="primary" href="/entrar">Obter nova chave</Button>
         )}
-        <Link href="/docs">Consultar documentação</Link>
+        <Link href={site.docsUrl}>Consultar documentação</Link>
       </Flex>
     </Card>
   );

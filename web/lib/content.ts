@@ -18,10 +18,6 @@ export function readDocs(): { slug: string; title: string; content: string }[] {
     });
 }
 
-export function readDoc(slug: string) {
-  return readDocs().find((doc) => doc.slug === slug);
-}
-
 export function readTutorials(): Tutorial[] {
   const directory = repositoryPath("docs", "tutoriais");
   return fs

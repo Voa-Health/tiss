@@ -1,5 +1,5 @@
 import { type ModuleSlug } from "@/lib/modules";
-import { operationAnchor } from "@/lib/site";
+import { docsPageUrl, operationAnchor, site } from "@/lib/site";
 
 export type TerminalDemo = { src: string; alt: string; width: number; height: number };
 export type AudienceItem = {
@@ -32,7 +32,7 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Checagem com as suas regras",
     description:
       "Rode check com o seu pacote de regras na porta de recebimento, offline, na sua infraestrutura e sem enviar dado à Voa.",
-    href: "/docs/regras-operadora",
+    href: docsPageUrl("regras-operadora"),
     linkLabel: "Ver regras por operadora",
     demo: terminalDemo(
       "checagem",
@@ -43,7 +43,7 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Mapa de rejeição por prestador",
     description:
       "Veja quais prestadores e quais regras geram mais retrabalho nos lotes recebidos, agregado por prestador e código.",
-    href: "/docs",
+    href: site.docsUrl,
     linkLabel: "Ver documentação",
   },
   {
@@ -61,7 +61,7 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Autorização TISS aberta",
     description:
       "Monte, leia e valide solicitação e resposta de autorização SP/SADT, com checagem determinística contra as suas regras.",
-    href: "/docs",
+    href: site.docsUrl,
     linkLabel: "Ver documentação",
     demo: terminalDemo(
       "autorizacao",

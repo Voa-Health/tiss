@@ -23,7 +23,7 @@
 <div align="center">
   <a href="https://tiss-api.voa.health">Site</a> ·
   <a href="https://tiss-api.voa.health/playground">Playground</a> ·
-  <a href="https://tiss-api.voa.health/docs">Documentação</a> ·
+  <a href="https://docs.voa.health/integracao/voa-tiss">Documentação</a> ·
   <a href="https://tiss-api.voa.health/operadoras">Operadoras</a> ·
   <a href="https://github.com/Voa-Health/tiss/blob/main/bench/README.md">TISS-Bench</a>
 </div>
@@ -247,6 +247,7 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 | `build_lote` | Gera o XML TISS a partir de um lote validado. |
 | `parse_lote` | Converte XML TISS em um lote JSON. |
 | `audit` | Audita o lote com o contexto da operadora. |
+| `validate_package` | Valida um pacote de regras de operadora e lista os erros. |
 | `hash_epilogo` | Calcula o hash do epílogo. |
 | `glosa` | Consulta um código da Tabela 38. |
 | `dominio.lookup` / `dominio.search` | Consulta tabelas de domínio TISS. |

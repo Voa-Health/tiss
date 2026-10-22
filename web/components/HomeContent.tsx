@@ -85,7 +85,7 @@ export function HomeContent() {
             <Button type="primary" size="large" href="/playground">
               Experimentar playground
             </Button>
-            <Button size="large" href="/docs">
+            <Button size="large" href={site.docsUrl}>
               Consultar documentação
             </Button>
           </Space>

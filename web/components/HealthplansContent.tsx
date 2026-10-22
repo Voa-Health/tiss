@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { healthplanFeatures, healthplanModules } from "@/lib/audiences";
 import { formatLaunchPrice, launchPrices, moduleContent } from "@/lib/modules";
 import type { RulePack } from "@/lib/rule-packs";
-import { site } from "@/lib/site";
+import { docsPageUrl, site } from "@/lib/site";
 import { track } from "@/lib/analytics";
 
 function HealthplanFeatures() {
@@ -104,7 +104,7 @@ export function HealthplansContent({ packs }: { packs: RulePack[] }) {
             description="Contribua com regras públicas para operadoras."
             action={
               <Space wrap>
-                <Button href="/docs/regras-operadora">Como criar um pacote</Button>
+                <Button href={docsPageUrl("regras-operadora")}>Como criar um pacote</Button>
                 <Button
                   type="primary"
                   href={site.healthplanContactUrl}
