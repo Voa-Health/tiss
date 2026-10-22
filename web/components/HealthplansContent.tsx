@@ -21,13 +21,15 @@ function HealthplanFeatures() {
         {withDemo.map((feature) => (
           <FeatureCard key={feature.label} item={feature} />
         ))}
-        <Row gutter={[token.margin, token.margin]}>
-          {withoutDemo.map((feature) => (
-            <Col key={feature.label} xs={24} md={12}>
-              <FeatureCard item={feature} />
-            </Col>
-          ))}
-        </Row>
+        {withoutDemo.length > 0 && (
+          <Row gutter={[token.margin, token.margin]}>
+            {withoutDemo.map((feature) => (
+              <Col key={feature.label} xs={24} md={12}>
+                <FeatureCard item={feature} />
+              </Col>
+            ))}
+          </Row>
+        )}
       </Flex>
     </Section>
   );

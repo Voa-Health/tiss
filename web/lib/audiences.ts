@@ -43,8 +43,12 @@ export const healthplanFeatures: AudienceItem[] = [
     label: "Mapa de rejeição por prestador",
     description:
       "Veja quais prestadores e quais regras geram mais retrabalho nos lotes recebidos, agregado por prestador e código.",
-    href: site.docsUrl,
-    linkLabel: "Ver documentação",
+    href: "/tutoriais/08-mapa-de-rejeicao",
+    linkLabel: "Ver tutorial",
+    demo: terminalDemo(
+      "mapa",
+      "Terminal: rejection_map agrega os achados de dois lotes por prestador e código, com o CPF pseudonimizado como cpf:hmac.",
+    ),
   },
   {
     label: "Sandbox com as suas regras",
