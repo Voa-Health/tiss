@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "health.voa/tiss",
+  "title": "voa-tiss",
+  "description": "Ferramentas para validar documentos TISS e consultar TUSS, operadoras e dados da ANS.",
+  "version": "0.3.0",
+  "websiteUrl": "https://tiss-api.voa.health",
+  "repository": {
+    "url": "https://github.com/Voa-Health/tiss",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://tiss-api.voa.health/mcp"
+    }
+  ]
+}
