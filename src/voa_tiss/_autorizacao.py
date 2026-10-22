@@ -300,6 +300,14 @@ def check_autorizacao(
     errors = any(finding.severity == "error" for finding in findings)
     if errors and decision_type != "pendente":
         decision_type = "pendente"
+    if decision_type == "pendente" and not needs:
+        needs = sorted(
+            {
+                finding.pointer or finding.xpath or "/solicitacao"
+                for finding in findings
+                if finding.severity == "error"
+            }
+        ) or ["/solicitacao"]
     return Report(
         not errors,
         base.version,
