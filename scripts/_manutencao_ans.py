@@ -20,7 +20,7 @@ else:
 
 ROOT = Path(__file__).resolve().parents[1]
 DOMAIN_OUT = ROOT / "src/voa_tiss/_data/domain.json"
-OPERATORS_OUT = ROOT / "src/voa_tiss/_data/operators.json"
+HEALTHPLANS_OUT = ROOT / "src/voa_tiss/_data/healthplans.json"
 GLOSA_OUT = ROOT / "src/voa_tiss/_data/glosas.json"
 GLOSA_DOMAIN = DOMAIN_OUT
 
@@ -165,7 +165,7 @@ def bake_domain(archive: Path) -> dict[str, Any]:
     }
 
 
-def bake_operators(source: Path) -> dict[str, Any]:
+def bake_healthplans(source: Path) -> dict[str, Any]:
     raw = source.read_bytes()
     rows = read_csv(raw)
     records = {}

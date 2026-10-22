@@ -27,7 +27,7 @@ const sample = `{
   ]
 }`;
 
-export function OperatorPublishing() {
+export function HealthplanPublishing() {
   const { token } = theme.useToken();
   return (
     <Card title="Para operadoras: publique suas regras">
@@ -61,7 +61,7 @@ export function OperatorPublishing() {
         </Typography.Paragraph>
         <Button
           type="primary"
-          href={site.operatorContactUrl}
+          href={site.healthplanContactUrl}
           onClick={() => track("tiss_operadora_contact", { local: "operadoras" })}
         >
           Falar com a equipe
