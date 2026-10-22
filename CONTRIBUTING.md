@@ -41,3 +41,9 @@ Para o site em `web/`, execute:
 ```sh
 cd web && pnpm install && pnpm lint && pnpm typecheck && pnpm build
 ```
+
+O site permite indexação quando `VERCEL_ENV=production`. Em previews e no
+ambiente local, o `robots.txt` bloqueia rastreamento e as páginas usam `noindex`.
+`NEXT_PUBLIC_INDEXAR=0` desativa a indexação também em produção. Essa configuração
+é aplicada no build. As páginas de acesso, chaves e organização usam `noindex`
+e não entram no sitemap.
