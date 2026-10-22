@@ -15,6 +15,7 @@ from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, LOGIN_URL, TIER_LIMITS
 
 Counter = Callable[[str, int], int]
 _counter: Counter | None = None
+_ANONYMOUS_OPERATIONS = ("sandbox_", "lista_de_espera")
 
 
 def _redis(key: str, ttl: int) -> int:
@@ -60,7 +61,7 @@ def admit(op_name: str, ctx: CallContext) -> tuple[int, dict[str, Any]] | None:
     # Sem segredo de chaves, o servidor é local ou auto-hospedado e não exige chave.
     if not os.environ.get("VOA_TISS_KEY_SECRET"):
         return None
-    if access is None and not op_name.startswith("sandbox_"):
+    if access is None and not op_name.startswith(_ANONYMOUS_OPERATIONS):
         return _denied(
             401, "chave_obrigatoria", "Esta operação exige chave do login Voa.", LOGIN_URL
         )

@@ -114,6 +114,117 @@
         "summary": "Limits"
       }
     },
+    "/v1/lista-de-espera": {
+      "post": {
+        "description": "Receba um aviso por e-mail quando o módulo for lançado.",
+        "operationId": "lista_de_espera_v1_lista_de_espera_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "else": {
+                      "not": {
+                        "required": [
+                          "tipos_documento"
+                        ]
+                      }
+                    },
+                    "if": {
+                      "properties": {
+                        "modulo": {
+                          "const": "extrator"
+                        }
+                      },
+                      "required": [
+                        "modulo"
+                      ]
+                    },
+                    "then": {
+                      "required": [
+                        "tipos_documento"
+                      ]
+                    }
+                  }
+                ],
+                "properties": {
+                  "email": {
+                    "maxLength": 254,
+                    "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+                    "type": "string"
+                  },
+                  "empresa": {
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "type": "string"
+                  },
+                  "modulo": {
+                    "enum": [
+                      "recurso",
+                      "extrator",
+                      "cloud"
+                    ]
+                  },
+                  "tipos_documento": {
+                    "items": {
+                      "enum": [
+                        "guia_pdf",
+                        "guia_foto",
+                        "demonstrativo_pdf",
+                        "demonstrativo_planilha"
+                      ]
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "volume_mensal": {
+                    "enum": [
+                      "ate_500",
+                      "500_a_2000",
+                      "2000_a_10000",
+                      "10000_a_50000",
+                      "acima_50000"
+                    ]
+                  }
+                },
+                "required": [
+                  "modulo",
+                  "email",
+                  "empresa",
+                  "volume_mensal"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Inscrição recebida."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          },
+          "429": {
+            "description": "Limite diário atingido."
+          },
+          "503": {
+            "description": "Lista de espera indisponível."
+          }
+        },
+        "summary": "Solicitar inscrição na lista de espera"
+      }
+    },
     "/v1/operadoras/{registro_ans}": {
       "get": {
         "operationId": "operadora_perfil_v1_operadoras__registro_ans__get",

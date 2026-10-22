@@ -1,4 +1,2821 @@
 {
+  "dominios": {
+    "12deoutubrosaude.com.br": [
+      "423912"
+    ],
+    "abas15.org.br": [
+      "304131"
+    ],
+    "abplus.com.br": [
+      "419621"
+    ],
+    "adcplasp.com.br": [
+      "424293"
+    ],
+    "admindependencia.com.br": [
+      "418277"
+    ],
+    "admlife.com.br": [
+      "421553"
+    ],
+    "adress.com.br": [
+      "422347"
+    ],
+    "advanceplano.com.br": [
+      "335657"
+    ],
+    "aespodonto.com.br": [
+      "413283"
+    ],
+    "affeam.com.br": [
+      "388092"
+    ],
+    "affego.com.br": [
+      "306754"
+    ],
+    "affixbeneficios.com.br": [
+      "417424"
+    ],
+    "afisvec.org.br": [
+      "382639"
+    ],
+    "afpergs.com.br": [
+      "417599"
+    ],
+    "afrafepsaude.com.br": [
+      "330281"
+    ],
+    "afrerj.org.br": [
+      "387185"
+    ],
+    "afresp.org.br": [
+      "317632"
+    ],
+    "agros.org.br": [
+      "368920"
+    ],
+    "alacoro.com.br": [
+      "417742"
+    ],
+    "alice.com.br": [
+      "421928"
+    ],
+    "allcare.com.br": [
+      "417289",
+      "417459"
+    ],
+    "allcross.com.br": [
+      "421677"
+    ],
+    "alleanzaadm.com.br": [
+      "423017"
+    ],
+    "allianz.com.br": [
+      "000515"
+    ],
+    "almaodonto.com.br": [
+      "423262"
+    ],
+    "alter.com.br": [
+      "420255"
+    ],
+    "amagis.com.br": [
+      "416690"
+    ],
+    "amazoniaplanos.com.br": [
+      "419052"
+    ],
+    "amcontadores.com.br": [
+      "424731"
+    ],
+    "ameplansaude.com.br": [
+      "394734"
+    ],
+    "americashealth.com.br": [
+      "424790"
+    ],
+    "amha.com.br": [
+      "418587"
+    ],
+    "amhemed.com.br": [
+      "421731"
+    ],
+    "amil.com.br": [
+      "326305"
+    ],
+    "ammpsaude.org.br": [
+      "417211"
+    ],
+    "ampara.com.br": [
+      "325465"
+    ],
+    "amplasaude.com": [
+      "422720"
+    ],
+    "anacostasaude.com.br": [
+      "326500"
+    ],
+    "anafesaude.com.br": [
+      "423319"
+    ],
+    "apas-sorocaba.com.br": [
+      "410128"
+    ],
+    "apasandradina.com.br": [
+      "406813"
+    ],
+    "apasaracatuba.com.br": [
+      "414212"
+    ],
+    "apasbauru.com.br": [
+      "406945"
+    ],
+    "apasfernandopolis.com": [
+      "409413"
+    ],
+    "apasitapetininga.com.br": [
+      "406635"
+    ],
+    "apasjau.com.br": [
+      "408034"
+    ],
+    "apasprudente.com.br": [
+      "410608"
+    ],
+    "apaspv.com.br": [
+      "411248"
+    ],
+    "apasrp.com.br": [
+      "408794"
+    ],
+    "apassantos.com.br": [
+      "410110"
+    ],
+    "apbeneficios.com.br": [
+      "424366"
+    ],
+    "apiceodonto.com.br": [
+      "400882"
+    ],
+    "aplusadministradora.com.br": [
+      "422932"
+    ],
+    "appai.org.br": [
+      "382540"
+    ],
+    "apssaude.com.br": [
+      "418030"
+    ],
+    "apubsaude.com.br": [
+      "343129"
+    ],
+    "aqquer.com.br": [
+      "421693"
+    ],
+    "araruama.unimed.com.br": [
+      "335215"
+    ],
+    "arcelormittal.com.br": [
+      "314668",
+      "416070"
+    ],
+    "arhya.com.br": [
+      "414247"
+    ],
+    "armodonto.onmicrosoft.com": [
+      "352152"
+    ],
+    "artyodontobrasil.com.br": [
+      "424340"
+    ],
+    "ases.com.br": [
+      "411582"
+    ],
+    "asfal.com.br": [
+      "393533"
+    ],
+    "asfeb.org.br": [
+      "335754"
+    ],
+    "aspara.org.br": [
+      "419591"
+    ],
+    "assecsaude.com.br": [
+      "384704"
+    ],
+    "assefaz.org.br": [
+      "346926"
+    ],
+    "assemse.com.br": [
+      "420093"
+    ],
+    "assim.com.br": [
+      "309222"
+    ],
+    "assist.org.br": [
+      "309028"
+    ],
+    "assisteadministradora.com.br": [
+      "417769"
+    ],
+    "assorelbrasil.com.br": [
+      "420794"
+    ],
+    "atemde.com.br": [
+      "336874",
+      "414557"
+    ],
+    "athenasaude.com.br": [
+      "348180"
+    ],
+    "aticare.com.br": [
+      "424528"
+    ],
+    "ativia.com.br": [
+      "320510"
+    ],
+    "ativuslife.com.br": [
+      "424714"
+    ],
+    "atualodontologia.com.br": [
+      "415782"
+    ],
+    "austa.com.br": [
+      "327417"
+    ],
+    "avamp.com.br": [
+      "412635"
+    ],
+    "avantadministradora.com.br": [
+      "423734"
+    ],
+    "b2saude.com.br": [
+      "419125"
+    ],
+    "banescaixa.com.br": [
+      "343331"
+    ],
+    "banese.com.br": [
+      "335789"
+    ],
+    "barbieri.inf.br": [
+      "424439"
+    ],
+    "bciadministradora.com.br": [
+      "419257"
+    ],
+    "bembeneficios.com.br": [
+      "421332"
+    ],
+    "bemconecta.com": [
+      "424579"
+    ],
+    "bemestaradm.com.br": [
+      "420697"
+    ],
+    "bemmaisodonto.com.br": [
+      "417874"
+    ],
+    "benecap.com.br": [
+      "415898"
+    ],
+    "beneficio.com.br": [
+      "423467"
+    ],
+    "beneribeiraopreto.com": [
+      "422762"
+    ],
+    "benevitae.com.br": [
+      "421324"
+    ],
+    "benevix.com.br": [
+      "417718"
+    ],
+    "bensaude.com.br": [
+      "366561"
+    ],
+    "bioral.com.br": [
+      "419079"
+    ],
+    "biovidasaude.com.br": [
+      "415111"
+    ],
+    "bkrsaude.com": [
+      "424552"
+    ],
+    "blessoperadora.com.br": [
+      "423882"
+    ],
+    "bluemedsaude.com.br": [
+      "344800"
+    ],
+    "bluzzsaude.com.br": [
+      "424170"
+    ],
+    "bradescoseguros.com.br": [
+      "005711",
+      "421715"
+    ],
+    "brf.com": [
+      "417238"
+    ],
+    "bwg.com.br": [
+      "423530"
+    ],
+    "cabergs.org.br": [
+      "307319"
+    ],
+    "caberj.com.br": [
+      "324361",
+      "415774"
+    ],
+    "cabesp.com.br": [
+      "352331"
+    ],
+    "cacador.unimedsc.com.br": [
+      "346951"
+    ],
+    "caesan.com.br": [
+      "363855"
+    ],
+    "cafaz.org.br": [
+      "359122"
+    ],
+    "caixa.gov.br": [
+      "312924"
+    ],
+    "camarj.com.br": [
+      "418820"
+    ],
+    "camed.com.br": [
+      "385697"
+    ],
+    "camim.com.br": [
+      "319872"
+    ],
+    "campe.org.br": [
+      "302627"
+    ],
+    "campellogomes.com.br": [
+      "422487",
+      "423092",
+      "424013",
+      "424412",
+      "425036"
+    ],
+    "campos.unimed.com.br": [
+      "352683"
+    ],
+    "capesesp.com.br": [
+      "324477"
+    ],
+    "capitalprev.com.br": [
+      "329665"
+    ],
+    "careplus.com.br": [
+      "379956",
+      "389358"
+    ],
+    "caringsaude.com.br": [
+      "422304"
+    ],
+    "casacaresc.org.br": [
+      "327557"
+    ],
+    "caseadm.com.br": [
+      "417165"
+    ],
+    "casembrapa.org.br": [
+      "416401"
+    ],
+    "casf.com.br": [
+      "358754"
+    ],
+    "caslorena.com.br": [
+      "417475"
+    ],
+    "casseb.com.br": [
+      "315583"
+    ],
+    "cassems.com.br": [
+      "413534"
+    ],
+    "cassi.com.br": [
+      "346659"
+    ],
+    "cassind.com.br": [
+      "413518"
+    ],
+    "casu.com.br": [
+      "316873"
+    ],
+    "casufes.org.br": [
+      "423637"
+    ],
+    "caurj.com.br": [
+      "347825"
+    ],
+    "caurn.com.br": [
+      "314251"
+    ],
+    "cbcacss.com.br": [
+      "417891"
+    ],
+    "cbnassessoria.com.br": [
+      "413721",
+      "419761"
+    ],
+    "cdmseguros.com.br": [
+      "424137"
+    ],
+    "ceambrasil.com.br": [
+      "311472"
+    ],
+    "cedplan.com.br": [
+      "418749"
+    ],
+    "celos.com.br": [
+      "315044"
+    ],
+    "cemeru.com": [
+      "401081"
+    ],
+    "cemigsaude.org.br": [
+      "417505"
+    ],
+    "cenibra.com.br": [
+      "339270",
+      "422436"
+    ],
+    "centraldosbeneficios.com.br": [
+      "419231"
+    ],
+    "centralnacionalunimed.com.br": [
+      "339679"
+    ],
+    "cesan.com.br": [
+      "392405"
+    ],
+    "cetsp.com.br": [
+      "330051"
+    ],
+    "circulosaude.com.br": [
+      "310247"
+    ],
+    "classeadministradora.com.br": [
+      "419435"
+    ],
+    "clicsaude.adm.br": [
+      "423327"
+    ],
+    "clin.digital": [
+      "304441"
+    ],
+    "clinicatempo.com.br": [
+      "422771"
+    ],
+    "cnpbrasil.com.br": [
+      "418072"
+    ],
+    "cnpseguradora.com.br": [
+      "310981"
+    ],
+    "codevasf.gov.br": [
+      "412295"
+    ],
+    "comparadm.com.br": [
+      "420247"
+    ],
+    "compesaprev.com.br": [
+      "307751"
+    ],
+    "comseder.com.br": [
+      "390259"
+    ],
+    "conab.gov.br": [
+      "334189"
+    ],
+    "conectaplan.com.br": [
+      "423220"
+    ],
+    "confiancasaude.com.br": [
+      "410624"
+    ],
+    "construdente.com.br": [
+      "405931"
+    ],
+    "cooperciso.com.br": [
+      "353892"
+    ],
+    "cooperdonto-se.com.br": [
+      "359459"
+    ],
+    "coopus.com.br": [
+      "418706"
+    ],
+    "coopusaude.coop.br": [
+      "406805"
+    ],
+    "copass-saude.com.br": [
+      "416568"
+    ],
+    "corpesaude.com.br": [
+      "418960",
+      "424676"
+    ],
+    "corplife.com.br": [
+      "418757"
+    ],
+    "corretoraprovidence.com.br": [
+      "423998"
+    ],
+    "costadosol.unimed.com.br": [
+      "302953"
+    ],
+    "costaverde.unimed.com.br": [
+      "311146"
+    ],
+    "criciuma.unimedsc.com.br": [
+      "329339"
+    ],
+    "croe.com.br": [
+      "368181"
+    ],
+    "crownodonto.com.br": [
+      "397245"
+    ],
+    "cscare.com.br": [
+      "304212",
+      "423785"
+    ],
+    "csf.unimed.coop.br": [
+      "320897"
+    ],
+    "ctesk.com.br": [
+      "422045"
+    ],
+    "cuidesaude.com.br": [
+      "424242"
+    ],
+    "dana.com": [
+      "416118"
+    ],
+    "dcampos.com.br": [
+      "419559"
+    ],
+    "delfhicorretora.com.br": [
+      "421081"
+    ],
+    "dentalcenterpb.com.br": [
+      "339458"
+    ],
+    "dentalgold.com.br": [
+      "300730"
+    ],
+    "dentalmastermg.com.br": [
+      "422975"
+    ],
+    "dentalmedcenter.com.br": [
+      "413941"
+    ],
+    "dentalmednorte.com.br": [
+      "419982"
+    ],
+    "dentalpar.com.br": [
+      "322890"
+    ],
+    "dentalplanvsf.com.br": [
+      "416908"
+    ],
+    "dentalplus-sorria.com.br": [
+      "314366"
+    ],
+    "dentalprev.com.br": [
+      "327867"
+    ],
+    "dentaluni.com.br": [
+      "304484"
+    ],
+    "dentalvidas.com.br": [
+      "415936"
+    ],
+    "dentsul.com.br": [
+      "353477"
+    ],
+    "dentsy.com.br": [
+      "414425"
+    ],
+    "desban.org.br": [
+      "357669"
+    ],
+    "dixmed.com.br": [
+      "423271"
+    ],
+    "doctorclin.com.br": [
+      "349682"
+    ],
+    "donasaude.com": [
+      "365645"
+    ],
+    "dourados.com.br": [
+      "313807"
+    ],
+    "drpam.com.br": [
+      "315265"
+    ],
+    "easyplan.com.br": [
+      "421120"
+    ],
+    "easysaude.com": [
+      "418927"
+    ],
+    "economus.com.br": [
+      "342611"
+    ],
+    "eletrossaude.com.br": [
+      "422070"
+    ],
+    "elo.com.br": [
+      "414981"
+    ],
+    "elosaude.com.br": [
+      "417297"
+    ],
+    "ero.com": [
+      "416703"
+    ],
+    "eshoje.com.br": [
+      "419516"
+    ],
+    "evidente.com.br": [
+      "400572"
+    ],
+    "evonsaude.com.br": [
+      "418048"
+    ],
+    "evorabeneficios.com.br": [
+      "423521"
+    ],
+    "exclusivodonto.com.br": [
+      "424471"
+    ],
+    "extramed.com.br": [
+      "414204"
+    ],
+    "fameh.org.br": [
+      "418129"
+    ],
+    "fapes.com.br": [
+      "339636"
+    ],
+    "fasamprs.com.br": [
+      "420701"
+    ],
+    "fcopel.org.br": [
+      "355151"
+    ],
+    "febrafite.org.br": [
+      "423777"
+    ],
+    "federaladm.com.br": [
+      "423581"
+    ],
+    "fenix.med.br": [
+      "420271"
+    ],
+    "fiemg.com.br": [
+      "417220"
+    ],
+    "fiosaude.org.br": [
+      "417548"
+    ],
+    "fiscosaudepe.com.br": [
+      "417661"
+    ],
+    "focosaudebr.com.br": [
+      "421847"
+    ],
+    "foxsaude.com.br": [
+      "423921"
+    ],
+    "frg.com.br": [
+      "331317",
+      "423513"
+    ],
+    "fsfx.com.br": [
+      "339954"
+    ],
+    "funasasaude.com.br": [
+      "370592"
+    ],
+    "fundacaolibertas.com.br": [
+      "378216"
+    ],
+    "fundaffemg.com.br": [
+      "315567"
+    ],
+    "funssest.com.br": [
+      "330809"
+    ],
+    "fups.com.br": [
+      "416584"
+    ],
+    "fusan.com.br": [
+      "338648"
+    ],
+    "g2cadministradora.com.br": [
+      "419443"
+    ],
+    "gamasaude.com.br": [
+      "407011"
+    ],
+    "garantiasaude.com.br": [
+      "343064"
+    ],
+    "gavazza.com.br": [
+      "323942"
+    ],
+    "geap.com.br": [
+      "323080"
+    ],
+    "geia.com.br": [
+      "416932"
+    ],
+    "gestaoplanodesaude.com.br": [
+      "423076"
+    ],
+    "gkndriveline.com": [
+      "416819"
+    ],
+    "globalalbeneficios.com.br": [
+      "422258"
+    ],
+    "gmail.com.br": [
+      "422754"
+    ],
+    "gocaresaude.com.br": [
+      "422681"
+    ],
+    "goldplanodonto.com.br": [
+      "423726"
+    ],
+    "gringoplanos.com.br": [
+      "424587"
+    ],
+    "grupocontem.com.br": [
+      "418323"
+    ],
+    "grupoepea.com.br": [
+      "420042"
+    ],
+    "grupoevidia.com.br": [
+      "424871"
+    ],
+    "gruporbs.com.br": [
+      "418862"
+    ],
+    "grupovital.com.br": [
+      "417785"
+    ],
+    "hab.org.br": [
+      "406554"
+    ],
+    "haoc.org.br": [
+      "410292"
+    ],
+    "hapvida.com.br": [
+      "340782",
+      "348520",
+      "350249",
+      "359017",
+      "368253",
+      "392804"
+    ],
+    "hbcsaude.com.br": [
+      "414352"
+    ],
+    "hcpf.com.br": [
+      "424391"
+    ],
+    "healthbr.com.br": [
+      "417611"
+    ],
+    "healthmedsaude.com.br": [
+      "421723"
+    ],
+    "healthylife.com.br": [
+      "424749"
+    ],
+    "hfcp.com.br": [
+      "418731"
+    ],
+    "hgusaude.com.br": [
+      "403962"
+    ],
+    "hmv.org.br": [
+      "423807"
+    ],
+    "hnj.com.br": [
+      "424161"
+    ],
+    "holnet.com.br": [
+      "360783"
+    ],
+    "hospfreigalvao.com.br": [
+      "319422"
+    ],
+    "hospitalcare.com.br": [
+      "421421"
+    ],
+    "hospitaldonabalbina.com.br": [
+      "329355"
+    ],
+    "hospitalsamaritano.org.br": [
+      "421189"
+    ],
+    "hospitalsaovicente.org.br": [
+      "420930"
+    ],
+    "hotmail.com.br": [
+      "344184"
+    ],
+    "howdenharmonia.com.br": [
+      "419869"
+    ],
+    "hpd.com.br": [
+      "415081"
+    ],
+    "hsaude.net.br": [
+      "416495"
+    ],
+    "hubcare.adm.br": [
+      "420301"
+    ],
+    "hubhealth.adm.br": [
+      "423343"
+    ],
+    "humanasaude.com.br": [
+      "357511"
+    ],
+    "humanitaria.com.br": [
+      "420816"
+    ],
+    "ibbca.com.br": [
+      "417050"
+    ],
+    "ibcm.org.br": [
+      "419427"
+    ],
+    "iboalan.com.br": [
+      "418013"
+    ],
+    "ics.curitiba.pr.gov.br": [
+      "419010"
+    ],
+    "iguacu.com.br": [
+      "414026"
+    ],
+    "impetu.com.br": [
+      "421812"
+    ],
+    "inb.gov.br": [
+      "329282"
+    ],
+    "infonet.com.br": [
+      "349283"
+    ],
+    "infraero.gov.br": [
+      "400891"
+    ],
+    "innovaplanodesaude.com.br": [
+      "423572"
+    ],
+    "innovsaude.com.br": [
+      "424854"
+    ],
+    "integraldental.com.br": [
+      "359394"
+    ],
+    "interbrasilsaude.com.br": [
+      "417998"
+    ],
+    "interdentaldf.com.br": [
+      "314757"
+    ],
+    "intermed-pi.com.br": [
+      "416398"
+    ],
+    "intermedici.com.br": [
+      "312282"
+    ],
+    "ipasgo.go.gov.br": [
+      "424188"
+    ],
+    "ipresbodonto.com.br": [
+      "423424"
+    ],
+    "isodont.com.br": [
+      "415260"
+    ],
+    "itaipu.gov.br": [
+      "366234"
+    ],
+    "itamed.com.br": [
+      "311359"
+    ],
+    "itau-unibanco.com.br": [
+      "000884",
+      "312126"
+    ],
+    "joinville.unimedsc.com.br": [
+      "321273"
+    ],
+    "judicemed.com.br": [
+      "417955"
+    ],
+    "klinisaude.com.br": [
+      "422029"
+    ],
+    "lancers.com.br": [
+      "419095"
+    ],
+    "lcadm.com.br": [
+      "418595"
+    ],
+    "levemaisbrasil.com.br": [
+      "424978"
+    ],
+    "levesaude.com.br": [
+      "422339"
+    ],
+    "levmed.com.br": [
+      "422321"
+    ],
+    "lidernet.com.br": [
+      "412490"
+    ],
+    "lifeempresarial.com.br": [
+      "414492"
+    ],
+    "lifelagos.com.br": [
+      "409286"
+    ],
+    "livsaude.com.br": [
+      "379280"
+    ],
+    "lodontosorocaba.com.br": [
+      "419818"
+    ],
+    "luminarsaude.org.br": [
+      "418374"
+    ],
+    "maffixseguros.com.br": [
+      "423378"
+    ],
+    "maisazulsaude.com.br": [
+      "411752"
+    ],
+    "maisdental.com": [
+      "349291"
+    ],
+    "maissaudeplano.com.br": [
+      "415065"
+    ],
+    "maissaudesantacasa.com.br": [
+      "419150"
+    ],
+    "mapma.com.br": [
+      "417564"
+    ],
+    "master.dental": [
+      "413747"
+    ],
+    "materdei.com.br": [
+      "421626"
+    ],
+    "maximedsaude.com.br": [
+      "424196"
+    ],
+    "maxmed.com.br": [
+      "417696"
+    ],
+    "mbplanosodontologicos.com.br": [
+      "424064"
+    ],
+    "me.com": [
+      "414921"
+    ],
+    "medgoldsaude.com.br": [
+      "419753"
+    ],
+    "medhealth.com.br": [
+      "421367"
+    ],
+    "mediatorie.com.br": [
+      "420859"
+    ],
+    "medicalhealth.com.br": [
+      "400190"
+    ],
+    "medicglobal.com.br": [
+      "411868"
+    ],
+    "mediservice.com.br": [
+      "333689"
+    ],
+    "medsenior.com.br": [
+      "335614"
+    ],
+    "medsulsaude.com.br": [
+      "401480"
+    ],
+    "medtoursaude.com.br": [
+      "328537"
+    ],
+    "meridian.adm.br": [
+      "424307"
+    ],
+    "meridionalsaude.com.br": [
+      "421642"
+    ],
+    "metlife.com": [
+      "406481"
+    ],
+    "metrus.org.br": [
+      "380661"
+    ],
+    "meunorden.com": [
+      "421707"
+    ],
+    "mezzoplanejamento.com.br": [
+      "419567"
+    ],
+    "mhadm.com.br": [
+      "420964"
+    ],
+    "mhvida.com.br": [
+      "412015"
+    ],
+    "multibucal.com.br": [
+      "351351"
+    ],
+    "mutuadosmagistrados.com.br": [
+      "418650"
+    ],
+    "mvalenca.unimed.coop.br": [
+      "321087"
+    ],
+    "n10.med.br": [
+      "425052"
+    ],
+    "netsite.com.br": [
+      "345091"
+    ],
+    "neurocardio.com.br": [
+      "424048"
+    ],
+    "newsaudeleader.com": [
+      "364592"
+    ],
+    "nexosaude.com.br": [
+      "421146"
+    ],
+    "niteroi.unimed.com.br": [
+      "343731"
+    ],
+    "nordestesaude.com.br": [
+      "412759"
+    ],
+    "noroesterj.unimed.coop.br": [
+      "360414"
+    ],
+    "nosamed.com.br": [
+      "305928"
+    ],
+    "nossasaude.com.br": [
+      "372609"
+    ],
+    "novamedplanosdesaude.com.br": [
+      "424561"
+    ],
+    "novasaudebr.com.br": [
+      "423661"
+    ],
+    "novodente.com.br": [
+      "417840"
+    ],
+    "nuclep.gov.br": [
+      "352888"
+    ],
+    "odont.com.br": [
+      "422088"
+    ],
+    "odontoalegre.com.br": [
+      "421464"
+    ],
+    "odontoartonline.com.br": [
+      "414387"
+    ],
+    "odontobase.com.br": [
+      "344486"
+    ],
+    "odontobras.net.br": [
+      "423491"
+    ],
+    "odontocardoficial.com.br": [
+      "422924"
+    ],
+    "odontocda.com.br": [
+      "415952"
+    ],
+    "odontoclassic.com.br": [
+      "407241"
+    ],
+    "odontoclinica24h.com.br": [
+      "418111"
+    ],
+    "odontogroup.com.br": [
+      "389854"
+    ],
+    "odontohope.com.br": [
+      "424862"
+    ],
+    "odontojaragua.com.br": [
+      "312321"
+    ],
+    "odontolifeodontologia.com.br": [
+      "406414"
+    ],
+    "odontolive.com": [
+      "417831"
+    ],
+    "odontomaisvip.com.br": [
+      "405582"
+    ],
+    "odontomaxi.com.br": [
+      "419583"
+    ],
+    "odontomix.com.br": [
+      "416371"
+    ],
+    "odontoplusrs.com.br": [
+      "405671"
+    ],
+    "odontoprev.com.br": [
+      "419419"
+    ],
+    "odontosa.com.br": [
+      "417106"
+    ],
+    "odontoseg.com": [
+      "419281"
+    ],
+    "oestesaude.com.br": [
+      "416738"
+    ],
+    "olivabeneficios.com.br": [
+      "422185"
+    ],
+    "omint.com.br": [
+      "359661"
+    ],
+    "onda.com.br": [
+      "333620"
+    ],
+    "oneplan.com.br": [
+      "418790"
+    ],
+    "operadoravivavida.com.br": [
+      "423351"
+    ],
+    "oplan.com.br": [
+      "418226"
+    ],
+    "opsaudebrasil.com.br": [
+      "421154"
+    ],
+    "oralblue.com.br": [
+      "418200"
+    ],
+    "orale.com.br": [
+      "412996"
+    ],
+    "oralplan.vc": [
+      "420972"
+    ],
+    "oralsantahelena.com.br": [
+      "415987"
+    ],
+    "orionodonto.com.br": [
+      "404772"
+    ],
+    "p4hsaude.com": [
+      "423483"
+    ],
+    "padrealbinosaude.com.br": [
+      "420158"
+    ],
+    "passosnet.com.br": [
+      "419729"
+    ],
+    "pessoalsaude.com.br": [
+      "310239"
+    ],
+    "pladisa.com.br": [
+      "419486"
+    ],
+    "plamed.com.br": [
+      "343463"
+    ],
+    "plamedh.com.br": [
+      "413551"
+    ],
+    "plamer.com.br": [
+      "324299"
+    ],
+    "plamesc.com.br": [
+      "419974"
+    ],
+    "plamhuv.com.br": [
+      "418501"
+    ],
+    "planidente.com.br": [
+      "403865"
+    ],
+    "planoamap.com.br": [
+      "423963"
+    ],
+    "planoatitudesaude.com.br": [
+      "422151"
+    ],
+    "planobemstar.com.br": [
+      "423181"
+    ],
+    "planobrasilsaude.com.br": [
+      "422584"
+    ],
+    "planodentalcare.com.br": [
+      "420239"
+    ],
+    "planodentalwhite.com.br": [
+      "423050"
+    ],
+    "planodesaudeangeli.com.br": [
+      "421871"
+    ],
+    "planodontoprime.com.br": [
+      "418994"
+    ],
+    "planogs.com.br": [
+      "413160"
+    ],
+    "planohospitalar.org.br": [
+      "326755"
+    ],
+    "planoidealsaude.com.br": [
+      "420751"
+    ],
+    "planopasa.com.br": [
+      "331988"
+    ],
+    "planoprimesaude.com.br": [
+      "424617"
+    ],
+    "planoriso.com.br": [
+      "365297"
+    ],
+    "planosantasaude.com.br": [
+      "418021"
+    ],
+    "planosaocamilo.com.br": [
+      "318299"
+    ],
+    "planoviversaude.com.br": [
+      "424480"
+    ],
+    "plansul.net": [
+      "420000"
+    ],
+    "platinumbeneficios.com.br": [
+      "418986"
+    ],
+    "plenasaude.com.br": [
+      "348830"
+    ],
+    "plenodonto.com.br": [
+      "403458"
+    ],
+    "plenumsaude.com": [
+      "423441"
+    ],
+    "pluricare.com.br": [
+      "417751"
+    ],
+    "policlinsaude.com.br": [
+      "415693"
+    ],
+    "polimedica.com.br": [
+      "316903"
+    ],
+    "polisaudepb.com.br": [
+      "351270"
+    ],
+    "portoseguro.com.br": [
+      "000582",
+      "417491",
+      "418625"
+    ],
+    "positiva.com.br": [
+      "420280"
+    ],
+    "postalsaude.com.br": [
+      "419133"
+    ],
+    "pphealth.com.br": [
+      "421413"
+    ],
+    "preservesaude.com.br": [
+      "422959"
+    ],
+    "prestodonto.com.br": [
+      "384844"
+    ],
+    "preventsenior.com.br": [
+      "302147",
+      "413267"
+    ],
+    "preverbeneficios.com.br": [
+      "421804"
+    ],
+    "prevident.com.br": [
+      "374440",
+      "419613"
+    ],
+    "previnaodonto.com.br": [
+      "403636"
+    ],
+    "previsaobeneficios.com.br": [
+      "418307"
+    ],
+    "prevtop.com.br": [
+      "333239"
+    ],
+    "primavida.com.br": [
+      "416525"
+    ],
+    "proasa.org.br": [
+      "310522"
+    ],
+    "prodentalbrasil.com.br": [
+      "422355"
+    ],
+    "promedica.com.br": [
+      "326861"
+    ],
+    "promedpr.org.br": [
+      "418617"
+    ],
+    "prontomedmg.com.br": [
+      "301728"
+    ],
+    "propulsaodental.com.br": [
+      "421383"
+    ],
+    "prosaudeadministradora.com.br": [
+      "424641"
+    ],
+    "prosaudeuepg.com.br": [
+      "409634"
+    ],
+    "proversaude.com.br": [
+      "422533"
+    ],
+    "prudenteadministradora.com.br": [
+      "422193"
+    ],
+    "pscard.srv.br": [
+      "419796"
+    ],
+    "pulseconsultor.com.br": [
+      "424838"
+    ],
+    "qualicorp.com.br": [
+      "417173",
+      "418552",
+      "419290",
+      "420107"
+    ],
+    "qualidonto.com.br": [
+      "417131"
+    ],
+    "qualisaudeadm.com.br": [
+      "420999"
+    ],
+    "quallityprosaude.com.br": [
+      "418170"
+    ],
+    "qvsaude.com.br": [
+      "419389"
+    ],
+    "rede-total.com": [
+      "423548"
+    ],
+    "resolveadministradora.com.br": [
+      "418692"
+    ],
+    "riodocesaude.com.br": [
+      "421359"
+    ],
+    "s1saude.com.br": [
+      "420981"
+    ],
+    "sabinatibaia.com.br": [
+      "350699"
+    ],
+    "sabinsinai.com.br": [
+      "414905"
+    ],
+    "safeadmin.com.br": [
+      "418439"
+    ],
+    "sagradafamiliasaude.com.br": [
+      "422371"
+    ],
+    "sagradasaude.com.br": [
+      "423815"
+    ],
+    "sallusadministradora.com.br": [
+      "418536",
+      "421774"
+    ],
+    "salusmedsaude.com.br": [
+      "422746"
+    ],
+    "salvesaude.com.br": [
+      "424421"
+    ],
+    "salvsaude.com.br": [
+      "424463"
+    ],
+    "samaritosaude.com.br": [
+      "411256"
+    ],
+    "sameisa.com.br": [
+      "411809"
+    ],
+    "samel.com.br": [
+      "367095"
+    ],
+    "samig.com.br": [
+      "340162"
+    ],
+    "samisaude.com": [
+      "422398"
+    ],
+    "samoc.com.br": [
+      "343676"
+    ],
+    "samp.com.br": [
+      "342033"
+    ],
+    "samp.org.br": [
+      "402206"
+    ],
+    "sansaude.com.br": [
+      "330116"
+    ],
+    "santacasabatatais.com.br": [
+      "344915"
+    ],
+    "santacasaclinicas.com.br": [
+      "420786"
+    ],
+    "santacasaderioclaro.com.br": [
+      "347655"
+    ],
+    "santacasadesaude.com": [
+      "420085"
+    ],
+    "santacasadevalinhos.com.br": [
+      "424986"
+    ],
+    "santacasajf.org.br": [
+      "342807"
+    ],
+    "santacasamaringa.com.br": [
+      "336831"
+    ],
+    "santacasamaua.org.br": [
+      "421197"
+    ],
+    "santacasasaudecg.com.br": [
+      "419699"
+    ],
+    "santacasasaudepiracicaba.com.br": [
+      "354562"
+    ],
+    "santacasasauderp.com.br": [
+      "417947"
+    ],
+    "santacasasaudesjc.com.br": [
+      "419249"
+    ],
+    "santacasatq.com.br": [
+      "321320"
+    ],
+    "santacasatupa.org.br": [
+      "306045"
+    ],
+    "santafilomena.com.br": [
+      "410888"
+    ],
+    "santaisabelsaude.com.br": [
+      "322326"
+    ],
+    "saocristovao.com.br": [
+      "314218"
+    ],
+    "saodomingossaude.com.br": [
+      "319180"
+    ],
+    "saogabrielsaude.com.br": [
+      "415944"
+    ],
+    "saolucas.org": [
+      "305626"
+    ],
+    "saoluizsaude.com.br": [
+      "421006"
+    ],
+    "saos.com.br": [
+      "324710"
+    ],
+    "saovicente.org.br": [
+      "424129"
+    ],
+    "saudeavai.com.br": [
+      "321931"
+    ],
+    "saudebeneficencia.com.br": [
+      "417530"
+    ],
+    "saudeblue.com": [
+      "423173"
+    ],
+    "saudebrb.com.br": [
+      "414310"
+    ],
+    "saudeconceicao.org.br": [
+      "330892"
+    ],
+    "saudemaior.net": [
+      "413372"
+    ],
+    "saudemega.com.br": [
+      "421391"
+    ],
+    "saudepas.com.br": [
+      "409243"
+    ],
+    "saudepetrobras.com.br": [
+      "422631"
+    ],
+    "saudeplenaadm.com.br": [
+      "423394"
+    ],
+    "sauderural.com.br": [
+      "418218"
+    ],
+    "saudesbc.com.br": [
+      "412058"
+    ],
+    "saudevivacom.com.br": [
+      "361461"
+    ],
+    "savisa.com.br": [
+      "353264"
+    ],
+    "scpassos.org.br": [
+      "333875"
+    ],
+    "scsbp.com.br": [
+      "420166"
+    ],
+    "sdmoperadora.com.br": [
+      "421634"
+    ],
+    "seato.com.br": [
+      "329967"
+    ],
+    "seedsaude.com.br": [
+      "424927"
+    ],
+    "segurosunimed.com.br": [
+      "000701",
+      "416801"
+    ],
+    "selectoperadora.com.br": [
+      "358053"
+    ],
+    "sempreodonto.com.br": [
+      "414654"
+    ],
+    "sepaco.org.br": [
+      "407224",
+      "420077"
+    ],
+    "sermedsaude.com.br": [
+      "303739",
+      "415243"
+    ],
+    "serpro.gov.br": [
+      "345474"
+    ],
+    "servdonto.com.br": [
+      "414701"
+    ],
+    "servixsaude.com.br": [
+      "417602"
+    ],
+    "sfodontomais.com.br": [
+      "423874"
+    ],
+    "sfvida.com.br": [
+      "419141"
+    ],
+    "sham.com.br": [
+      "355097"
+    ],
+    "silvestresaude.com.br": [
+      "354511"
+    ],
+    "simplanodesaude.com.br": [
+      "356476"
+    ],
+    "sintimmmebsaude.com.br": [
+      "419851"
+    ],
+    "sistemasplanosdesaude.com.br": [
+      "352586"
+    ],
+    "smilesaude.com.br": [
+      "395480"
+    ],
+    "snisaude.com.br": [
+      "424901"
+    ],
+    "socioodonto.com.br": [
+      "416410"
+    ],
+    "solidente.com.br": [
+      "415871"
+    ],
+    "solidusadministradora.com.br": [
+      "423068"
+    ],
+    "solutionsbeneficios.com.br": [
+      "422291"
+    ],
+    "soprevi.com.br": [
+      "403245"
+    ],
+    "sorriden.com.br": [
+      "419524"
+    ],
+    "souaurorasaude.com.br": [
+      "423629"
+    ],
+    "spasaude.org.br": [
+      "324493"
+    ],
+    "ssisaude.com.br": [
+      "320820"
+    ],
+    "ssjose.com.br": [
+      "418919"
+    ],
+    "stellantis.com": [
+      "418285",
+      "422053"
+    ],
+    "sulamerica.com.br": [
+      "006246",
+      "416428",
+      "417815"
+    ],
+    "suldoparasaude.com.br": [
+      "423718"
+    ],
+    "sulmed.com.br": [
+      "338346"
+    ],
+    "svsaude.com": [
+      "412252"
+    ],
+    "tacchini.com.br": [
+      "342556"
+    ],
+    "tecbeneficios.com.br": [
+      "421740"
+    ],
+    "tecgroup.com.br": [
+      "424251"
+    ],
+    "telos.org.br": [
+      "316849"
+    ],
+    "topbras.com.br": [
+      "424153"
+    ],
+    "topdonto.com.br": [
+      "417114"
+    ],
+    "totalmedcare.com.br": [
+      "318477"
+    ],
+    "trasmontano.com.br": [
+      "303623"
+    ],
+    "triang.com.br": [
+      "382281"
+    ],
+    "trinoonline.com.br": [
+      "422827"
+    ],
+    "ufecep.com.br": [
+      "414573"
+    ],
+    "ufenesp.com.br": [
+      "328294"
+    ],
+    "ultraodonto.com.br": [
+      "422673"
+    ],
+    "unafiscosaude.org.br": [
+      "361011"
+    ],
+    "uniaomedica.com.br": [
+      "414581"
+    ],
+    "unibenjf.com.br": [
+      "418528"
+    ],
+    "unicassaude.com.br": [
+      "421944"
+    ],
+    "unicorbeneficios.com.br": [
+      "423041"
+    ],
+    "unidental.com.br": [
+      "401072"
+    ],
+    "unihospsaude.com.br": [
+      "385255"
+    ],
+    "unimed-as.com.br": [
+      "343684"
+    ],
+    "unimed-assis.com.br": [
+      "300713"
+    ],
+    "unimed-dracena.com.br": [
+      "314781"
+    ],
+    "unimed-erechim.com.br": [
+      "357022"
+    ],
+    "unimed-es.com.br": [
+      "311715"
+    ],
+    "unimed-fno.com.br": [
+      "352179"
+    ],
+    "unimed-nne.com.br": [
+      "324213"
+    ],
+    "unimed-taubate.com.br": [
+      "363286"
+    ],
+    "unimed-uba.coop.br": [
+      "362573"
+    ],
+    "unimed.campinagrande.br": [
+      "367397"
+    ],
+    "unimed.coop.br": [
+      "300870",
+      "425061"
+    ],
+    "unimed061.com.br": [
+      "362832"
+    ],
+    "unimed144.coop.br": [
+      "319121"
+    ],
+    "unimed238.com.br": [
+      "304344"
+    ],
+    "unimed279.com.br": [
+      "353663"
+    ],
+    "unimed303.com.br": [
+      "353698"
+    ],
+    "unimed531.coop.br": [
+      "314099"
+    ],
+    "unimedadamantina.com.br": [
+      "311944"
+    ],
+    "unimedaj.com.br": [
+      "352519"
+    ],
+    "unimedalfenas.com.br": [
+      "354996"
+    ],
+    "unimedaltamogiana.com.br": [
+      "324159"
+    ],
+    "unimedaltovale.coop.br": [
+      "372561"
+    ],
+    "unimedamparo.coop.br": [
+      "345598"
+    ],
+    "unimedanapolis.com.br": [
+      "312347"
+    ],
+    "unimedandradina.com.br": [
+      "303844"
+    ],
+    "unimedanhanguera.coop.br": [
+      "348082"
+    ],
+    "unimedapucarana.coop.br": [
+      "358096"
+    ],
+    "unimedara.com.br": [
+      "364312"
+    ],
+    "unimedaracatuba.com.br": [
+      "369411"
+    ],
+    "unimedaraguaia.coop.br": [
+      "304468"
+    ],
+    "unimedaraguaina.com.br": [
+      "313084"
+    ],
+    "unimedaraguari.coop.br": [
+      "354325"
+    ],
+    "unimedaraxa.com.br": [
+      "331651"
+    ],
+    "unimedasf.coop.br": [
+      "348261"
+    ],
+    "unimedavare.coop.br": [
+      "304123"
+    ],
+    "unimedbarbacena.coop.br": [
+      "309087"
+    ],
+    "unimedbarretos.com.br": [
+      "347108"
+    ],
+    "unimedbatatais.com.br": [
+      "313149"
+    ],
+    "unimedbauru.com.br": [
+      "369659"
+    ],
+    "unimedbebedouro.coop.br": [
+      "331341"
+    ],
+    "unimedbelem.com.br": [
+      "303976"
+    ],
+    "unimedbh.com.br": [
+      "343889"
+    ],
+    "unimedbirigui.com.br": [
+      "345776"
+    ],
+    "unimedblumenau.com.br": [
+      "334561"
+    ],
+    "unimedbm.coop.br": [
+      "330264"
+    ],
+    "unimedbotucatu.coop.br": [
+      "304883"
+    ],
+    "unimedbrusque.com.br": [
+      "348244"
+    ],
+    "unimedbxm.coop.br": [
+      "311847"
+    ],
+    "unimedcabofrio.coop.br": [
+      "323357"
+    ],
+    "unimedcaceres.com.br": [
+      "350346"
+    ],
+    "unimedcaldas.coop.br": [
+      "343765"
+    ],
+    "unimedcampanha.com.br": [
+      "350648"
+    ],
+    "unimedcampinas.com.br": [
+      "335690"
+    ],
+    "unimedcampobelo.coop.br": [
+      "367613"
+    ],
+    "unimedcampomourao.com.br": [
+      "306100"
+    ],
+    "unimedcapivari.com.br": [
+      "366340"
+    ],
+    "unimedcarangola.coop.br": [
+      "337561"
+    ],
+    "unimedcaratinga.com.br": [
+      "347736"
+    ],
+    "unimedcaruaru.com.br": [
+      "340952"
+    ],
+    "unimedcascavel.coop.br": [
+      "370070"
+    ],
+    "unimedcataguases.coop.br": [
+      "315648"
+    ],
+    "unimedcatalao.coop.br": [
+      "324566"
+    ],
+    "unimedcatanduva.com.br": [
+      "351407"
+    ],
+    "unimedcd.coop.br": [
+      "324345"
+    ],
+    "unimedceara.com.br": [
+      "303178",
+      "321958",
+      "356123"
+    ],
+    "unimedcentrorondonia.coop.br": [
+      "347507"
+    ],
+    "unimedcerrado.coop.br": [
+      "386596"
+    ],
+    "unimedcg.coop.br": [
+      "312851"
+    ],
+    "unimedchapeco.coop.br": [
+      "354295"
+    ],
+    "unimedcianorte.com.br": [
+      "354627"
+    ],
+    "unimedcircuito.coop.br": [
+      "370088"
+    ],
+    "unimedcl.com.br": [
+      "345709"
+    ],
+    "unimedcop.coop.br": [
+      "357138"
+    ],
+    "unimedcorumba.com.br": [
+      "344788"
+    ],
+    "unimedcostaoeste.com.br": [
+      "371106"
+    ],
+    "unimedcuiaba.coop.br": [
+      "342084"
+    ],
+    "unimedcuritiba.com.br": [
+      "304701"
+    ],
+    "unimeddourados.com.br": [
+      "333662"
+    ],
+    "unimedextremooeste.com.br": [
+      "340251"
+    ],
+    "unimedextremosul.com.br": [
+      "346209"
+    ],
+    "unimedfama.com.br": [
+      "313971"
+    ],
+    "unimedfb.coop.br": [
+      "336858"
+    ],
+    "unimedfesp.coop.br": [
+      "319996"
+    ],
+    "unimedfloriano.com.br": [
+      "316458"
+    ],
+    "unimedflorianopolis.com.br": [
+      "360449"
+    ],
+    "unimedfortaleza.com.br": [
+      "317144"
+    ],
+    "unimedfranca.com.br": [
+      "354783"
+    ],
+    "unimedfronteira.com.br": [
+      "328375"
+    ],
+    "unimedfrutal.coop.br": [
+      "371564"
+    ],
+    "unimedgm.coop.br": [
+      "330108"
+    ],
+    "unimedgoiania.com.br": [
+      "382876"
+    ],
+    "unimedguarapuava.coop.br": [
+      "322571"
+    ],
+    "unimedguaratingueta.com.br": [
+      "355577"
+    ],
+    "unimedguarulhos.coop.br": [
+      "333051"
+    ],
+    "unimedguaxupe.coop.br": [
+      "318035"
+    ],
+    "unimedgurupi.com.br": [
+      "301124"
+    ],
+    "unimedgv.com.br": [
+      "386588"
+    ],
+    "unimedibitinga.coop.br": [
+      "365238"
+    ],
+    "unimedicasaude.com": [
+      "418773",
+      "418901",
+      "420018",
+      "420140",
+      "422061",
+      "422797",
+      "422860",
+      "423131",
+      "423611",
+      "424021",
+      "424099",
+      "424200",
+      "424234",
+      "424277",
+      "424315",
+      "424323",
+      "424498",
+      "424609",
+      "424625",
+      "424633",
+      "424757",
+      "424897",
+      "425028",
+      "425109"
+    ],
+    "unimedinconfidentes.coop.br": [
+      "304395"
+    ],
+    "unimeditabira.com.br": [
+      "335517"
+    ],
+    "unimeditajuba.coop.br": [
+      "322831"
+    ],
+    "unimeditauna.coop.br": [
+      "356581"
+    ],
+    "unimedituiutaba.coop.br": [
+      "301060"
+    ],
+    "unimeditumbiara.com.br": [
+      "305472"
+    ],
+    "unimedjaboticabal.coop.br": [
+      "329886"
+    ],
+    "unimedjatai.com.br": [
+      "334847"
+    ],
+    "unimedjau.com.br": [
+      "306762"
+    ],
+    "unimedjf.coop.br": [
+      "306886"
+    ],
+    "unimedjm.coop.br": [
+      "352314"
+    ],
+    "unimedjp.com.br": [
+      "321044"
+    ],
+    "unimedjundiai.com.br": [
+      "303267"
+    ],
+    "unimedlages.coop.br": [
+      "318213"
+    ],
+    "unimedlavras.coop.br": [
+      "345458"
+    ],
+    "unimedleopoldina.coop.br": [
+      "386901"
+    ],
+    "unimedlestepaulista.com.br": [
+      "358088"
+    ],
+    "unimedlimeira.com.br": [
+      "301574"
+    ],
+    "unimedlins.com.br": [
+      "354279"
+    ],
+    "unimedlitoral.com.br": [
+      "303356"
+    ],
+    "unimedlitoralsul.com.br": [
+      "300136"
+    ],
+    "unimedlondrina.com.br": [
+      "343269"
+    ],
+    "unimedlorena.coop.br": [
+      "385620"
+    ],
+    "unimedlp.coop.br": [
+      "325031"
+    ],
+    "unimedmaceio.com.br": [
+      "327689"
+    ],
+    "unimedmachado.coop.br": [
+      "354678"
+    ],
+    "unimedmanaus.coop.br": [
+      "311961"
+    ],
+    "unimedmaranhaodosul.coop.br": [
+      "352543"
+    ],
+    "unimedmarilia.com.br": [
+      "336106"
+    ],
+    "unimedmaringa.com.br": [
+      "371254"
+    ],
+    "unimedmeiooeste.coop.br": [
+      "301744"
+    ],
+    "unimedmetropolitana.coop.br": [
+      "318566"
+    ],
+    "unimedmineiros.com.br": [
+      "357715"
+    ],
+    "unimedmissoes.com.br": [
+      "311618"
+    ],
+    "unimedmococa.com.br": [
+      "328308"
+    ],
+    "unimedmontealto.coop.br": [
+      "309524"
+    ],
+    "unimedmorrinhos.com.br": [
+      "342157"
+    ],
+    "unimedmt.coop.br": [
+      "328031"
+    ],
+    "unimedmuriae.com.br": [
+      "368148"
+    ],
+    "unimednatal.com.br": [
+      "335592"
+    ],
+    "unimednc.com.br": [
+      "371777"
+    ],
+    "unimednf.coop.br": [
+      "312592"
+    ],
+    "unimedni.coop.br": [
+      "344397"
+    ],
+    "unimednoc.com.br": [
+      "371629"
+    ],
+    "unimednoroesteminas.coop.br": [
+      "315494"
+    ],
+    "unimednoroesters.com.br": [
+      "357260"
+    ],
+    "unimednortedeminas.com.br": [
+      "304051"
+    ],
+    "unimednortepaulista.com.br": [
+      "323055"
+    ],
+    "unimednortepioneiro.com.br": [
+      "366064"
+    ],
+    "unimednp.com.br": [
+      "358282"
+    ],
+    "unimedoestedopara.coop.br": [
+      "362140"
+    ],
+    "unimedosbandeirantes.com.br": [
+      "415014"
+    ],
+    "unimedourinhos.com.br": [
+      "311294"
+    ],
+    "unimedpalmas.com.br": [
+      "309907"
+    ],
+    "unimedparanagua.com.br": [
+      "361615"
+    ],
+    "unimedpatos.com.br": [
+      "336467"
+    ],
+    "unimedpatosdeminas.com.br": [
+      "353060"
+    ],
+    "unimedpatrocinio.com.br": [
+      "355593"
+    ],
+    "unimedpb.com.br": [
+      "324523"
+    ],
+    "unimedpc.coop.br": [
+      "316148"
+    ],
+    "unimedpelotas.com.br": [
+      "311375"
+    ],
+    "unimedpenapolis.com.br": [
+      "323004"
+    ],
+    "unimedpetropolis.coop.br": [
+      "323993"
+    ],
+    "unimedpf.com.br": [
+      "319384"
+    ],
+    "unimedpg.com.br": [
+      "349712"
+    ],
+    "unimedpinda.com.br": [
+      "342343"
+    ],
+    "unimedpiracicaba.com.br": [
+      "315729"
+    ],
+    "unimedpirassununga.coop.br": [
+      "314242"
+    ],
+    "unimedpoa.com.br": [
+      "352501"
+    ],
+    "unimedpontal.coop.br": [
+      "353876"
+    ],
+    "unimedpontenova.com.br": [
+      "343722"
+    ],
+    "unimedportovelho.coop.br": [
+      "337374"
+    ],
+    "unimedpr.com.br": [
+      "308811"
+    ],
+    "unimedpr.coop.br": [
+      "305227",
+      "312720",
+      "365777",
+      "370681"
+    ],
+    "unimedprudente.com.br": [
+      "315796"
+    ],
+    "unimedpvai.coop.br": [
+      "320862"
+    ],
+    "unimedrb.com.br": [
+      "337871"
+    ],
+    "unimedrc.com.br": [
+      "306126"
+    ],
+    "unimedrecife.com.br": [
+      "344885"
+    ],
+    "unimedregistro.com.br": [
+      "351776"
+    ],
+    "unimedresende.coop.br": [
+      "330566"
+    ],
+    "unimedribeirao.com.br": [
+      "351202"
+    ],
+    "unimedrio.com.br": [
+      "393321"
+    ],
+    "unimedriopardo.coop.br": [
+      "354619"
+    ],
+    "unimedriopreto.com.br": [
+      "335100"
+    ],
+    "unimedrj.coop.br": [
+      "312363"
+    ],
+    "unimedrondonopolis.com.br": [
+      "359777"
+    ],
+    "unimedrs.com.br": [
+      "367087"
+    ],
+    "unimedrv.com.br": [
+      "320251"
+    ],
+    "unimedsa.com.br": [
+      "369292"
+    ],
+    "unimedsaltoitu.com.br": [
+      "346276"
+    ],
+    "unimedsantos.com.br": [
+      "355721"
+    ],
+    "unimedsaocarlos.com.br": [
+      "354031"
+    ],
+    "unimedsaoroque.coop.br": [
+      "318388"
+    ],
+    "unimedsc.coop.br": [
+      "355691"
+    ],
+    "unimedse.coop.br": [
+      "337668"
+    ],
+    "unimedserragaucha.com.br": [
+      "325571"
+    ],
+    "unimedserranarj.coop.br": [
+      "335479"
+    ],
+    "unimedsjc.com.br": [
+      "331872"
+    ],
+    "unimedsjdelrei.coop.br": [
+      "323926"
+    ],
+    "unimedsjn.coop.br": [
+      "327638"
+    ],
+    "unimedsm.com.br": [
+      "319708"
+    ],
+    "unimedsorocaba.coop.br": [
+      "348295"
+    ],
+    "unimedssp.coop.br": [
+      "327352"
+    ],
+    "unimedsudoeste.com.br": [
+      "350371"
+    ],
+    "unimedsudoestemg.coop.br": [
+      "324175"
+    ],
+    "unimedsudoestepaulista.coop.br": [
+      "327468"
+    ],
+    "unimedsulcapixaba.coop.br": [
+      "320706"
+    ],
+    "unimedsuldeminas.coop.br": [
+      "320838"
+    ],
+    "unimedsulmineira.com.br": [
+      "337188"
+    ],
+    "unimedsulpaulista.coop.br": [
+      "353027"
+    ],
+    "unimedtatui.com.br": [
+      "361941"
+    ],
+    "unimedtc.coop.br": [
+      "359033"
+    ],
+    "unimedteresina.com.br": [
+      "353353"
+    ],
+    "unimedtr.coop.br": [
+      "337498"
+    ],
+    "unimedtreslagoas.com.br": [
+      "342386"
+    ],
+    "unimedtrespontas.coop.br": [
+      "364070"
+    ],
+    "unimedtubarao.com.br": [
+      "364860"
+    ],
+    "unimedtupa.com.br": [
+      "365530"
+    ],
+    "unimedtv.coop.br": [
+      "316881"
+    ],
+    "unimeduberaba.com.br": [
+      "354066"
+    ],
+    "unimeduberlandia.coop.br": [
+      "384577",
+      "423645"
+    ],
+    "unimedvale.com.br": [
+      "311057"
+    ],
+    "unimedvaledasantas.coop.br": [
+      "335541"
+    ],
+    "unimedvaledoaco.coop.br": [
+      "359289"
+    ],
+    "unimedvaledocai.com.br": [
+      "313211"
+    ],
+    "unimedvaledocorumba.coop.br": [
+      "302228"
+    ],
+    "unimedvaledojauru.com.br": [
+      "370975"
+    ],
+    "unimedvaledoparaiba.coop.br": [
+      "334511"
+    ],
+    "unimedvalenovopaulista.com.br": [
+      "334154"
+    ],
+    "unimedvarginha.coop.br": [
+      "344729"
+    ],
+    "unimedvc.com.br": [
+      "317896"
+    ],
+    "unimedvicosa.com.br": [
+      "314587"
+    ],
+    "unimedvilhena.coop.br": [
+      "342131"
+    ],
+    "unimedvr.com.br": [
+      "364584"
+    ],
+    "unimedvsf.coop.br": [
+      "323268"
+    ],
+    "unimedvtrp.com.br": [
+      "306398"
+    ],
+    "unimedvx.com.br": [
+      "357391"
+    ],
+    "uniodonto-ce.com.br": [
+      "335258"
+    ],
+    "uniodonto-metropolitana.com.br": [
+      "382337"
+    ],
+    "uniodonto-rs.com.br": [
+      "305421"
+    ],
+    "uniodonto.coop.br": [
+      "314315"
+    ],
+    "uniodontoacre.com.br": [
+      "403997"
+    ],
+    "uniodontoap.com.br": [
+      "365785"
+    ],
+    "uniodontoaracatuba.com.br": [
+      "362824"
+    ],
+    "uniodontoarapiraca.com.br": [
+      "403512"
+    ],
+    "uniodontoararaquara.com.br": [
+      "316997"
+    ],
+    "uniodontoathenas.coop.br": [
+      "340120"
+    ],
+    "uniodontobahiasul.com.br": [
+      "383929"
+    ],
+    "uniodontobebedouro.coop.br": [
+      "327093"
+    ],
+    "uniodontobelem.com.br": [
+      "368555"
+    ],
+    "uniodontocampinas.com.br": [
+      "350494"
+    ],
+    "uniodontocampos.com.br": [
+      "402516"
+    ],
+    "uniodontocatanduva.com.br": [
+      "354686"
+    ],
+    "uniodontoes.coop.br": [
+      "370711"
+    ],
+    "uniodontofronteiraoeste.com.br": [
+      "341894"
+    ],
+    "uniodontogaranhuns.coop.br": [
+      "342335"
+    ],
+    "uniodontogoiania.com.br": [
+      "358436"
+    ],
+    "uniodontoitajuba.com.br": [
+      "419028"
+    ],
+    "uniodontojac.com.br": [
+      "343056"
+    ],
+    "uniodontojf.com.br": [
+      "327441"
+    ],
+    "uniodontojp.com.br": [
+      "361569"
+    ],
+    "uniodontojundiai.com.br": [
+      "347795"
+    ],
+    "uniodontolimeira.com.br": [
+      "369462"
+    ],
+    "uniodontolins.com.br": [
+      "344681"
+    ],
+    "uniodontolondrina.coop.br": [
+      "350770"
+    ],
+    "uniodontomaceio.com.br": [
+      "321125"
+    ],
+    "uniodontomao.com.br": [
+      "311391"
+    ],
+    "uniodontomaringa.com.br": [
+      "381144"
+    ],
+    "uniodontominas.coop.br": [
+      "344451"
+    ],
+    "uniodontomossoro.com.br": [
+      "303291"
+    ],
+    "uniodontoms.com.br": [
+      "347183"
+    ],
+    "uniodontomt.com.br": [
+      "343404"
+    ],
+    "uniodontopaulista.com.br": [
+      "361593"
+    ],
+    "uniodontopauloafonso.com.br": [
+      "402109"
+    ],
+    "uniodontopinda.com.br": [
+      "331104"
+    ],
+    "uniodontopiracicaba.com.br": [
+      "346004"
+    ],
+    "uniodontopirassununga.com.br": [
+      "378941"
+    ],
+    "uniodontopoa.com.br": [
+      "366439"
+    ],
+    "uniodontopocos.com.br": [
+      "409791"
+    ],
+    "uniodontoprudente.com.br": [
+      "336017"
+    ],
+    "uniodontorc.com.br": [
+      "349011"
+    ],
+    "uniodontorecife.com.br": [
+      "305740"
+    ],
+    "uniodontoresende.com.br": [
+      "406121"
+    ],
+    "uniodontoriogrande.com.br": [
+      "367966"
+    ],
+    "uniodontoriopreto.com.br": [
+      "303259"
+    ],
+    "uniodontorn.com.br": [
+      "345318"
+    ],
+    "uniodontorondonia.com.br": [
+      "336025"
+    ],
+    "uniodontorr.com.br": [
+      "418242"
+    ],
+    "uniodontosalvador.com.br": [
+      "310107"
+    ],
+    "uniodontosc.com.br": [
+      "342203",
+      "351628",
+      "415626"
+    ],
+    "uniodontosertaozinho.com.br": [
+      "373109"
+    ],
+    "uniodontosjc.com.br": [
+      "313751"
+    ],
+    "uniodontosjrpardo.com.br": [
+      "378682"
+    ],
+    "uniodontosorocaba.com.br": [
+      "334243"
+    ],
+    "uniodontosudoeste.com.br": [
+      "314871"
+    ],
+    "uniodontotaquaritinga.com.br": [
+      "350290"
+    ],
+    "uniodontotaubate.com.br": [
+      "319350"
+    ],
+    "uniodontouberaba.com.br": [
+      "370568"
+    ],
+    "uniodontovalehistorico.com.br": [
+      "382655"
+    ],
+    "uniodontovtrp.com.br": [
+      "353752"
+    ],
+    "uniogroup.com.br": [
+      "422703"
+    ],
+    "unionadm.com.br": [
+      "420808"
+    ],
+    "unipactum.com.br": [
+      "421278"
+    ],
+    "unisalus.com.br": [
+      "424820"
+    ],
+    "unisaudemarau.com.br": [
+      "333867"
+    ],
+    "unisaudems.org.br": [
+      "421341"
+    ],
+    "unisinos.br": [
+      "404241"
+    ],
+    "unity.adm.br": [
+      "423114"
+    ],
+    "unitysaude.com.br": [
+      "423335"
+    ],
+    "unividaplanodesaude.com.br": [
+      "420123"
+    ],
+    "uol.com": [
+      "419931"
+    ],
+    "uphealthadministradora.com.br": [
+      "422126"
+    ],
+    "upn.unimedsc.com.br": [
+      "317012"
+    ],
+    "upsaude.med.br": [
+      "422223"
+    ],
+    "valdivia.com.br": [
+      "422991"
+    ],
+    "vale.com": [
+      "345695"
+    ],
+    "valem.com.br": [
+      "417301"
+    ],
+    "vallorbeneficios.com.br": [
+      "417581"
+    ],
+    "valorsaudeadm.com.br": [
+      "423751"
+    ],
+    "vidamax.com.br": [
+      "416789"
+    ],
+    "vidasaudeplano.com.br": [
+      "425010"
+    ],
+    "vidatop.com.br": [
+      "422835"
+    ],
+    "vilavelha.com.br": [
+      "424145"
+    ],
+    "vitaplenasaude.com.br": [
+      "424722"
+    ],
+    "vitta.me": [
+      "422592"
+    ],
+    "viventeris.com.br": [
+      "414662"
+    ],
+    "viveradministradora.com.br": [
+      "422657"
+    ],
+    "vivermaishospital.com.br": [
+      "425001"
+    ],
+    "vivest.com.br": [
+      "315478"
+    ],
+    "vixmed.adm.br": [
+      "421758"
+    ],
+    "voceclube.com.br": [
+      "417122"
+    ],
+    "votuporanga.com.br": [
+      "350630"
+    ],
+    "vs.unimed.com.br": [
+      "356417"
+    ],
+    "wdental.com.br": [
+      "421049"
+    ],
+    "xipp.com.br": [
+      "423084"
+    ],
+    "xpi.com.br": [
+      "423505"
+    ],
+    "xx.xx": [
+      "419265"
+    ]
+  },
   "license": "CC BY",
   "records": {
     "000515": {

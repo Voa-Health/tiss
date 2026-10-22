@@ -65,6 +65,21 @@ CADOP_SOURCE = (
     "https://dadosabertos.ans.gov.br/FTP/PDA/operadoras_de_plano_de_saude_ativas/Relatorio_cadop.csv"
 )
 
+_DOMINIOS_GENERICOS = {
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "live.com",
+    "msn.com",
+    "icloud.com",
+    "yahoo.com",
+    "yahoo.com.br",
+    "uol.com.br",
+    "bol.com.br",
+    "terra.com.br",
+    "ig.com.br",
+}
+
 
 def _fold(text: str) -> str:
     return unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii").upper()
@@ -137,6 +152,7 @@ def bake_operators(source: Path) -> dict[str, Any]:
     raw = source.read_bytes()
     rows = read_csv(raw)
     records = {}
+    domains: dict[str, set[str]] = {}
     for row in rows:
         registro = (row.get("REGISTRO_OPERADORA") or "").strip()
         if not registro:
@@ -151,11 +167,18 @@ def bake_operators(source: Path) -> dict[str, Any]:
             "uf": (row.get("UF") or "").strip(),
             "data_registro_ans": (row.get("DATA_REGISTRO_ANS") or "").strip(),
         }
+        email = (row.get("ENDERECO_ELETRONICO") or "").strip().lower()
+        domain = email.rsplit("@", 1)[-1] if "@" in email else ""
+        if domain not in _DOMINIOS_GENERICOS and re.fullmatch(
+            r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", domain
+        ):
+            domains.setdefault(domain, set()).add(registro)
     return {
         "version": 1,
         "source": CADOP_SOURCE,
         "license": "CC BY",
         "records": dict(sorted(records.items())),
+        "dominios": {domain: sorted(registros) for domain, registros in sorted(domains.items())},
     }
 
 

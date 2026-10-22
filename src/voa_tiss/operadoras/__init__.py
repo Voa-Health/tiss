@@ -41,6 +41,21 @@ def lookup(registro_ans: str) -> dict[str, Any] | None:
     return deepcopy(record) if record else None
 
 
+def por_email(email: str) -> list[str]:
+    """Devolva os registros ANS cujo e-mail cadastrado usa o domínio deste e-mail."""
+    if not isinstance(email, str):
+        return []
+    domain = email.strip().lower().rsplit("@", 1)[-1]
+    labels = domain.split(".")
+    dominios = _data().get("dominios", {})
+    while len(labels) >= 2:
+        registros = dominios.get(".".join(labels))
+        if registros:
+            return sorted(registros)
+        labels.pop(0)
+    return []
+
+
 def search(text: str, *, limit: int = 20) -> list[dict[str, Any]]:
     """Busque operadoras por nome, registro, CNPJ ou localidade."""
     if not isinstance(text, str) or not text.strip():
@@ -92,4 +107,4 @@ def info() -> dict[str, Any]:
     }
 
 
-__all__ = ["info", "lookup", "perfil", "search"]
+__all__ = ["info", "lookup", "perfil", "por_email", "search"]

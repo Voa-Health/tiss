@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/api",
     "/playground",
     "/operadoras",
+    ...site.modules.map(({ href }) => href),
     "/entrar",
     "/chaves",
     "/termos",

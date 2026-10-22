@@ -49,37 +49,47 @@ def _xml_values(value: Any) -> tuple[str | None, str | None]:
     return registry, version
 
 
-def _send(event: str, properties: dict[str, Any]) -> None:
+def _deliver(event: str, properties: dict[str, Any]) -> bool:
     sink = _sink
     if sink is not None:
-        with suppress(Exception):
-            sink(event, properties)
-        return
+        sink(event, properties)
+        return True
     key = os.environ.get("POSTHOG_KEY")
     if not key:
-        return
+        return False
     host = os.environ.get("POSTHOG_HOST", "https://us.i.posthog.com").rstrip("/")
+    event_properties = {key: value for key, value in properties.items() if key != "distinct_id"}
     body = json.dumps(
         {
             "api_key": key,
             "event": event,
-            "distinct_id": "voa-tiss-api",
-            "properties": properties,
+            "distinct_id": properties.get("distinct_id", "voa-tiss-api"),
+            "properties": event_properties,
         },
         ensure_ascii=False,
         separators=(",", ":"),
     ).encode()
-    try:
-        request = urllib.request.Request(
-            f"{host}/i/v0/e/",
-            data=body,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(request, timeout=2):
-            pass
-    except Exception:
+    request = urllib.request.Request(
+        f"{host}/i/v0/e/",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=2):
         pass
+    return True
+
+
+def _send(event: str, properties: dict[str, Any]) -> None:
+    with suppress(Exception):
+        _deliver(event, properties)
+
+
+def waitlist_join(properties: dict[str, Any]) -> bool:
+    try:
+        return _deliver("tiss_waitlist_join", properties)
+    except Exception:
+        return False
 
 
 def _submit(
@@ -137,4 +147,4 @@ def key_issued(
     )
 
 
-__all__ = ["key_issued", "operation_event", "set_sink"]
+__all__ = ["key_issued", "operation_event", "set_sink", "waitlist_join"]

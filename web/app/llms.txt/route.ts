@@ -1,6 +1,7 @@
 import { readDocs, readOpenApi, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
 import { operationAnchor, site } from "@/lib/site";
+import { moduleContent } from "@/lib/modules";
 
 export const dynamic = "force-static";
 
@@ -21,6 +22,15 @@ export function GET() {
   const operators = readOperadoras()
     .map((operadora) => `- [${operadora.razao_social} (${operadora.registro_ans})](${site.url}/operadoras/${operadora.registro_ans})`)
     .join("\n");
+  const moduleDescriptions: Record<string, string> = {
+    recurso: moduleContent.recurso.description,
+    extrator: moduleContent.extrator.description,
+    cloud: moduleContent.cloud.description,
+    calculadora: "Estime o custo mensal de recursos de glosa.",
+  };
+  const modules = site.modules
+    .map(({ href, label, slug }) => `- [${label}](${site.url}${href}) — ${moduleDescriptions[slug]}`)
+    .join("\n");
   const body = [
     "# voa-tiss",
     "",
@@ -31,6 +41,9 @@ export function GET() {
     "",
     "## Tutoriais",
     tutorials,
+    "",
+    "## Módulos",
+    modules,
     "",
     "## API",
     `- [Referência HTTP](${site.url}/api)`,

@@ -24,7 +24,7 @@ from voa_tiss.sandbox import SandboxError, demonstrativo, enviar_lote
 from voa_tiss.server import _auth
 from voa_tiss.server._auth import CLIENT_DOCUMENT, BackendError
 from voa_tiss.server._http import create_app
-from voa_tiss.server._keys import LIMITS, issue_key, read_key, sign
+from voa_tiss.server._keys import ANONYMOUS_LIMIT, LIMITS, issue_key, read_key, sign
 from voa_tiss.server._ops import OPS, token_estimate
 from voa_tiss.server._quota import set_counter
 from voa_tiss.server._telemetry import set_sink
@@ -32,6 +32,7 @@ from voa_tiss.tuss import lookup, search
 
 ROOT = Path(__file__).resolve().parents[1]
 HTTP_OK = 200
+HTTP_ACCEPTED = 202
 HTTP_FOUND = 302
 HTTP_UNAUTHORIZED = 401
 HTTP_NOT_FOUND = 404
@@ -382,6 +383,94 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         assert not events
         monkeypatch.delenv("VOA_TISS_KEY_SECRET")
         assert client.get("/v1/auth/login").status_code == HTTP_UNAVAILABLE
+        monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
+        set_counter(lambda key, ttl: 1)
+        events.clear()
+        domain, registros = next(iter(operadoras._data()["dominios"].items()))
+        base = {
+            "modulo": "recurso",
+            "email": f" Teste@{domain} ",
+            "empresa": " Clínica   Exemplo ",
+            "volume_mensal": "ate_500",
+        }
+        accepted = client.post("/v1/lista-de-espera", json=base)
+        assert accepted.status_code == HTTP_ACCEPTED
+        assert accepted.json() == {"recebido": True}
+        assert events == [
+            (
+                "tiss_waitlist_join",
+                {
+                    "module": "recurso",
+                    "volume_mensal": "ate_500",
+                    "org_match": registros,
+                    "distinct_id": f"teste@{domain}",
+                    "$set": {"email": f"teste@{domain}", "empresa": "Clínica Exemplo"},
+                    "$geoip_disable": True,
+                },
+            )
+        ]
+        for email, expected in (
+            (f"x@faturamento.{domain}", registros),
+            ("teste@gmail.com", []),
+        ):
+            events.clear()
+            assert (
+                client.post("/v1/lista-de-espera", json={**base, "email": email}).status_code == 202
+            )
+            assert events[0][1]["org_match"] == expected
+        invalid_waitlist = [
+            ({**base, "modulo": "extrator"}, HTTP_UNPROCESSABLE),
+            (
+                {
+                    **base,
+                    "modulo": "extrator",
+                    "tipos_documento": ["guia_pdf"],
+                },
+                HTTP_ACCEPTED,
+            ),
+            ({**base, "modulo": "cloud", "tipos_documento": ["guia_pdf"]}, HTTP_UNPROCESSABLE),
+            ({**base, "email": "invalido"}, HTTP_UNPROCESSABLE),
+            ({**base, "extra": "valor"}, HTTP_UNPROCESSABLE),
+        ]
+        for body, status in invalid_waitlist:
+            result = client.post("/v1/lista-de-espera", json=body)
+            assert result.status_code == status
+        assert events[-1][1]["tipos_documento"] == ["guia_pdf"]
+        assert client.post("/v1/lista-de-espera", content="{").status_code == HTTP_UNPROCESSABLE
+        assert (
+            client.post("/v1/lista-de-espera", json=["nao", "objeto"]).status_code
+            == HTTP_UNPROCESSABLE
+        )
+        events.clear()
+
+        def broken_sink(event, properties):
+            raise RuntimeError("telemetria indisponível")
+
+        set_sink(broken_sink)
+        assert client.post("/v1/lista-de-espera", json=base).status_code == HTTP_UNAVAILABLE
+        set_sink(None)
+        monkeypatch.delenv("POSTHOG_KEY", raising=False)
+        assert client.post("/v1/lista-de-espera", json=base).status_code == HTTP_UNAVAILABLE
+        monkeypatch.setenv("POSTHOG_KEY", "test-posthog-key")
+        set_sink(lambda event, properties: events.append((event, properties)))
+        assert "authorization" not in client.post("/v1/lista-de-espera", json=base).request.headers
+        use: dict[str, int] = {}
+        set_counter(lambda key, ttl: use.update({key: use.get(key, 0) + 1}) or use[key])
+        for _ in range(ANONYMOUS_LIMIT):
+            assert client.post("/v1/lista-de-espera", json=base).status_code == 202
+        limited = client.post("/v1/lista-de-espera", json=base)
+        assert limited.status_code == HTTP_TOO_MANY
+        assert limited.headers["retry-after"]
+        allowed = {
+            "module",
+            "volume_mensal",
+            "org_match",
+            "tipos_documento",
+            "distinct_id",
+            "$set",
+            "$geoip_disable",
+        }
+        assert all(set(properties) <= allowed for _, properties in events)
     assert fragment["chave"] not in caplog.text
     assert fragment["refresh_token"] not in caplog.text
 
