@@ -23,10 +23,13 @@ determinísticos comparam o resultado sem chamadas a modelos.
 
 ## Configuração e reprodução
 
-O runner consulta o catálogo OpenRouter, envia `max_tokens: 8000` e
+O runner consulta o catálogo OpenRouter, envia `max_tokens: 16000` e
 `usage.include: true`, além de
 `temperature: 0` e `seed: 7` quando aceitos pelo modelo. O custo informado vem
-do uso reportado pelo provedor.
+do uso reportado pelo provedor. A ferramenta Python roda só com a biblioteca
+padrão, sem rede e sem acesso aos arquivos do host, em namespaces Linux isolados;
+o limite é de 20 segundos e 4000 caracteres de saída. O agente faz até 16 chamadas
+ao modelo por tarefa.
 
 ```sh
 uv run python -m bench gerar

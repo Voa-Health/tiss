@@ -7,7 +7,12 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from bench._agente import executar_tarefa, listar_ferramentas_mcp, parametros_modelo
+from bench._agente import (
+    executar_tarefa,
+    ferramenta_python,
+    listar_ferramentas_mcp,
+    parametros_modelo,
+)
 from bench._tarefas import TASK_DIR, escrever
 
 
@@ -28,6 +33,7 @@ def _run(args: argparse.Namespace) -> None:
     if not selected:
         raise SystemExit("Nenhuma tarefa encontrada; execute `gerar` primeiro.")
     selected.sort(key=lambda task: task["id"])
+    ferramenta_python("pass")
     model_parameters = parametros_modelo(args.modelo)
     if args.modo == "com_mcp":
         listar_ferramentas_mcp()

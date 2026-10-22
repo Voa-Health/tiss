@@ -255,7 +255,13 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
             json={"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}},
         )
         assert tools.status_code == HTTP_OK
-        tool_names = [tool["name"] for tool in tools.json()["result"]["tools"]]
+        tool_definitions = tools.json()["result"]["tools"]
+        assert all(tool["inputSchema"].get("type") == "object" for tool in tool_definitions)
+        assert all(
+            not any(key in tool["inputSchema"] for key in ("oneOf", "anyOf", "allOf"))
+            for tool in tool_definitions
+        )
+        tool_names = [tool["name"] for tool in tool_definitions]
         assert len(tool_names) == len(OPS)
         assert set(tool_names) == {operation.tool_name for operation in OPS}
         reference_files = [
@@ -279,6 +285,18 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
         assert all(operation.route != "/v1/lista-de-espera" for operation in OPS)
         assert client.get("/v1/limits").json() == LIMITS
         assert client.post("/v1/validate", json={"xml": 3}).status_code == HTTP_UNPROCESSABLE
+        for entrada in ({}, {"xml": "<mensagem/>", "lote": {}}):
+            invalid = client.post("/v1/validate", json=entrada)
+            assert invalid.status_code == HTTP_UNPROCESSABLE
+            assert invalid.json()["erro"]["mensagem"] == (
+                "Informe exatamente um dos campos 'xml' ou 'lote'."
+            )
+        for parametros in ({}, {"cnpj": "11222333000181", "cnes": "1234567"}):
+            invalid = client.get("/v1/rede", params=parametros)
+            assert invalid.status_code == HTTP_UNPROCESSABLE
+            assert invalid.json()["erro"]["mensagem"] == (
+                "Informe exatamente um dos campos 'cnpj' ou 'cnes'."
+            )
         assert client.get("/v1/operadoras/999999").status_code == HTTP_NOT_FOUND
         assert client.get("/v1/operadoras/abc").status_code == HTTP_UNPROCESSABLE
         assert client.get("/v1/glosas/9999").status_code == HTTP_NOT_FOUND
