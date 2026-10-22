@@ -17,7 +17,6 @@
   <a href="https://github.com/Voa-Health/tiss/actions/workflows/ci.yml"><img src="https://github.com/Voa-Health/tiss/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/voa-tiss/"><img src="https://img.shields.io/pypi/v/voa-tiss?label=PyPI" alt="Versão no PyPI"></a>
   <a href="https://pypi.org/project/voa-tiss/"><img src="https://img.shields.io/pypi/pyversions/voa-tiss" alt="Versões do Python"></a>
-  <a href="https://pypistats.org/packages/voa-tiss"><img src="https://img.shields.io/pypi/dm/voa-tiss?label=downloads" alt="Downloads por mês"></a>
   <a href="https://github.com/Voa-Health/tiss/blob/main/LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue" alt="Licença Apache-2.0"></a>
   <a href="https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss"><img src="https://img.shields.io/badge/MCP-health.voa%2Ftiss-7c3aed" alt="MCP Registry"></a>
 </div>
