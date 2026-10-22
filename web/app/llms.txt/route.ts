@@ -1,14 +1,14 @@
 import { readDocs, readOpenApi, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
-import { operationAnchor, site } from "@/lib/site";
-import { moduleContent } from "@/lib/modules";
+import { docsPageUrl, operationAnchor, site } from "@/lib/site";
+import { moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
 
 export const dynamic = "force-static";
 
 export function GET() {
   const docs = readDocs()
-    .map((doc) => `- [${doc.title}](${site.url}/docs/${doc.slug})`)
+    .map((doc) => `- [${doc.title}](${docsPageUrl(doc.slug)})`)
     .join("\n");
   const tutorials = readTutorials()
     .map((tutorial) => `- [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})`)
@@ -20,18 +20,17 @@ export function GET() {
         .map((method) => `- \`${method.toUpperCase()} ${path}\` — ${site.url}/api#${operationAnchor(method, path)}`),
     )
     .join("\n");
-  const operators = readOperadoras()
+  const healthplans = readOperadoras()
     .map((operadora) => `- [${operadora.razao_social} (${operadora.registro_ans})](${site.url}/operadoras/${operadora.registro_ans})`)
     .join("\n");
-  const moduleDescriptions: Record<string, string> = {
-    recurso: moduleContent.recurso.description,
-    extrator: moduleContent.extrator.description,
-    cloud: moduleContent.cloud.description,
-    calculadora: "Estime o custo mensal de recursos de glosa.",
-  };
-  const modules = site.modules
-    .map(({ href, label, slug }) => `- [${label}](${site.url}${href}) — ${moduleDescriptions[slug]}`)
-    .join("\n");
+  const modules = moduleGroups
+    .map(({ title, links }) =>
+      [
+        `### ${title}`,
+        ...links.map(({ href, label, description }) => `- [${label}](${site.url}${href}) — ${description}`),
+      ].join("\n"),
+    )
+    .join("\n\n");
   const body = [
     "# voa-tiss",
     "",
@@ -53,7 +52,7 @@ export function GET() {
     operations,
     "",
     "## Operadoras",
-    operators,
+    healthplans,
     "",
     agentGuidance,
     "",

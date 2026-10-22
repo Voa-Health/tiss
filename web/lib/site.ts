@@ -1,25 +1,35 @@
+const docsUrl = "https://docs.voa.health/integracao/voa-tiss";
+
 export const site = {
   name: "voa-tiss",
   url: "https://tiss-api.voa.health",
   github: "https://github.com/Voa-Health/tiss",
-  operatorContactUrl: "https://github.com/Voa-Health/tiss/issues/new?template=regra-de-operadora.yml",
+  docsUrl,
+  healthplanContactUrl: "https://github.com/Voa-Health/tiss/issues/new?template=regra-de-operadora.yml",
   pypi: "https://pypi.org/project/voa-tiss/",
   installCommand: "pip install voa-tiss",
   mcpCommand: "claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp",
   navigation: [
-    { href: "/docs", label: "Documentação" },
+    { href: docsUrl, label: "Documentação" },
     { href: "/tutoriais", label: "Tutoriais" },
     { href: "/api", label: "API" },
     { href: "/playground", label: "Playground" },
     { href: "/operadoras", label: "Operadoras" },
   ],
-  modules: [
-    { href: "/recurso", label: "Recurso de glosa", slug: "recurso" },
-    { href: "/extrator", label: "Extrator", slug: "extrator" },
-    { href: "/cloud", label: "Cloud", slug: "cloud" },
-    { href: "/calculadora", label: "Calculadora", slug: "calculadora" },
-  ],
 } as const;
+
+export function docsPageUrl(slug?: string): string {
+  switch (slug) {
+    case "api":
+      return `${site.docsUrl}/api`;
+    case "regras-operadora":
+      return `${site.docsUrl}/regras-operadora`;
+    case "codigos":
+      return `${site.github}/blob/main/docs/codigos.md`;
+    default:
+      return site.docsUrl;
+  }
+}
 
 export const siteContentWidth = 1120;
 export const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";

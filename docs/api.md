@@ -19,10 +19,15 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
 | `build` | `POST /v1/build` | `tiss_build` | Gera o XML TISS 4.03.00 de um lote em JSON, com hash do epílogo. Consulte tiss://schemas/lote para o esquema estrutural. Quando usar: depois de validar o lote em JSON sem erros. Quando não usar: para corrigir achados; use tiss_apply_fixes. | 3000 |
 | `hash` | `POST /v1/hash` | `tiss_hash` | Calcula o hash do epílogo de um XML TISS. Quando usar: para conferir a integridade do XML. Quando não usar: para validar o conteúdo; use tiss_validate. | 1000 |
 | `audit` | `POST /v1/audit` | `tiss_audit` | Audita um lote JSON com regras locais e contexto da operadora. Quando usar: para identificar inconsistências administrativas. Quando não usar: para aplicar correções; use tiss_apply_fixes. | 1000 |
+| `rejection_map` | `POST /v1/rejection-map` | `tiss_rejection_map` | Agrega achados por prestador e mês, sem expor dados das guias; CPF é pseudonimizado. Quando usar: para analisar rejeições por prestador. Quando não usar: para consultar guias individuais ou corrigir lotes. | 4000 |
 | `apply_fixes` | `POST /v1/apply_fixes` | `tiss_apply_fixes` | Aplica correções JSON Patch de um relatório ao lote. Quando usar: depois de tiss_validate ou tiss_audit com achados corrigíveis. Quando não usar: para inventar dados ausentes; peça-os ao usuário. | 1500 |
 | `glosa_explain` | `GET /v1/glosas/{codigo}` | `glosa_explain` | Explica um código da Tabela 38 da ANS. Quando usar: ao interpretar uma glosa recebida. Quando não usar: para validar ou corrigir o lote. | 1000 |
 | `dominio` | `GET /v1/dominio` | `tiss_dominio` | Consulta tabelas e códigos de domínio TISS. Quando usar: para localizar um código ou termo de domínio. Quando não usar: para buscar procedimentos TUSS; use tuss_search. | 1000 |
 | `operadora_lookup` | `GET /v1/operadoras` | `operadora_lookup` | Busca operadoras ativas pelo nome, registro, CNPJ ou localidade. Quando usar: para localizar uma operadora na base pública. Quando não usar: para consultar vínculos hospitalares; use tiss_rede. | 1000 |
+| `autorizacao_build` | `POST /v1/autorizacoes/build` | `tiss_autorizacao_build` | Gera XML TISS 4.03.00 para solicitação ou resposta de autorização SP/SADT. | 1500 |
+| `autorizacao_parse` | `POST /v1/autorizacoes/parse` | `tiss_autorizacao_parse` | Interpreta solicitações e respostas de autorização SP/SADT. | 1500 |
+| `autorizacao_check` | `POST /v1/autorizacoes/check` | `tiss_autorizacao_check` | Valida uma solicitação SP/SADT e retorna uma decisão explicável. | 2000 |
+| `sandbox_autorizacao` | `POST /v1/sandbox/autorizacoes` | `tiss_sandbox_autorizacao` | Gera uma resposta SP/SADT sintética nos cenários disponíveis. | 1500 |
 | `buscar_docs` | `GET /v1/docs` | `buscar_docs` | Busca trechos da documentação local da biblioteca. Quando usar: para encontrar instruções e referências da API. Quando não usar: para consultar dados clínicos ou códigos específicos. | 2000 |
 
 ## Acesso

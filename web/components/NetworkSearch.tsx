@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Alert, Button, Card, Flex, Form, Input, Tag, Typography } from "antd";
+import { Alert, Button, Card, Flex, Form, Input, Tag, Typography, theme } from "antd";
 
 const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 
@@ -34,6 +34,7 @@ async function fetchRede(query: string): Promise<Rede> {
 }
 
 export function NetworkSearch() {
+  const { token } = theme.useToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Rede | null>(null);
@@ -57,7 +58,7 @@ export function NetworkSearch() {
   }
 
   return (
-    <Card title="Operadoras que atendem um hospital" style={{ marginBlockEnd: 24 }}>
+    <Card title="Operadoras que atendem um hospital" id="rede">
       <Form layout="vertical" onFinish={search} requiredMark={false}>
         <Form.Item
           label="CNPJ ou CNES do estabelecimento"
@@ -70,9 +71,9 @@ export function NetworkSearch() {
           Buscar
         </Button>
       </Form>
-      {error && <Alert type="error" showIcon title={error} style={{ marginBlockStart: 16 }} />}
+      {error && <Alert type="error" showIcon title={error} style={{ marginBlockStart: token.margin }} />}
       {result && (
-        <Flex vertical gap={8} style={{ marginBlockStart: 16 }}>
+        <Flex vertical gap={token.marginXS} style={{ marginBlockStart: token.margin }}>
           <Typography.Text strong>
             {result.operadoras[0]?.nome_estabelecimento ?? "Estabelecimento"} · {result.total} operadora(s)
           </Typography.Text>

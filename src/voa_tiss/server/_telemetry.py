@@ -49,6 +49,24 @@ def _xml_values(value: Any) -> tuple[str | None, str | None]:
     return registry, version
 
 
+def _shared_lote_registry(values: Any) -> str | None:
+    if not isinstance(values, list) or not values:
+        return None
+    registries = []
+    for value in values:
+        if isinstance(value, (str, bytes)):
+            registry, _ = _xml_values(value)
+        elif isinstance(value, dict):
+            healthplan = value.get("operadora")
+            registry = healthplan.get("registro_ans") if isinstance(healthplan, dict) else None
+        else:
+            registry = None
+        if not isinstance(registry, str) or not registry:
+            return None
+        registries.append(registry)
+    return registries[0] if len(set(registries)) == 1 else None
+
+
 def _deliver(event: str, properties: dict[str, Any]) -> bool:
     sink = _sink
     if sink is not None:
@@ -117,16 +135,24 @@ def operation_event(
     lote = entrada.get("lote")
     operadora = lote.get("operadora") if isinstance(lote, dict) else None
     lote_registry = operadora.get("registro_ans") if isinstance(operadora, dict) else None
+    codes = {
+        str(item["code"])
+        for item in result.get("findings", [])
+        if isinstance(item, dict) and item.get("code")
+    }
+    codes.update(
+        str(item["codigo"])
+        for item in result.get("linhas", [])
+        if isinstance(item, dict) and item.get("codigo")
+    )
     properties = {
         "operacao": operation,
-        "codigos": sorted(
-            {
-                str(item["code"])
-                for item in result.get("findings", [])
-                if isinstance(item, dict) and item.get("code")
-            }
+        "codigos": sorted(codes),
+        "registro_ans": (
+            _shared_lote_registry(entrada.get("lotes"))
+            if "lotes" in entrada
+            else registry or entrada.get("registro_ans") or lote_registry
         ),
-        "registro_ans": registry or entrada.get("registro_ans") or lote_registry,
         "versao_tiss": result.get("version") or version,
         "data": datetime.now(timezone.utc).date().isoformat(),
         "$process_person_profile": False,

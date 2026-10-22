@@ -7,7 +7,7 @@ body:
     attributes:
       value: Não inclua dados pessoais ou informações de saúde identificáveis.
   - type: input
-    id: operator
+    id: healthplan
     attributes:
       label: Operadora
     validations:

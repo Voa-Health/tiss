@@ -2,7 +2,7 @@ import type { Components } from "react-markdown";
 import { Children, isValidElement, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { site } from "@/lib/site";
+import { docsPageUrl, site } from "@/lib/site";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 
@@ -17,7 +17,7 @@ function repositoryLink(href: string, sourcePath: string): string {
   }
   const clean = parts.join("/");
   const suffix = fragment ? `#${fragment}` : "";
-  if (/^docs\/[^/]+\.md$/.test(clean)) return `/docs/${clean.slice(5, -3)}${suffix}`;
+  if (/^docs\/[^/]+\.md$/.test(clean)) return `${docsPageUrl(clean.slice(5, -3))}${suffix}`;
   if (/^docs\/tutoriais\/[^/]+\.ipynb$/.test(clean)) {
     return `/tutoriais/${clean.split("/").at(-1)?.replace(/\.ipynb$/, "")}${suffix}`;
   }

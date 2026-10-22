@@ -5,11 +5,14 @@ from typing import Any
 
 from . import dominio, examples, operadoras
 from ._audit import AuditContext, audit
+from ._autorizacao import check_autorizacao
+from ._autorizacao_xml import AutorizacaoError, build_autorizacao, parse_autorizacao
 from ._check import check
 from ._completeness import missing_mandatory
 from ._glosa import glosa
 from ._lote import Lote, LoteError
 from ._lote_codec import build_lote, hash_epilogo, parse_lote
+from ._mapa import rejection_map
 from ._patch import PatchError, apply_fixes
 from ._report import Finding, Report, json_schema
 from ._retorno import (
@@ -21,6 +24,7 @@ from ._retorno import (
     parse_demonstrativo,
     plan_reconciliation,
 )
+from ._rules import validate_package
 from ._sadt import BundleError, MissingExtraError, load_bundle, render_sadt
 from ._validate import validate
 
@@ -39,6 +43,7 @@ def sadt_missing(values: dict[str, Any]) -> list[str]:
 
 __all__ = [
     "AuditContext",
+    "AutorizacaoError",
     "BundleError",
     "Decisao",
     "Decision",
@@ -53,19 +58,24 @@ __all__ = [
     "RetornoError",
     "apply_fixes",
     "audit",
+    "build_autorizacao",
     "build_lote",
     "check",
+    "check_autorizacao",
     "dominio",
     "examples",
     "glosa",
     "hash_epilogo",
     "json_schema",
     "operadoras",
+    "parse_autorizacao",
     "parse_demonstrativo",
     "parse_lote",
     "plan_reconciliation",
+    "rejection_map",
     "render_sadt",
     "sadt_catalog",
     "sadt_missing",
     "validate",
+    "validate_package",
 ]

@@ -1,9 +1,9 @@
 "use client";
 
-import { Alert, Button, Checkbox, Flex, Form, Input, Select, Typography } from "antd";
+import { Alert, Button, Checkbox, Flex, Form, Input, Select, Typography, theme } from "antd";
 import { useState } from "react";
 import { apiBase } from "@/lib/site";
-import { documentTypes, monthlyVolumes, type ModuleSlug } from "@/lib/modules";
+import { documentTypes, moduleContent, monthlyVolumes, type ModuleSlug } from "@/lib/modules";
 
 type WaitlistValues = {
   email: string;
@@ -13,6 +13,7 @@ type WaitlistValues = {
 };
 
 export function WaitlistForm({ module }: { module: ModuleSlug }) {
+  const { token } = theme.useToken();
   const [form] = Form.useForm<WaitlistValues>();
   const [received, setReceived] = useState(false);
   const [error, setError] = useState("");
@@ -43,8 +44,10 @@ export function WaitlistForm({ module }: { module: ModuleSlug }) {
   }
 
   return (
-    <Flex vertical gap={16}>
-      <Typography.Title level={2}>Avise-me no lançamento</Typography.Title>
+    <Flex vertical gap={token.margin}>
+      <Typography.Title level={2} style={{ margin: 0, fontSize: token.fontSizeHeading4 }}>
+        Avise-me no lançamento
+      </Typography.Title>
       {received ? (
         <Alert
           type="success"
@@ -56,7 +59,6 @@ export function WaitlistForm({ module }: { module: ModuleSlug }) {
           form={form}
           layout="vertical"
           onFinish={(values) => void submit(values)}
-          style={{ maxWidth: 560 }}
         >
           <Form.Item
             label="E-mail"
@@ -76,7 +78,7 @@ export function WaitlistForm({ module }: { module: ModuleSlug }) {
             <Input autoComplete="organization" />
           </Form.Item>
           <Form.Item
-            label="Volume mensal de guias"
+            label={moduleContent[module].volumeLabel}
             name="volume_mensal"
             rules={[{ required: true, message: "Selecione o volume mensal." }]}
           >
@@ -91,11 +93,11 @@ export function WaitlistForm({ module }: { module: ModuleSlug }) {
               <Checkbox.Group options={documentTypes.map(({ value, label }) => ({ value, label }))} />
             </Form.Item>
           )}
-          {error && <Alert type="error" showIcon title={error} style={{ marginBlockEnd: 16 }} />}
+          {error && <Alert type="error" showIcon title={error} style={{ marginBlockEnd: token.margin }} />}
           <Button type="primary" htmlType="submit" loading={loading}>
             Entrar na lista de espera
           </Button>
-          <Typography.Paragraph type="secondary" style={{ marginBlockStart: 12 }}>
+          <Typography.Paragraph type="secondary" style={{ margin: 0, marginBlockStart: token.marginSM }}>
             E-mail e empresa usados só para falar sobre o módulo. Consulte os{" "}
             <a href="/termos">termos</a>.
           </Typography.Paragraph>

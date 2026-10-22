@@ -52,6 +52,10 @@
               "audit.tabela_fora_de_vigencia",
               "audit.tabela_sem_procedimentos",
               "audit.valor_nao_positivo",
+              "autorizacao.carteirinha",
+              "autorizacao.dado_ausente",
+              "autorizacao.exige_auditoria",
+              "autorizacao.sem_regra",
               "guia.carteirinha_ausente",
               "guia.executante_ausente",
               "guia.sequencial",
@@ -65,6 +69,7 @@
               "lote.valor_total_geral",
               "lote.vazio",
               "regra.combinacao_proibida",
+              "regra.exige_autorizacao",
               "regra.max_itens",
               "regra.obrigatorio",
               "regra.padrao",
@@ -151,6 +156,93 @@
               "object",
               "null"
             ]
+          }
+        }
+      }
+    },
+    "decisao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipo",
+        "rules",
+        "needs"
+      ],
+      "properties": {
+        "tipo": {
+          "enum": [
+            "aprovar_por_regra",
+            "pendente",
+            "encaminhar_auditor"
+          ]
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "source",
+              "mantenedor"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "url",
+                  "titulo",
+                  "data",
+                  "acesso",
+                  "official"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "titulo": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  },
+                  "acesso": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "mantenedor": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo"
+                ],
+                "properties": {
+                  "tipo": {
+                    "enum": [
+                      "comunidade",
+                      "operadora"
+                    ]
+                  },
+                  "registro_ans": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "needs": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

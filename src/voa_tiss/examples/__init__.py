@@ -2,7 +2,13 @@
 
 from importlib.resources import files
 
-_NAMES = ("lote-valido", "lote-com-erros", "demonstrativo")
+_NAMES = (
+    "lote-valido",
+    "lote-com-erros",
+    "demonstrativo",
+    "autorizacao-solicitacao",
+    "autorizacao-resposta",
+)
 
 
 def names() -> list[str]:

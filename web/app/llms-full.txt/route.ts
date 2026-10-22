@@ -1,19 +1,20 @@
 import { readDocs, readOpenApi, readTutorials, tutorialMarkdown } from "@/lib/content";
 import { descricaoOperadora } from "@/lib/operadoras";
 import { fontePainel, readOperadoras, readSerie } from "@/lib/operadoras-dados";
-import { site } from "@/lib/site";
-import { formatLaunchPrice, launchPrices, moduleContent, type ModuleSlug } from "@/lib/modules";
+import { docsPageUrl, site } from "@/lib/site";
+import { formatLaunchPrice, launchPrices, moduleContent, moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
+import { audiences } from "@/lib/audiences";
 
 export const dynamic = "force-static";
 
 export function GET() {
   const docs = readDocs();
   const documentationIndex = docs
-    .map((doc) => `- [${doc.title}](${site.url}/docs/${doc.slug})`)
+    .map((doc) => `- [${doc.title}](${docsPageUrl(doc.slug)})`)
     .join("\n");
   const documentation = docs
-    .map((doc) => `# [${doc.title}](${site.url}/docs/${doc.slug})\n\n${doc.content}`)
+    .map((doc) => `# [${doc.title}](${docsPageUrl(doc.slug)})\n\n${doc.content}`)
     .join("\n\n---\n\n");
   const tutorialData = readTutorials();
   const tutorialIndex = tutorialData
@@ -29,21 +30,46 @@ export function GET() {
         .map(([method, operation]) => `${method.toUpperCase()} ${path}: ${operation.summary ?? ""}`),
     )
     .join("\n");
-  const operators = readOperadoras()
+  const healthplans = readOperadoras()
     .map((operadora) => `- ${descricaoOperadora(operadora, readSerie(operadora.registro_ans))} ${site.url}/operadoras/${operadora.registro_ans}`)
     .join("\n");
   const fonte = fontePainel();
-  const modules = [
-    ...(["recurso", "extrator", "cloud"] as ModuleSlug[]).map((slug) => {
-      const content = moduleContent[slug];
-      return `### [${content.title}](${site.url}/${slug})\n\n${content.description}\n\n${content.points.join("\n")}\n\n${formatLaunchPrice(launchPrices[slug])}`;
-    }),
-    `### [Calculadora](${site.url}/calculadora)\n\nEstime o custo mensal dos recursos de glosa.`,
-  ].join("\n\n");
+  const modules = moduleGroups
+    .map(({ title, slugs, links }) =>
+      [
+        `### ${title}`,
+        ...slugs.map((slug) => {
+          const content = moduleContent[slug];
+          return `#### [${content.title}](${site.url}${content.href})\n\n${content.description}\n\n${content.points.join("\n")}\n\n${formatLaunchPrice(launchPrices[slug])}`;
+        }),
+        ...links
+          .slice(slugs.length)
+          .map(({ href, label, description }) => `#### [${label}](${site.url}${href})\n\n${description}`),
+      ].join("\n\n"),
+    )
+    .join("\n\n");
+  const audienceSections = audiences
+    .map(({ title, summary, items, modules: slugs }) =>
+      [
+        `### ${title}`,
+        "",
+        summary,
+        "",
+        ...items.map(
+          ({ label, description, href }) =>
+            `- [${label}](${new URL(href, site.url)}): ${description}`,
+        ),
+        ...slugs.map((slug) => `- [${moduleContent[slug].title}](${site.url}${moduleContent[slug].href}): ${formatLaunchPrice(launchPrices[slug])}`),
+      ].join("\n"),
+    )
+    .join("\n\n");
   const body = [
     "# voa-tiss: documentação completa",
     "",
     "> Para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo que usam TISS e dados abertos da ANS sobre operadoras, glosas e rede hospitalar.",
+    "",
+    "## Para quem é",
+    audienceSections,
     "",
     "## Documentação",
     documentationIndex,
@@ -66,7 +92,7 @@ export function GET() {
     "",
     "## Operadoras",
     `Fonte: ${fonte.titulo} (${fonte.licenca}), ${fonte.url}`,
-    operators,
+    healthplans,
     "",
     agentGuidance,
     "",

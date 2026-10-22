@@ -98,6 +98,7 @@ allowed-confusables = ["×"]
 "tests/**" = ["D", "PLR2004"]
 "agents/*/tests/**" = ["D", "PLR2004"]
 "scripts/**" = ["D", "PLR2004", "T20"]
+"web/demos/**" = ["D", "T20"]
 "bench/**" = ["D", "PLR0913", "PLR0917", "PLR2004", "T20"]
 "docs/**/*.ipynb" = ["D", "PLR2004"]
 

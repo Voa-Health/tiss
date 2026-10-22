@@ -1,0 +1,40 @@
+{
+  "operadora": "123456",
+  "mantenedor": { "tipo": "operadora", "registro_ans": "123456" },
+  "official": true,
+  "versao_tiss": "4.03.00",
+  "regras": [
+    {
+      "id": "carteira.oito-digitos",
+      "descricao": "A carteira do beneficiário tem 8 dígitos.",
+      "source": {
+        "url": "https://example.org/manual-de-faturamento",
+        "titulo": "Manual de faturamento (exemplo)",
+        "data": "2026-01-15",
+        "acesso": "publico"
+      },
+      "severity": "error",
+      "check": {
+        "tipo": "padrao",
+        "pointer": "/guias/*/dados_beneficiario/numero_carteira",
+        "regex": "\\d{8}"
+      }
+    },
+    {
+      "id": "guia.ate-dez-procedimentos",
+      "descricao": "Cada guia tem no máximo 10 procedimentos.",
+      "source": {
+        "url": "https://example.org/manual-de-faturamento",
+        "titulo": "Manual de faturamento (exemplo)",
+        "data": "2026-01-15",
+        "acesso": "publico"
+      },
+      "severity": "warning",
+      "check": {
+        "tipo": "max_itens",
+        "pointer": "/guias/*/procedimentos_executados",
+        "max": 10
+      }
+    }
+  ]
+}

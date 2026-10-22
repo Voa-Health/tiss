@@ -23,7 +23,7 @@
 <div align="center">
   <a href="https://tiss-api.voa.health">Site</a> ·
   <a href="https://tiss-api.voa.health/playground">Playground</a> ·
-  <a href="https://tiss-api.voa.health/docs">Documentação</a> ·
+  <a href="https://docs.voa.health/integracao/voa-tiss">Documentação</a> ·
   <a href="https://tiss-api.voa.health/operadoras">Operadoras</a> ·
   <a href="https://github.com/Voa-Health/tiss/blob/main/bench/README.md">TISS-Bench</a>
 </div>
@@ -70,7 +70,7 @@ Prefere testar no navegador? Abra o
 | --- | --- |
 | **Prestador** (hospital, clínica, laboratório) | pegar o erro antes da operadora e entender por que uma guia foi glosada |
 | **Profissional de saúde** | conferir guias e códigos TUSS sem decorar o manual |
-| **Operadora** | auditar lotes com as suas regras e publicá-las para quem envia |
+| **Operadora** | checar lotes na entrada com as suas regras, offline; ver o mapa de rejeição por prestador; oferecer sandbox com as suas regras; validar autorizações TISS; publicar regras com selo Oficial; e, nos módulos com agente, analisar contas e autorizações prévias |
 | **Paciente** | entender em linguagem simples o que uma glosa significa |
 | **Gestor do SUS ou do governo** | consultar dados abertos da ANS sobre operadoras, glosas e rede hospitalar |
 
@@ -95,7 +95,7 @@ que foi cobrado. Para testar sem operadora real, use a
   auditoria, demonstrativos, TUSS, operadoras e rede hospitalar.
 - **[API HTTP](#api-http)**: as mesmas operações em
   `https://tiss-api.voa.health`, com [OpenAPI](https://tiss-api.voa.health/openapi.json).
-- **[MCP remoto](#conectar-agentes)**: 20 ferramentas e 3 prompts para agentes,
+- **[MCP remoto](#conectar-agentes)**: 24 ferramentas e 3 prompts para agentes,
   no [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss).
 - **[Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)**: envie
   lotes e receba protocolo, demonstrativo e glosas sem tocar em produção.
@@ -169,6 +169,8 @@ No Cursor, adicione ao `mcp.json`:
 | [Gerar e corrigir um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb) | sair do JSON para o XML válido |
 | [Regras por operadora](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/05-regras-por-operadora.ipynb) | auditar com regras publicadas |
 | [Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb) | testar envios e glosas |
+| [Autorização SP/SADT](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/07-autorizacao.ipynb) | solicitar e analisar autorizações |
+| [Mapa de rejeição](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/08-mapa-de-rejeicao.ipynb) | agregar achados por prestador |
 
 ## API HTTP
 
@@ -246,6 +248,7 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 | `build_lote` | Gera o XML TISS a partir de um lote validado. |
 | `parse_lote` | Converte XML TISS em um lote JSON. |
 | `audit` | Audita o lote com o contexto da operadora. |
+| `validate_package` | Valida um pacote de regras de operadora e lista os erros. |
 | `hash_epilogo` | Calcula o hash do epílogo. |
 | `glosa` | Consulta um código da Tabela 38. |
 | `dominio.lookup` / `dominio.search` | Consulta tabelas de domínio TISS. |

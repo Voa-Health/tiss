@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { OperatorProfile } from "@/components/OperatorProfile";
+import { HealthplanProfile } from "@/components/HealthplanProfile";
 import { descricaoOperadora } from "@/lib/operadoras";
 import { fontePainel, readOperadoras, readSerie } from "@/lib/operadoras-dados";
 
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function OperatorPage({ params }: Params) {
+export default async function HealthplanPage({ params }: Params) {
   const operadora = find((await params).registro);
   if (!operadora) notFound();
-  return <OperatorProfile operadora={operadora} serie={readSerie(operadora.registro_ans)} fonte={fontePainel()} />;
+  return <HealthplanProfile operadora={operadora} serie={readSerie(operadora.registro_ans)} fonte={fontePainel()} />;
 }
