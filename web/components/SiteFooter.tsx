@@ -2,7 +2,7 @@
 
 import { Col, Flex, Row, Typography, theme } from "antd";
 import Link from "next/link";
-import { moduleGroups } from "@/lib/modules";
+import { solutionGroups } from "@/lib/solutions";
 import { site, siteContentWidth } from "@/lib/site";
 import { track } from "@/lib/analytics";
 
@@ -22,19 +22,19 @@ export function SiteFooter() {
         gutter={[token.marginXL, token.marginLG]}
         style={{ maxWidth: siteContentWidth, marginInline: "auto" }}
       >
-        {moduleGroups.map((group) => (
-          <Col key={group.title} xs={24} sm={12} md={8}>
+        {solutionGroups.map((group) => (
+          <Col key={group.title} xs={24} sm={12} md={5}>
             <Flex vertical gap={token.marginXS}>
               <Typography.Text strong>{group.title}</Typography.Text>
               {group.links.map((item) => (
-                <Link key={item.href} href={item.href} style={linkStyle}>
+                <Link key={item.label} href={item.href} style={linkStyle}>
                   {item.label}
                 </Link>
               ))}
             </Flex>
           </Col>
         ))}
-        <Col xs={24} sm={12} md={8}>
+        <Col xs={24} sm={12} md={4}>
           <Flex vertical gap={token.marginXS}>
             <Typography.Text strong>{site.name}</Typography.Text>
             <a

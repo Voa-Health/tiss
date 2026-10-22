@@ -70,3 +70,7 @@ textarea:focus-visible,
   border: var(--ant-line-width) solid var(--ant-color-border);
   text-align: left;
 }
+
+.solution-link:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
