@@ -93,18 +93,20 @@ class Execucao:
         recursos = {(r["guia"], r["codigo_glosa"]): r for r in self.recursos}
         glosas = []
         for decisao in self.glosas():
-            codigo = extrair_codigo_glosa(decisao)
-            explicacao = explicacoes.get(codigo, {})
-            glosas.append(
-                {
-                    "guia": decisao["guia_ref"],
-                    "codigo": codigo,
-                    "descricao": explicacao.get("descricao"),
-                    "grupo": explicacao.get("grupo"),
-                    "valor_glosa_cents": decisao.get("valor_glosa_cents"),
-                    "recurso": (decisao["guia_ref"], codigo) in recursos,
-                }
-            )
+            for indice, codigo in enumerate(extrair_codigos_glosa(decisao)):
+                explicacao = explicacoes.get(codigo, {})
+                glosas.append(
+                    {
+                        "guia": decisao["guia_ref"],
+                        "codigo": codigo,
+                        "descricao": explicacao.get("descricao"),
+                        "grupo": explicacao.get("grupo"),
+                        "valor_glosa_cents": (
+                            decisao.get("valor_glosa_cents") if indice == 0 else None
+                        ),
+                        "recurso": (decisao["guia_ref"], codigo) in recursos,
+                    }
+                )
         aceito = bool(envio.get("aceito"))
         concluido = aceito and all(glosa["recurso"] for glosa in glosas)
         return {
@@ -123,9 +125,16 @@ class Execucao:
         }
 
 
-def extrair_codigo_glosa(decisao: dict[str, Any]) -> str:
-    """Extraia o código de glosa do motivo devolvido pelo demonstrativo."""
-    return str(decisao.get("motivo", "")).split(";")[0].split(" ")[0].strip()
+def extrair_codigos_glosa(decisao: dict[str, Any]) -> list[str]:
+    """Extraia códigos de glosa únicos na ordem do motivo."""
+    codigos = []
+    vistos = set()
+    for parte in str(decisao.get("motivo") or "").split(";"):
+        tokens = parte.strip().split()
+        if tokens and tokens[0] not in vistos:
+            vistos.add(tokens[0])
+            codigos.append(tokens[0])
+    return codigos
 
 
 def _curto(texto: str, limite: int = 110) -> str:
@@ -181,7 +190,11 @@ def _ferramentas_locais(execucao: Execucao) -> list[BaseTool]:
         guia: str, codigo_glosa: str, classe: str, justificativa: str
     ) -> str:
         execucao.relatar(f"→ rascunhar_recurso guia={guia} glosa={codigo_glosa} classe={classe}")
-        glosadas = {(d["guia_ref"], extrair_codigo_glosa(d)) for d in execucao.glosas()}
+        glosadas = {
+            (d["guia_ref"], codigo)
+            for d in execucao.glosas()
+            for codigo in extrair_codigos_glosa(d)
+        }
         if (guia, codigo_glosa) not in glosadas or classe not in CLASSES:
             erro = {"codigo": "recurso_invalido", "mensagem": "Guia, glosa ou classe inexistente."}
             return execucao.guardar("rascunhar_recurso", {"erro": erro})

@@ -2,10 +2,10 @@ export type ModuleSlug = "recurso" | "extrator" | "cloud";
 export type LaunchPrice = { amount: number | null; unit: string; note?: string };
 
 export const launchPrices: Record<ModuleSlug, LaunchPrice> = {
-  recurso: { amount: 4.9, unit: "por recurso enviado" },
-  extrator: { amount: 0.39, unit: "por documento extraído" },
+  recurso: { amount: 6.9, unit: "por recurso enviado" },
+  extrator: { amount: 0.49, unit: "por documento extraído" },
   cloud: {
-    amount: 0.15,
+    amount: 0.05,
     unit: "por guia acompanhada",
     note: "1.000 guias por mês grátis. Enterprise (híbrido ou self-hosted, SSO e SLA) sob consulta.",
   },
