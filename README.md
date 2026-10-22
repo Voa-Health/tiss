@@ -9,7 +9,6 @@
 </div>
 
 <div align="center">
-  <h1>voa-tiss</h1>
   <h3>TISS sem dor de cabeça, para pessoas e agentes de IA.</h3>
 </div>
 
