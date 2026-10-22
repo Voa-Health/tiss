@@ -24,7 +24,7 @@ _SCHEMA: dict[str, Any] = {
     "additionalProperties": False,
     "required": ["modulo", "email", "empresa", "volume_mensal"],
     "properties": {
-        "modulo": {"enum": ["recurso", "extrator", "cloud"]},
+        "modulo": {"enum": ["recurso", "extrator", "cloud", "analise_contas", "autorizacao"]},
         "email": {
             "type": "string",
             "maxLength": 254,

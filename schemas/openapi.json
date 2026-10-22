@@ -848,7 +848,9 @@
                     "enum": [
                       "recurso",
                       "extrator",
-                      "cloud"
+                      "cloud",
+                      "analise_contas",
+                      "autorizacao"
                     ]
                   },
                   "tipos_documento": {

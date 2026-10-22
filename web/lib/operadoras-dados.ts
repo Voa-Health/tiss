@@ -10,7 +10,7 @@ function dados() {
   if (!cache) {
     const read = (name: string) =>
       JSON.parse(fs.readFileSync(repositoryPath("src", "voa_tiss", "operadoras", "_data", name), "utf8"));
-    const records: Record<string, Operadora> = read("operators.json").records;
+    const records: Record<string, Operadora> = read("healthplans.json").records;
     cache = { operadoras: Object.values(records), painel: read("indicadores.json") };
   }
   return cache;

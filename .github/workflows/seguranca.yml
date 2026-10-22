@@ -38,4 +38,4 @@ jobs:
             --output gitleaks.tar.gz
           printf '%s  gitleaks.tar.gz\n' "$GITLEAKS_SHA256" | sha256sum --check
           tar -xzf gitleaks.tar.gz gitleaks
-          ./gitleaks git . --redact --no-banner --exit-code 1
+          ./gitleaks git . --log-opts=HEAD --redact --no-banner --exit-code 1

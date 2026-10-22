@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Operadora } from "@/lib/operadoras";
 
-export function OperatorList({ operadoras }: { operadoras: Pick<Operadora, "registro_ans" | "razao_social">[] }) {
+export function HealthplanList({ operadoras }: { operadoras: Pick<Operadora, "registro_ans" | "razao_social">[] }) {
   const { token } = theme.useToken();
   const [busca, setBusca] = useState("");
   const termo = busca.trim().toLocaleLowerCase("pt-BR");

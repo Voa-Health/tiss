@@ -3,7 +3,7 @@
 import { Alert, Button, Checkbox, Flex, Form, Input, Select, Typography } from "antd";
 import { useState } from "react";
 import { apiBase } from "@/lib/site";
-import { documentTypes, monthlyVolumes, type ModuleSlug } from "@/lib/modules";
+import { documentTypes, moduleContent, monthlyVolumes, type ModuleSlug } from "@/lib/modules";
 
 type WaitlistValues = {
   email: string;
@@ -76,7 +76,7 @@ export function WaitlistForm({ module }: { module: ModuleSlug }) {
             <Input autoComplete="organization" />
           </Form.Item>
           <Form.Item
-            label="Volume mensal de guias"
+            label={moduleContent[module].volumeLabel}
             name="volume_mensal"
             rules={[{ required: true, message: "Selecione o volume mensal." }]}
           >

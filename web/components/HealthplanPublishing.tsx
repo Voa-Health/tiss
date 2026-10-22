@@ -27,10 +27,10 @@ const sample = `{
   ]
 }`;
 
-export function OperatorPublishing() {
+export function HealthplanPublishing() {
   const { token } = theme.useToken();
   return (
-    <Card title="Para operadoras: publique suas regras">
+    <Card id="publicar-regras" title="Publique suas regras com selo Oficial">
       <Flex vertical gap={token.margin}>
         <Typography.Paragraph>
           Prestadores validam as guias com as regras da operadora antes do envio, reduzindo glosas
@@ -61,7 +61,7 @@ export function OperatorPublishing() {
         </Typography.Paragraph>
         <Button
           type="primary"
-          href={site.operatorContactUrl}
+          href={site.healthplanContactUrl}
           onClick={() => track("tiss_operadora_contact", { local: "operadoras" })}
         >
           Falar com a equipe
