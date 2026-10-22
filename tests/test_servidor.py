@@ -168,6 +168,11 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
             audit_report,
         ),
         (
+            "rejection_map",
+            {"lotes": [lote]},
+            voa_tiss.rejection_map([lote]),
+        ),
+        (
             "apply_fixes",
             {"lote": fix_lote, "report": fix_report},
             {"lote": voa_tiss.apply_fixes(fix_lote, fix_report)},
@@ -542,10 +547,19 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         )
         fix_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
         fix_report = voa_tiss.check(fix_lote).to_dict()
+        cpf = "12345678909"
+        secret = "s" * 16
+        cpf_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        cpf_lote["prestador"] = {"cpf": cpf}
+        cpf_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
         privacy_inputs = [
             ("build", {"lote": marked_lote}),
             ("hash", {"xml": marked_xml}),
             ("audit", {"lote": marked_lote, "operadora": "000000"}),
+            (
+                "rejection_map",
+                {"lotes": [cpf_lote], "segredo_pseudonimo": secret},
+            ),
             ("autorizacao_build", {"mensagem": marked_request}),
             ("autorizacao_parse", {"xml": marked_auth_xml}),
             ("autorizacao_parse", {"xml": marked_auth_response.decode("ISO-8859-1")}),
@@ -592,6 +606,21 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
             assert auth_password not in str(properties)
             if "lote" in entrada:
                 assert properties["registro_ans"] == entrada["lote"]["operadora"]["registro_ans"]
+            if name == "rejection_map":
+                assert properties["registro_ans"] == "123456"
+                assert cpf not in response.text
+                assert cpf not in str(properties)
+                assert secret not in str(properties)
+                assert "hmac" not in str(properties)
+        conflict = client.post(
+            "/v1/rejection-map",
+            json={"lotes": [marked_lote], "operadora": "123456", "regras": {}},
+            headers=_bearer(),
+        )
+        assert conflict.status_code == HTTP_UNPROCESSABLE
+        assert conflict.json()["erro"]["mensagem"] == (
+            "Informe no máximo um dos campos 'operadora' ou 'regras'."
+        )
         events.clear()
         assert (
             client.post(

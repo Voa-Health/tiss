@@ -110,7 +110,7 @@ def _artifact_contents() -> dict[Path, bytes]:
         ROOT / "schemas" / f"{name}.schema.json": (
             json.dumps(json_schema(name), ensure_ascii=False, indent=2).encode("utf-8") + b"\n"
         )
-        for name in ("finding", "report", "lote", "audit_context", "rules")
+        for name in ("finding", "report", "lote", "audit_context", "rules", "rejection_map")
     }
     lines = [
         "# Códigos estáveis de validação",
