@@ -78,7 +78,7 @@ export const orgMock: OrgData = {
   keys: [
     {
       id: "chave-01",
-      prefixo: "vt_3fa9",
+      prefixo: "sk_tiss_3fa9",
       membro_email: "marina@exemplo.com.br",
       nivel: "verified",
       expira_em: usedKeyLastUse + daySeconds,
@@ -86,7 +86,7 @@ export const orgMock: OrgData = {
     },
     {
       id: "chave-02",
-      prefixo: "vt_8c21",
+      prefixo: "sk_tiss_8c21",
       membro_email: "rafael@exemplo.com.br",
       nivel: "login",
       expira_em: unusedKeyIssuedAt + daySeconds,

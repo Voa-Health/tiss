@@ -19,7 +19,6 @@ from voa_tiss.tuss import lookup, search
 from ._context import CallContext
 from ._docs import _load_readme, search_docs
 from ._docs import render_api_docs as _render_api_docs
-from ._keys import KEY_TTL_SECONDS
 from ._mcp_data import RESOURCE_DEFINITIONS, RESOURCE_TEMPLATE_DEFINITIONS
 from ._ops_autorizacao import AUTORIZACAO_OPS
 from ._ops_consulta import CONSULTA_OPS
@@ -38,8 +37,11 @@ from ._ops_schemas import (
 from ._prompts import PROMPTS
 from ._quota import admit
 from ._telemetry import operation_event
+from ._usage import API_CALL, record, wait
 
 logger = logging.getLogger("voa_tiss.server")
+_USAGE_WAIT_SECONDS = 2.0
+_HTTP_OK = 200
 
 
 def _decision(value: dict[str, Any]) -> Decisao:
@@ -278,6 +280,7 @@ _BASE_OPS = (
             "validar → tiss_apply_fixes → validar de novo."
         ),
         2500,
+        scope="tiss:validate",
     ),
     Op(
         "parse_demonstrativo",
@@ -289,6 +292,7 @@ _BASE_OPS = (
             "Quando não usar: para validar lotes."
         ),
         1800,
+        scope="tiss:accounts",
     ),
     Op(
         "plan_reconciliation",
@@ -310,6 +314,7 @@ _BASE_OPS = (
             "Quando não usar: para alterar guias."
         ),
         3000,
+        scope="tiss:accounts",
     ),
     Op(
         "tuss_lookup",
@@ -360,6 +365,7 @@ _BASE_OPS = (
             "renderizar uma guia. Quando não usar: para validar um lote."
         ),
         1000,
+        scope="tiss:validate",
     ),
     Op(
         "sadt_catalog",
@@ -371,6 +377,7 @@ _BASE_OPS = (
             "Quando não usar: para preencher uma guia sem dados."
         ),
         10000,
+        scope="tiss:validate",
     ),
     Op(
         "rede",
@@ -488,6 +495,7 @@ _BASE_OPS = (
         ),
         2500,
         path="/v1/sandbox/lotes",
+        scope="tiss:sandbox",
     ),
     Op(
         "sandbox_demonstrativo",
@@ -501,6 +509,7 @@ _BASE_OPS = (
         5000,
         method="GET",
         path="/v1/sandbox/lotes/{protocolo}/demonstrativo",
+        scope="tiss:sandbox",
     ),
 )
 OPS = (*_BASE_OPS, *LOTE_OPS, *CONSULTA_OPS, *AUTORIZACAO_OPS, buscar_docs_op)
@@ -517,12 +526,12 @@ def call(
     op: Op, entrada: dict[str, Any], ctx: CallContext | None = None
 ) -> tuple[int, dict[str, Any]]:
     ctx = ctx or CallContext()
-    denied = admit(op.name, ctx)
+    denied = admit(op.name, ctx, op.scope)
     if denied is not None:
         logger.info("op=%s status=%d ms=0.0", op.name, denied[0])
         return denied
     started = dt.datetime.now(dt.timezone.utc)
-    status = 200
+    status = _HTTP_OK
     try:
         _VALIDATORS[op.name].validate(entrada)
         result = op.run(entrada)
@@ -549,6 +558,10 @@ def call(
         result = {"erro": {"codigo": "entrada_invalida", "mensagem": str(exc)}}
     elapsed = (dt.datetime.now(dt.timezone.utc) - started).total_seconds() * 1000
     logger.info("op=%s status=%d ms=%.1f", op.name, status, elapsed)
+    if ctx.access is not None:
+        record(ctx.access, op.name, op.usage_kind if status == _HTTP_OK else API_CALL, started)
+        if ctx.background_tasks is not None:
+            ctx.background_tasks.add_task(wait, _USAGE_WAIT_SECONDS)
     operation_event(
         op.name,
         entrada,
@@ -573,7 +586,6 @@ def render_api_docs() -> str:
         PROMPTS,
         RESOURCE_DEFINITIONS,
         RESOURCE_TEMPLATE_DEFINITIONS,
-        KEY_TTL_SECONDS,
     )
 
 
