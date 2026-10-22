@@ -131,6 +131,8 @@ claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp
 <details>
 <summary><strong>Skill, plugins, Codex e Cursor</strong></summary>
 
+### Skill, plugins, Codex e Cursor
+
 ```sh
 npx skills add Voa-Health/tiss
 claude plugin marketplace add Voa-Health/tiss && claude plugin install voa-tiss@voa-tiss
@@ -173,6 +175,8 @@ No Cursor, adicione ao `mcp.json`:
 
 <details>
 <summary><strong>Servidor local, chaves e telemetria</strong></summary>
+
+### Servidor local, chaves e telemetria
 
 Instale o extra do servidor e inicie a API local:
 
@@ -231,6 +235,8 @@ podem ler para enviar uma chave de acesso.
 <details>
 <summary><strong>Símbolos da biblioteca</strong></summary>
 
+### Símbolos da biblioteca
+
 Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 
 | Símbolo | Uso |
@@ -264,6 +270,8 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 
 <details>
 <summary><strong>Campos de um achado</strong></summary>
+
+### Campos de um achado
 
 | Campo | Significado |
 | --- | --- |
