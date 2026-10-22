@@ -27,7 +27,7 @@ from voa_tiss.server._auth import CLIENT_DOCUMENT, BackendError
 from voa_tiss.server._docs import search_docs
 from voa_tiss.server._http import create_app
 from voa_tiss.server._keys import LIMITS, issue_key, read_key, sign
-from voa_tiss.server._ops import _DOCS_CORPUS, OPS, token_estimate
+from voa_tiss.server._ops import OPS, _docs_corpus, token_estimate
 from voa_tiss.server._quota import set_counter
 from voa_tiss.server._telemetry import set_sink
 from voa_tiss.tuss import lookup, search
@@ -157,7 +157,7 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         (
             "buscar_docs",
             {"texto": "MCP"},
-            {"resultados": search_docs(_DOCS_CORPUS, "MCP", 3)},
+            {"resultados": search_docs(_docs_corpus(), "MCP", 3)},
         ),
     ]
 

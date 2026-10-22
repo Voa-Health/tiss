@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import logging
+from functools import cache
 from typing import Any
 
 import jsonschema
@@ -222,7 +223,7 @@ def _validate(value: dict[str, Any]) -> dict[str, Any]:
 def _buscar_docs(value: dict[str, Any]) -> dict[str, Any]:
     return {
         "resultados": search_docs(
-            _DOCS_CORPUS,
+            _docs_corpus(),
             value["texto"],
             value.get("limite", 3),
         )
@@ -576,7 +577,9 @@ def render_api_docs() -> str:
     )
 
 
-_DOCS_CORPUS = {
-    "tiss://docs/readme": _load_readme(),
-    "tiss://docs/api": render_api_docs(),
-}
+@cache
+def _docs_corpus() -> dict[str, str]:
+    return {
+        "tiss://docs/readme": _load_readme(),
+        "tiss://docs/api": render_api_docs(),
+    }
