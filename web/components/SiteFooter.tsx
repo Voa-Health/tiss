@@ -2,6 +2,7 @@
 
 import { Flex, theme } from "antd";
 import Link from "next/link";
+import { moduleLinks } from "@/lib/modules";
 import { site } from "@/lib/site";
 import { track } from "@/lib/analytics";
 
@@ -19,7 +20,7 @@ export function SiteFooter() {
     >
       <Flex justify="center" align="center" gap={token.margin} wrap>
         <Link href="/termos" style={linkStyle}>Termos</Link>
-        {site.modules.map((item) => (
+        {moduleLinks.map((item) => (
           <Link key={item.href} href={item.href} style={linkStyle}>{item.label}</Link>
         ))}
         <a href={site.github} style={linkStyle} onClick={() => track("tiss_cta_github", { local: "footer" })}>GitHub</a>

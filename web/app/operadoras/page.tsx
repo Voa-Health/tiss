@@ -8,7 +8,8 @@ import { readRulePacks } from "@/lib/rule-packs";
 
 export const metadata: Metadata = {
   title: "Operadoras",
-  description: "Operadoras ativas na ANS, indicadores públicos de glosa e pacotes de regras declarativas.",
+  description:
+    "Checagem na entrada com regras próprias, sandbox, autorização TISS aberta, módulos com agente e dados abertos da ANS sobre operadoras.",
 };
 
 export default function OperatorsPage() {

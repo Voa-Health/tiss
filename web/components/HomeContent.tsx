@@ -7,6 +7,8 @@ import { Fragment } from "react";
 import { CodeBlock } from "./CodeBlock";
 import { site } from "@/lib/site";
 import { track } from "@/lib/analytics";
+import { audiences } from "@/lib/audiences";
+import { formatLaunchPrice, launchPrices, moduleContent } from "@/lib/modules";
 
 export function HomeContent() {
   const { token } = theme.useToken();
@@ -20,9 +22,10 @@ export function HomeContent() {
   return (
     <Flex vertical gap={token.paddingXL}>
       <section>
-        <Typography.Title>Valide lotes TISS antes do envio</Typography.Title>
+        <Typography.Title>TISS aberto para quem envia e para quem recebe</Typography.Title>
         <Typography.Paragraph>
-          Aplique validações XSD e regras de negócio, simule a operadora e integre fluxos com MCP.
+          Valide, gere e audite TISS offline, simule a operadora, consulte dados abertos da ANS e
+          integre agentes por MCP.
         </Typography.Paragraph>
         <Space wrap>
           <Button type="primary" size="large" href="/playground">Experimentar playground</Button>
@@ -30,7 +33,47 @@ export function HomeContent() {
         </Space>
       </section>
 
-      <section aria-label="Fluxo de validação">
+      <section aria-labelledby="para-quem-e">
+        <Typography.Title level={2} id="para-quem-e">Para quem é</Typography.Title>
+        <Row gutter={[token.marginLG, token.marginLG]}>
+          {audiences.map((audience) => (
+            <Col key={audience.id} xs={24} lg={12}>
+              <Card id={audience.id} title={audience.title} style={{ height: "100%" }}>
+                <Flex vertical gap={token.margin}>
+                  <Typography.Paragraph style={{ margin: 0 }}>{audience.summary}</Typography.Paragraph>
+                  <ul style={{ margin: 0, paddingInlineStart: token.paddingLG }}>
+                    {audience.items.map((item) => (
+                      <li key={item.label}>
+                        <Link href={item.href}>{item.label}</Link>
+                        <Typography.Text type="secondary">: {item.description}</Typography.Text>
+                      </li>
+                    ))}
+                  </ul>
+                  {audience.modules.length > 0 && (
+                    <Flex vertical gap={token.marginXS}>
+                      <Typography.Text strong>Módulos</Typography.Text>
+                      {audience.modules.map((slug) => (
+                        <Typography.Text key={slug}>
+                          <Link href={moduleContent[slug].href}>{moduleContent[slug].label}</Link>
+                          <Typography.Text type="secondary">
+                            {" "}· {formatLaunchPrice(launchPrices[slug])}
+                          </Typography.Text>
+                        </Typography.Text>
+                      ))}
+                    </Flex>
+                  )}
+                  <div>
+                    <Button href={audience.cta.href}>{audience.cta.label}</Button>
+                  </div>
+                </Flex>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </section>
+
+      <section aria-labelledby="como-funciona">
+        <Typography.Title level={2} id="como-funciona">Como funciona para quem envia</Typography.Title>
         <Flex vertical gap={token.margin}>
           <Flex vertical={!screens.md} align="stretch" gap={token.marginSM}>
             {steps.map((step, index) => (

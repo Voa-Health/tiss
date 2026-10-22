@@ -5,6 +5,7 @@ import { Button, Drawer, Dropdown, Flex, Grid, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { moduleGroups } from "@/lib/modules";
 import { loginSimulationEnabled, site, siteContentWidth } from "@/lib/site";
 
 export function SiteHeader() {
@@ -19,9 +20,14 @@ export function SiteHeader() {
       {item.label}
     </Link>
   ));
-  const moduleItems = site.modules.map((item) => ({
-    key: item.href,
-    label: <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>,
+  const moduleItems = moduleGroups.map((group) => ({
+    type: "group" as const,
+    key: group.title,
+    label: group.title,
+    children: group.links.map((item) => ({
+      key: item.href,
+      label: <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>,
+    })),
   }));
 
   return (
@@ -64,11 +70,15 @@ export function SiteHeader() {
             <Drawer title="Navegação" open={open} onClose={() => setOpen(false)}>
               <Flex vertical gap={token.marginLG}>
                 {links}
-                <Typography.Text strong>Módulos</Typography.Text>
-                {site.modules.map((item) => (
-                  <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
-                    {item.label}
-                  </Link>
+                {moduleGroups.map((group) => (
+                  <Flex key={group.title} vertical gap={token.marginSM}>
+                    <Typography.Text strong>Módulos {group.title.toLowerCase()}</Typography.Text>
+                    {group.links.map((item) => (
+                      <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
+                        {item.label}
+                      </Link>
+                    ))}
+                  </Flex>
                 ))}
                 <Link href="/entrar" onClick={() => setOpen(false)}>Entrar</Link>
               </Flex>
