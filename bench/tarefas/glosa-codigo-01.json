@@ -1,0 +1,13 @@
+{
+  "categoria": "glosa",
+  "errada": "{\n  \"codigo\": \"1017\",\n  \"descricao\": \"PROCEDIMENTO INVÁLIDO\"\n}",
+  "esperado": {
+    "codigo": "1017",
+    "descricao": "DATA DE VALIDADE DA CARTEIRA VENCIDA"
+  },
+  "formato": "json",
+  "id": "glosa-codigo-01",
+  "instrucao": "Um convênio glosou seu atendimento com o código 1017 da Tabela 38 da TISS (mensagens de glosa). Qual é a descrição oficial desse código?\n\nResposta: JSON {\"codigo\": \"1017\", \"descricao\": \"DATA DE VALIDADE DA CARTEIRA VENCIDA\"}.",
+  "perspectiva": "profissional",
+  "referencia": "{\n  \"codigo\": \"1017\",\n  \"descricao\": \"DATA DE VALIDADE DA CARTEIRA VENCIDA\"\n}"
+}

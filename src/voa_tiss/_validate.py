@@ -10,7 +10,8 @@ from typing import Any
 
 from lxml import etree
 
-from ._lote_codec import parse_lote
+from ._lote import LoteError
+from ._lote_codec import hash_epilogo, parse_lote
 from ._report import Finding, Report
 from ._rules import rule_findings
 from ._schema import parser
@@ -320,8 +321,38 @@ def validate(xml: bytes | str, *, version: str | None = None, operadora: Any = N
         chosen = None
 
     guias = _guia_elements(root)
+    xsd_findings: list[Finding] = []
     if chosen is not None:
-        findings.extend(_xsd_findings(doc, root, guias, chosen))
+        xsd_findings = _xsd_findings(doc, root, guias, chosen)
+        findings.extend(xsd_findings)
+    hash_element = next(
+        (
+            element
+            for element in root.iter()
+            if local_name(element.tag) == "hash"
+            and element.getparent() is not None
+            and local_name(element.getparent().tag) == "epilogo"
+        ),
+        None,
+    )
+    if hash_element is not None:
+        hash_xpath = _canonical_xpath(hash_element)
+        hash_xsd_invalid = any(finding.xpath == hash_xpath for finding in xsd_findings)
+        if not hash_xsd_invalid:
+            try:
+                calculated_hash = hash_epilogo(raw)
+            except LoteError:
+                pass
+            else:
+                declared_hash = (hash_element.text or "").strip()
+                if declared_hash.lower() != calculated_hash.lower():
+                    findings.append(
+                        _finding(
+                            "lote.hash_divergente",
+                            "Hash do epílogo divergente do calculado.",
+                            element=hash_element,
+                        )
+                    )
     if chosen == "4.03.00" and operadora is not None:
         with suppress(ValueError):
             findings.extend(rule_findings(dict(parse_lote(raw)), operadora))

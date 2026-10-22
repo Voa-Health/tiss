@@ -1,0 +1,13 @@
+{
+  "categoria": "glosa",
+  "errada": "{\n  \"codigo\": \"1802\",\n  \"descricao\": \"DATA DE VALIDADE DA CARTEIRA VENCIDA\"\n}",
+  "esperado": {
+    "codigo": "1802",
+    "descricao": "PROCEDIMENTO INCOMPATÍVEL COM O SEXO DO BENEFICIÁRIO"
+  },
+  "formato": "json",
+  "id": "glosa-codigo-03",
+  "instrucao": "Um convênio glosou seu atendimento com o código 1802 da Tabela 38 da TISS (mensagens de glosa). Qual é a descrição oficial desse código?\n\nResposta: JSON {\"codigo\": \"1802\", \"descricao\": \"PROCEDIMENTO INCOMPATÍVEL COM O SEXO DO BENEFICIÁRIO\"}.",
+  "perspectiva": "profissional",
+  "referencia": "{\n  \"codigo\": \"1802\",\n  \"descricao\": \"PROCEDIMENTO INCOMPATÍVEL COM O SEXO DO BENEFICIÁRIO\"\n}"
+}

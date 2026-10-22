@@ -54,6 +54,7 @@ gitleaks-report*.json
 
 # Dados reais nunca entram no repositório
 privado/
+.bench/
 
 # Sistema e editores
 .DS_Store

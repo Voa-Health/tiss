@@ -125,6 +125,8 @@ def _sandbox_statement(value: dict[str, Any]) -> dict[str, Any]:
 
 
 def _rede_lookup(value: dict[str, Any]) -> dict[str, Any]:
+    if ("cnpj" in value) == ("cnes" in value):
+        raise ValueError("Informe exatamente um dos campos 'cnpj' ou 'cnes'.")
     limite = value.get("limite", 200)
     operadoras = _rede_module.operadoras_do_estabelecimento(
         cnpj=value.get("cnpj"), cnes=value.get("cnes")
@@ -206,10 +208,11 @@ _VALIDATE_INPUT = _object(
         "data": {"type": "string", "format": "date"},
     }
 )
-_VALIDATE_INPUT["oneOf"] = [{"required": ["xml"]}, {"required": ["lote"]}]
 
 
 def _validate(value: dict[str, Any]) -> dict[str, Any]:
+    if ("xml" in value) == ("lote" in value):
+        raise ValueError("Informe exatamente um dos campos 'xml' ou 'lote'.")
     if "xml" in value:
         return voa_tiss.validate(value["xml"], operadora=value.get("operadora")).to_dict()
     return voa_tiss.check(
@@ -370,13 +373,7 @@ _BASE_OPS = (
     Op(
         "rede",
         _rede_lookup,
-        {
-            **_object({"cnpj": _string(), "cnes": _string(), "limite": _LIMIT}),
-            "oneOf": [
-                {"required": ["cnpj"], "not": {"required": ["cnes"]}},
-                {"required": ["cnes"], "not": {"required": ["cnpj"]}},
-            ],
-        },
+        _object({"cnpj": _string(), "cnes": _string(), "limite": _LIMIT}),
         _object(
             {
                 "atualizado_em": _string(),

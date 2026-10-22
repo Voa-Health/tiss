@@ -1,0 +1,13 @@
+{
+  "categoria": "glosa",
+  "errada": "{\n  \"codigo\": \"1801\",\n  \"descricao\": \"DATA DE VALIDADE DA CARTEIRA VENCIDA\"\n}",
+  "esperado": {
+    "codigo": "1801",
+    "descricao": "PROCEDIMENTO INVÁLIDO"
+  },
+  "formato": "json",
+  "id": "glosa-codigo-02",
+  "instrucao": "Um convênio glosou seu atendimento com o código 1801 da Tabela 38 da TISS (mensagens de glosa). Qual é a descrição oficial desse código?\n\nResposta: JSON {\"codigo\": \"1801\", \"descricao\": \"PROCEDIMENTO INVÁLIDO\"}.",
+  "perspectiva": "profissional",
+  "referencia": "{\n  \"codigo\": \"1801\",\n  \"descricao\": \"PROCEDIMENTO INVÁLIDO\"\n}"
+}

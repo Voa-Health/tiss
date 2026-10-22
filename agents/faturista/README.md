@@ -69,8 +69,8 @@ chave e as demais exigem `VOA_TISS_API_KEY`. Também é possível passar `--mode
   LLM; [test_fluxo.py](tests/test_fluxo.py) roda o fluxo completo contra a
   operadora simulada local.
 
-Para comparar modelos no mesmo tipo de tarefa, veja o TISS-Bench em
-`bench/README.md`.
+Para comparar modelos no mesmo tipo de tarefa, veja o
+[TISS-Bench](../../bench/README.md).
 
 ## Execução real
 

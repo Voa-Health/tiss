@@ -181,7 +181,12 @@ def _document(lote: Lote) -> tuple[etree._Element, dict[int, str]]:
             },
             "guia",
         ):
-            _element(node, name, value, _pointer(pointer, name), paths, kind=name)
+            kind_name = (
+                "dados_atendimento_consulta"
+                if kind == "consulta" and name == "dados_atendimento"
+                else name
+            )
+            _element(node, name, value, _pointer(pointer, name), paths, kind=kind_name)
     epilogue = etree.SubElement(root, f"{{{NS}}}epilogo")
     etree.SubElement(epilogue, f"{{{NS}}}hash").text = ""
     return root, paths

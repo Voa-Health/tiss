@@ -2002,18 +2002,6 @@
             "application/json": {
               "schema": {
                 "additionalProperties": false,
-                "oneOf": [
-                  {
-                    "required": [
-                      "xml"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "lote"
-                    ]
-                  }
-                ],
                 "properties": {
                   "contexto": {
                     "additionalProperties": false,

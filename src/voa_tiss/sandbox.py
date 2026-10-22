@@ -11,6 +11,7 @@ from typing import Any
 
 from lxml import etree
 
+from ._lote_codec import hash_epilogo
 from ._schema import NS, parser
 from ._validate import validate
 
@@ -288,8 +289,8 @@ def _make_demonstrativo(data: dict[str, Any]) -> bytes:
     _element(statement, "valorProcessadoGeral", _amount_text(total_informed))
     _element(statement, "valorLiberadoGeral", _amount_text(total_released))
     _element(statement, "valorGlosaGeral", _amount_text(total_glosa))
-    body = bytes(etree.tostring(root, method="c14n"))
-    _element(_element(root, "epilogo", ""), "hash", hashlib.md5(body).hexdigest())
+    epilogue_hash = _element(_element(root, "epilogo", ""), "hash", "")
+    epilogue_hash.text = hash_epilogo(etree.tostring(root, encoding="UTF-8"))
     return bytes(etree.tostring(root, xml_declaration=True, encoding="UTF-8"))
 
 

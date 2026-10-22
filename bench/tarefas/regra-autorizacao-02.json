@@ -1,0 +1,12 @@
+{
+  "categoria": "regra",
+  "errada": "sim",
+  "esperado": {
+    "resposta": "nao"
+  },
+  "formato": "texto",
+  "id": "regra-autorizacao-02",
+  "instrucao": "Você é o profissional executante. A operadora exige autorização prévia para os procedimentos 10101012. Veja a guia abaixo e as autorizações já emitidas. Falta autorização para esta guia?\n\nAutorizações emitidas: {\n  \"G-0001\": {\n    \"validade\": \"2026-12-31\"\n  }\n}\n\nGuia (JSON do voa-tiss):\n{\n  \"cabecalho_guia\": {\n    \"numero_guia_prestador\": \"G-0001\",\n    \"registro_ans\": \"123456\"\n  },\n  \"dados_atendimento\": {\n    \"indicacao_acidente\": \"0\",\n    \"regime_atendimento\": \"01\",\n    \"tipo_atendimento\": \"01\"\n  },\n  \"dados_beneficiario\": {\n    \"atendimento_rn\": \"N\",\n    \"numero_carteira\": \"000000000001\"\n  },\n  \"dados_executante\": {\n    \"cnes\": \"1234567\",\n    \"contratado_executante\": {\n      \"codigo_prestador_na_operadora\": \"PRESTADOR01\"\n    }\n  },\n  \"dados_solicitacao\": {\n    \"carater_atendimento\": \"1\"\n  },\n  \"dados_solicitante\": {\n    \"contratado_solicitante\": {\n      \"codigo_prestador_na_operadora\": \"PRESTADOR1\"\n    },\n    \"nome_contratado_solicitante\": \"CLÍNICA SÃO JOÃO\",\n    \"profissional_solicitante\": {\n      \"cbos\": \"225125\",\n      \"conselho_profissional\": \"01\",\n      \"nome_profissional\": \"DRA. MARIA COSTA\",\n      \"numero_conselho_profissional\": \"12345\",\n      \"uf\": \"35\"\n    }\n  },\n  \"procedimentos_executados\": [\n    {\n      \"data_execucao\": \"2026-10-21\",\n      \"procedimento\": {\n        \"codigo_procedimento\": \"10101012\",\n        \"codigo_tabela\": \"22\",\n        \"descricao_procedimento\": \"Consulta em consultório (no horário normal ou preestabelecido)\"\n      },\n      \"quantidade_executada\": \"1\",\n      \"reducao_acrescimo\": \"1.00\",\n      \"sequencial_item\": \"1\",\n      \"valor_total\": 12500,\n      \"valor_unitario\": 12500\n    }\n  ],\n  \"tipo\": \"sp_sadt\",\n  \"valor_total\": {\n    \"valor_procedimentos\": 12500,\n    \"valor_total_geral\": 12500\n  }\n}\n\nResposta: apenas \"sim\" ou \"não\".",
+  "perspectiva": "profissional",
+  "referencia": "nao"
+}
