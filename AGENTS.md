@@ -25,7 +25,9 @@ Valide com `tiss_validate` ou `validate`/`check`, aplique os patches com
 os erros. Se houver `needs`, pergunte ao usuário somente os dados listados.
 Calcule o hash com `tiss_hash` ou `hash_epilogo`; leia demonstrativos com
 `tiss_parse_demonstrativo` e explique glosas com `glosa_explain`. Teste envios
-com `tiss_sandbox_*` ou `voa_tiss.sandbox`.
+com `tiss_sandbox_*` ou `voa_tiss.sandbox`. Para autorização SP/SADT, use
+`tiss_autorizacao_build`, `tiss_autorizacao_parse`, `tiss_autorizacao_check`
+ou `tiss_sandbox_autorizacao`.
 
 Atende operadoras, prestadores (hospitais, clínicas e laboratórios),
 profissionais de saúde, pacientes e gestores do SUS e do governo que consultam

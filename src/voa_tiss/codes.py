@@ -72,6 +72,23 @@ CODE_CATALOG = {
     "regra.valores": _spec("Valor não permitido pela operadora", needs="pointer"),
     "regra.max_itens": _spec("Limite de itens da operadora excedido", needs="pointer"),
     "regra.combinacao_proibida": _spec("Combinação proibida pela operadora", needs="pointer"),
+    "regra.exige_autorizacao": _spec(
+        "Procedimento exige autorização prévia", glosa="1818", needs="pointer"
+    ),
+    "autorizacao.sem_regra": _spec(
+        "Sem regra da operadora para decidir a autorização.", severity="warning"
+    ),
+    "autorizacao.dado_ausente": _spec(
+        "Dado necessário para analisar a autorização ausente.",
+        severity="warning",
+        needs="pointer",
+    ),
+    "autorizacao.exige_auditoria": _spec(
+        "Procedimento exige autorização prévia.", severity="warning", needs="pointer"
+    ),
+    "autorizacao.carteirinha": _spec(
+        "Carteirinha inativa ou vencida.", severity="warning", needs="pointer"
+    ),
 }
 
 CODES: dict[str, str] = {code: values["message"] for code, values in CODE_CATALOG.items()}

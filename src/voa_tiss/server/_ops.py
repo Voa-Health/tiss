@@ -21,6 +21,7 @@ from ._docs import _load_readme, search_docs
 from ._docs import render_api_docs as _render_api_docs
 from ._keys import KEY_TTL_SECONDS
 from ._mcp_data import RESOURCE_DEFINITIONS, RESOURCE_TEMPLATE_DEFINITIONS
+from ._ops_autorizacao import AUTORIZACAO_OPS
 from ._ops_consulta import CONSULTA_OPS
 from ._ops_lote import LOTE_OPS
 from ._ops_schemas import (
@@ -116,6 +117,7 @@ def _sandbox_send(value: dict[str, Any]) -> dict[str, Any]:
         value["xml"],
         cenario=value.get("cenario", "aprovado"),
         tentativa=value.get("tentativa", 1),
+        registro_ans=value.get("registro_ans"),
     )
 
 
@@ -475,6 +477,7 @@ _BASE_OPS = (
                     ]
                 },
                 "tentativa": {"type": "integer", "minimum": 1},
+                "registro_ans": {"type": "string", "pattern": "^[0-9]{5,6}$"},
             },
             ["xml"],
         ),
@@ -500,7 +503,7 @@ _BASE_OPS = (
         path="/v1/sandbox/lotes/{protocolo}/demonstrativo",
     ),
 )
-OPS = (*_BASE_OPS, *LOTE_OPS, *CONSULTA_OPS, buscar_docs_op)
+OPS = (*_BASE_OPS, *LOTE_OPS, *CONSULTA_OPS, *AUTORIZACAO_OPS, buscar_docs_op)
 
 _VALIDATORS = {
     op.name: jsonschema.Draft202012Validator(

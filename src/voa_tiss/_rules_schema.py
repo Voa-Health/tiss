@@ -56,6 +56,7 @@ def rules_schema() -> dict[str, Any]:
                                     "valores",
                                     "max_itens",
                                     "combinacao_proibida",
+                                    "exige_autorizacao",
                                 )
                             ]
                         },
@@ -79,6 +80,15 @@ def _check_schema(tipo: str) -> dict[str, Any]:
             "tipo": {"const": tipo},
             "se": {"type": "object"},
             "entao_proibido": {"type": "object"},
+        }
+    elif tipo == "exige_autorizacao":
+        base = {
+            "tipo": {"const": tipo},
+            "codigos": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 1,
+            },
         }
     required = list(base)
     return {

@@ -198,6 +198,26 @@
                     "type": "object"
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tipo",
+                  "codigos"
+                ],
+                "properties": {
+                  "tipo": {
+                    "const": "exige_autorizacao"
+                  },
+                  "codigos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 1
+                  }
+                }
               }
             ]
           }
