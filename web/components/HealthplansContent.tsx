@@ -1,8 +1,9 @@
 "use client";
 
 import { Button, Card, Col, Flex, Row, Space, Tag, theme, Typography } from "antd";
-import Link from "next/link";
+import { FeatureCard } from "@/components/FeatureCard";
 import { NetworkSearch } from "@/components/NetworkSearch";
+import { Section } from "@/components/ui/Section";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { healthplanFeatures, healthplanModules } from "@/lib/audiences";
 import { formatLaunchPrice, launchPrices, moduleContent } from "@/lib/modules";
@@ -12,40 +13,49 @@ import { track } from "@/lib/analytics";
 
 function HealthplanFeatures() {
   const { token } = theme.useToken();
+  const withDemo = healthplanFeatures.filter((feature) => feature.demo);
+  const withoutDemo = healthplanFeatures.filter((feature) => !feature.demo);
   return (
-    <section aria-labelledby="para-operadoras">
-      <Typography.Title level={2} id="para-operadoras">Para operadoras</Typography.Title>
-      <Typography.Paragraph>
-        A camada aberta roda na sua infraestrutura, sem contrato e sem enviar dado à Voa. Os
-        módulos com agente decidem sempre com a regra ou a evidência citada.
-      </Typography.Paragraph>
-      <Row gutter={[token.margin, token.margin]}>
-        {healthplanFeatures.map((feature) => (
-          <Col key={feature.label} xs={24} md={12} lg={8}>
-            <Card title={feature.label} style={{ height: "100%" }}>
-              <Typography.Paragraph>{feature.description}</Typography.Paragraph>
-              <Link href={feature.href}>{feature.linkLabel}</Link>
-            </Card>
-          </Col>
+    <Section id="para-operadoras" title="Para operadoras">
+      <Flex vertical gap={token.margin}>
+        {withDemo.map((feature) => (
+          <FeatureCard key={feature.label} item={feature} />
         ))}
-      </Row>
-      <Typography.Title level={3} style={{ marginBlockStart: token.marginLG }}>
-        Módulos para operadoras
-      </Typography.Title>
+        <Row gutter={[token.margin, token.margin]}>
+          {withoutDemo.map((feature) => (
+            <Col key={feature.label} xs={24} md={12}>
+              <FeatureCard item={feature} />
+            </Col>
+          ))}
+        </Row>
+      </Flex>
+    </Section>
+  );
+}
+
+function HealthplanModules() {
+  const { token } = theme.useToken();
+  return (
+    <Section id="modulos-para-operadoras" title="Módulos para operadoras">
       <Row gutter={[token.margin, token.margin]}>
         {healthplanModules.map((slug) => (
           <Col key={slug} xs={24} md={12}>
-            <Card title={moduleContent[slug].title} style={{ height: "100%" }}>
-              <Typography.Paragraph>{moduleContent[slug].description}</Typography.Paragraph>
-              <Typography.Paragraph strong>
-                {formatLaunchPrice(launchPrices[slug])}
-              </Typography.Paragraph>
-              <Button href={moduleContent[slug].href}>Entrar na lista de espera</Button>
+            <Card style={{ height: "100%" }}>
+              <Flex vertical gap={token.marginSM} align="flex-start">
+                <Typography.Title level={3} style={{ margin: 0, fontSize: token.fontSizeHeading4 }}>
+                  {moduleContent[slug].title}
+                </Typography.Title>
+                <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
+                  {moduleContent[slug].description}
+                </Typography.Paragraph>
+                <Typography.Text strong>{formatLaunchPrice(launchPrices[slug])}</Typography.Text>
+                <Button href={moduleContent[slug].href}>Entrar na lista de espera</Button>
+              </Flex>
             </Card>
           </Col>
         ))}
       </Row>
-    </section>
+    </Section>
   );
 }
 
@@ -53,10 +63,16 @@ export function HealthplansContent({ packs }: { packs: RulePack[] }) {
   const { token } = theme.useToken();
   return (
     <>
-      <Typography.Title>Operadoras</Typography.Title>
-      <Flex vertical gap={token.marginLG}>
-        <HealthplanFeatures />
-        <NetworkSearch />
+      <Section
+        id="operadoras"
+        level={1}
+        title="Operadoras"
+        description="A camada aberta roda na sua infraestrutura, sem contrato e sem enviar dado à Voa. Os módulos com agente decidem sempre com a regra ou a evidência citada."
+      />
+      <HealthplanFeatures />
+      <HealthplanModules />
+      <NetworkSearch />
+      <Section id="pacotes-de-regras" title="Pacotes de regras públicos">
         {packs.length ? (
           packs.map((pack) => (
             <Card
@@ -100,7 +116,7 @@ export function HealthplansContent({ packs }: { packs: RulePack[] }) {
             }
           />
         )}
-      </Flex>
+      </Section>
     </>
   );
 }

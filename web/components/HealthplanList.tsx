@@ -1,6 +1,8 @@
 "use client";
 
-import { Input, theme, Typography } from "antd";
+import { Input, theme } from "antd";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Section } from "@/components/ui/Section";
 import Link from "next/link";
 import { useState } from "react";
 import type { Operadora } from "@/lib/operadoras";
@@ -17,17 +19,19 @@ export function HealthplanList({ operadoras }: { operadoras: Pick<Operadora, "re
     : operadoras;
 
   return (
-    <section>
-      <Typography.Title level={2}>Operadoras ativas na ANS</Typography.Title>
+    <Section id="operadoras-ativas" title="Operadoras ativas na ANS">
       <Input.Search
         allowClear
         placeholder="Nome ou registro ANS"
         aria-label="Buscar operadora"
         value={busca}
         onChange={(event) => setBusca(event.target.value)}
-        style={{ maxWidth: 420, marginBottom: token.marginLG }}
+        style={{ maxWidth: token.screenXS }}
       />
-      <ul style={{ columns: "280px", columnGap: token.marginXL, paddingLeft: token.paddingMD }}>
+      {visiveis.length === 0 && (
+        <EmptyState title="Nenhuma operadora encontrada" description="Busque pelo nome ou pelo registro ANS." />
+      )}
+      <ul style={{ columns: "280px", columnGap: token.marginXL, margin: 0, paddingInlineStart: token.paddingMD }}>
         {visiveis.map(({ registro_ans, razao_social }) => (
           <li key={registro_ans} style={{ breakInside: "avoid", marginBottom: token.marginXXS }}>
             <Link href={`/operadoras/${registro_ans}`}>
@@ -36,6 +40,6 @@ export function HealthplanList({ operadoras }: { operadoras: Pick<Operadora, "re
           </li>
         ))}
       </ul>
-    </section>
+    </Section>
   );
 }
