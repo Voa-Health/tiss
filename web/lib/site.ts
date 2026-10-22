@@ -1,4 +1,5 @@
 const docsUrl = "https://docs.voa.health/integracao/voa-tiss";
+const tutorialsUrl = `${docsUrl}/tutoriais`;
 
 export const site = {
   name: "voa-tiss",
@@ -11,23 +12,27 @@ export const site = {
   mcpCommand: "claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp",
   navigation: [
     { href: docsUrl, label: "Documentação" },
-    { href: "/tutoriais", label: "Tutoriais" },
-    { href: "/api", label: "API" },
+    { href: tutorialUrl(), label: "Tutoriais" },
+    { href: docsPageUrl("api"), label: "API" },
     { href: "/playground", label: "Playground" },
     { href: "/operadoras", label: "Operadoras" },
   ],
 } as const;
 
+export function tutorialUrl(slug?: string): string {
+  return slug ? `${tutorialsUrl}/${slug}` : tutorialsUrl;
+}
+
 export function docsPageUrl(slug?: string): string {
   switch (slug) {
     case "api":
-      return `${site.docsUrl}/api`;
+      return `${docsUrl}/api`;
     case "regras-operadora":
-      return `${site.docsUrl}/regras-operadora`;
+      return `${docsUrl}/regras-operadora`;
     case "codigos":
       return `${site.github}/blob/main/docs/codigos.md`;
     default:
-      return site.docsUrl;
+      return docsUrl;
   }
 }
 
@@ -61,10 +66,6 @@ export function formatDateTimeShort(unixTimestamp: number): string {
 
 export function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("pt-BR", { timeZone: "UTC" });
-}
-
-export function operationAnchor(method: string, route: string): string {
-  return `${method}-${route}`.replace(/[^a-z0-9-]+/gi, "-").toLowerCase();
 }
 
 export function loginSimulationEnabled(): boolean {

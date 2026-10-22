@@ -163,14 +163,14 @@ No Cursor, adicione ao `mcp.json`:
 
 | Tutorial | O que você aprende |
 | --- | --- |
-| [Validar um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/01-validar-um-lote.ipynb) | ler achados e corrigir |
-| [Demonstrativo e conciliação](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/02-demonstrativo-e-conciliacao.ipynb) | conferir o que a operadora pagou |
-| [TUSS e SP/SADT](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/03-tuss-e-sp-sadt.ipynb) | buscar códigos e montar a guia |
-| [Gerar e corrigir um lote](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb) | sair do JSON para o XML válido |
-| [Regras por operadora](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/05-regras-por-operadora.ipynb) | auditar com regras publicadas |
-| [Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb) | testar envios e glosas |
-| [Autorização SP/SADT](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/07-autorizacao.ipynb) | solicitar e analisar autorizações |
-| [Mapa de rejeição](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/08-mapa-de-rejeicao.ipynb) | agregar achados por prestador |
+| [Validar um lote](https://docs.voa.health/integracao/voa-tiss/tutoriais/01-validar-um-lote) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/01-validar-um-lote.ipynb)) | ler achados e corrigir |
+| [Demonstrativo e conciliação](https://docs.voa.health/integracao/voa-tiss/tutoriais/02-demonstrativo-e-conciliacao) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/02-demonstrativo-e-conciliacao.ipynb)) | conferir o que a operadora pagou |
+| [TUSS e SP/SADT](https://docs.voa.health/integracao/voa-tiss/tutoriais/03-tuss-e-sp-sadt) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/03-tuss-e-sp-sadt.ipynb)) | buscar códigos e montar a guia |
+| [Gerar e corrigir um lote](https://docs.voa.health/integracao/voa-tiss/tutoriais/04-gerar-e-corrigir-um-lote) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb)) | sair do JSON para o XML válido |
+| [Regras por operadora](https://docs.voa.health/integracao/voa-tiss/tutoriais/05-regras-por-operadora) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/05-regras-por-operadora.ipynb)) | auditar com regras publicadas |
+| [Operadora simulada](https://docs.voa.health/integracao/voa-tiss/tutoriais/06-operadora-simulada) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)) | testar envios e glosas |
+| [Autorização SP/SADT](https://docs.voa.health/integracao/voa-tiss/tutoriais/07-autorizacao) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/07-autorizacao.ipynb)) | solicitar e analisar autorizações |
+| [Mapa de rejeição](https://docs.voa.health/integracao/voa-tiss/tutoriais/08-mapa-de-rejeicao) ([notebook](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/08-mapa-de-rejeicao.ipynb)) | agregar achados por prestador |
 
 ## API HTTP
 

@@ -1,6 +1,6 @@
 import { readDocs, readOpenApi, readTutorials } from "@/lib/content";
 import { readOperadoras } from "@/lib/operadoras-dados";
-import { docsPageUrl, operationAnchor, site } from "@/lib/site";
+import { docsPageUrl, site, tutorialUrl } from "@/lib/site";
 import { moduleGroups } from "@/lib/modules";
 import { agentGuidance } from "@/lib/agent-guidance";
 
@@ -11,13 +11,13 @@ export function GET() {
     .map((doc) => `- [${doc.title}](${docsPageUrl(doc.slug)})`)
     .join("\n");
   const tutorials = readTutorials()
-    .map((tutorial) => `- [${tutorial.title}](${site.url}/tutoriais/${tutorial.slug})`)
+    .map((tutorial) => `- [${tutorial.title}](${tutorialUrl(tutorial.slug)})`)
     .join("\n");
   const operations = Object.entries(readOpenApi().paths)
     .flatMap(([path, methods]) =>
       Object.keys(methods)
         .filter((method) => ["get", "post", "put", "patch", "delete"].includes(method))
-        .map((method) => `- \`${method.toUpperCase()} ${path}\` — ${site.url}/api#${operationAnchor(method, path)}`),
+        .map((method) => `- \`${method.toUpperCase()} ${path}\` — ${docsPageUrl("api")}`),
     )
     .join("\n");
   const healthplans = readOperadoras()
@@ -46,7 +46,7 @@ export function GET() {
     modules,
     "",
     "## API, OpenAPI e MCP",
-    `- [Referência HTTP](${site.url}/api)`,
+    `- [Referência HTTP](${docsPageUrl("api")})`,
     `- [OpenAPI](${site.url}/openapi.json)`,
     `- [MCP](${site.url}/mcp)`,
     operations,

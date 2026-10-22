@@ -1,11 +1,11 @@
 "use client";
 
 import { DownOutlined, MenuOutlined } from "@ant-design/icons";
-import { Button, Drawer, Dropdown, Flex, Grid, theme, Typography } from "antd";
+import { Button, Col, Drawer, Dropdown, Flex, Grid, Row, Tag, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { moduleGroups } from "@/lib/modules";
+import { type SolutionLink, solutionGroups } from "@/lib/solutions";
 import { loginSimulationEnabled, site, siteContentWidth } from "@/lib/site";
 
 export function SiteHeader() {
@@ -20,15 +20,59 @@ export function SiteHeader() {
       {item.label}
     </Link>
   ));
-  const moduleItems = moduleGroups.map((group) => ({
-    type: "group" as const,
-    key: group.title,
-    label: group.title,
-    children: group.links.map((item) => ({
-      key: item.href,
-      label: <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>,
-    })),
-  }));
+  const solutionLink = (item: SolutionLink) => (
+    <Link
+      key={item.label}
+      href={item.href}
+      onClick={() => setOpen(false)}
+      className="solution-link"
+      style={{ display: "block", padding: token.paddingXS, borderRadius: token.borderRadius }}
+    >
+      <Typography.Text style={{ display: "block" }}>{item.label}</Typography.Text>
+      <Typography.Text type="secondary" style={{ display: "block", fontSize: token.fontSizeSM }}>
+        {item.description}
+      </Typography.Text>
+      {item.tag && (
+        <Tag
+          color={item.tag === "Grátis" ? "green" : undefined}
+          style={{ marginTop: token.marginXXS, marginInlineEnd: 0 }}
+        >
+          {item.tag}
+        </Tag>
+      )}
+    </Link>
+  );
+  const solutionHeading = (group: (typeof solutionGroups)[number]) => (
+    <Flex vertical style={{ paddingInline: token.paddingXS, marginBottom: token.marginXXS }}>
+      <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+        {group.audience}
+      </Typography.Text>
+      <Typography.Text strong>{group.title}</Typography.Text>
+    </Flex>
+  );
+  const solutionsPanel = (
+    <div
+      style={{
+        width: 920,
+        maxWidth: "calc(100vw - 32px)",
+        padding: token.padding,
+        background: token.colorBgElevated,
+        borderRadius: token.borderRadiusLG,
+        boxShadow: token.boxShadowSecondary,
+      }}
+    >
+      <Row gutter={[token.margin, token.margin]}>
+        {solutionGroups.map((group) => (
+          <Col key={group.title} span={6}>
+            {solutionHeading(group)}
+            <Flex vertical gap={token.marginXXS}>
+              {group.links.map(solutionLink)}
+            </Flex>
+          </Col>
+        ))}
+      </Row>
+    </div>
+  );
 
   return (
     <header style={{ borderBottom: `${token.lineWidth}px ${token.lineType} ${token.colorBorderSecondary}` }}>
@@ -44,7 +88,7 @@ export function SiteHeader() {
         {screens.md ? (
           <Flex align="center" gap={token.marginLG} className="site-nav">
             {links}
-            <Dropdown menu={{ items: moduleItems }} trigger={["click"]}>
+            <Dropdown popupRender={() => solutionsPanel} trigger={["click"]} placement="bottom">
               <Button
                 type="link"
                 style={{
@@ -54,7 +98,7 @@ export function SiteHeader() {
                   fontWeight: "inherit",
                 }}
               >
-                Módulos
+                Soluções
                 <DownOutlined
                   style={{
                     marginInlineStart: token.marginXXS,
@@ -70,14 +114,10 @@ export function SiteHeader() {
             <Drawer title="Navegação" open={open} onClose={() => setOpen(false)}>
               <Flex vertical gap={token.marginLG}>
                 {links}
-                {moduleGroups.map((group) => (
-                  <Flex key={group.title} vertical gap={token.marginSM}>
-                    <Typography.Text strong>Módulos {group.title.toLowerCase()}</Typography.Text>
-                    {group.links.map((item) => (
-                      <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
-                        {item.label}
-                      </Link>
-                    ))}
+                {solutionGroups.map((group) => (
+                  <Flex key={group.title} vertical gap={token.marginXXS}>
+                    {solutionHeading(group)}
+                    {group.links.map(solutionLink)}
                   </Flex>
                 ))}
                 <Link href="/entrar" onClick={() => setOpen(false)}>Entrar</Link>
