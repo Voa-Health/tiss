@@ -172,6 +172,7 @@ podem ler para enviar uma chave de acesso.
 - [Gerar e corrigir um lote](docs/tutoriais/04-gerar-e-corrigir-um-lote.ipynb)
 - [Regras por operadora](docs/tutoriais/05-regras-por-operadora.ipynb)
 - [Operadora simulada](docs/tutoriais/06-operadora-simulada.ipynb)
+- [Agente faturista](agents/faturista/README.md)
 - [Esquemas JSON](schemas/)
 - [Fontes de dados](DATA_SOURCES.md)
 - [Contribuição](CONTRIBUTING.md)
