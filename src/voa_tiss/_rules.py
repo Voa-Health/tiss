@@ -7,8 +7,10 @@ import re
 from importlib.resources import files
 from typing import Any, TypedDict, cast
 
+from ._lote import _procedure_records
 from ._report import Finding
 from ._rules_schema import rules_schema
+from .codes import CODE_CATALOG
 
 
 class RulePackage(TypedDict, total=False):
@@ -49,6 +51,7 @@ def validate_package(package: Any) -> list[str]:
             "valores",
             "max_itens",
             "combinacao_proibida",
+            "exige_autorizacao",
         }:
             errors.append(f"regras/{index}: primitiva não suportada.")
             continue
@@ -61,6 +64,18 @@ def validate_package(package: Any) -> list[str]:
                     re.compile(regex)
                 except re.error:
                     errors.append(f"regras/{index}: regex inválida.")
+        elif check["tipo"] == "exige_autorizacao":
+            codes = check.get("codigos")
+            if (
+                not isinstance(codes, list)
+                or not codes
+                or any(not isinstance(code, str) for code in codes)
+                or "pointer" in check
+            ):
+                errors.append(
+                    f"regras/{index}: exige_autorizacao requer codigos não vazios "
+                    "e não aceita pointer."
+                )
     return errors
 
 
@@ -107,7 +122,7 @@ def _rule_finding(package: dict[str, Any], rule: dict[str, Any], pointer: str) -
         message=rule["descricao"],
         fix=None,
         needs=[pointer],
-        glosa=rule.get("glosa"),
+        glosa=rule.get("glosa") or CODE_CATALOG[f"regra.{rule['check']['tipo']}"]["glosa"],
         rule={
             "id": rule["id"],
             "source": source,
@@ -137,6 +152,27 @@ def rule_findings(lote: dict[str, Any], value: Any) -> list[Finding]:
     for rule in package["regras"]:
         check = rule["check"]
         kind = check["tipo"]
+        if kind == "exige_autorizacao":
+            for guide_index, guide in enumerate(lote.get("guias", [])):
+                if not isinstance(guide, dict):
+                    continue
+                requested = any(
+                    str(procedure.get("codigo_procedimento", "")) in check["codigos"]
+                    for _, procedure, _, _ in _procedure_records(guide)
+                    if isinstance(procedure, dict)
+                )
+                authorization = guide.get("dados_autorizacao")
+                if requested and not (
+                    isinstance(authorization, dict) and authorization.get("senha")
+                ):
+                    findings.append(
+                        _rule_finding(
+                            package,
+                            rule,
+                            f"/guias/{guide_index}/dados_autorizacao",
+                        )
+                    )
+            continue
         pointer = check.get("pointer", "")
         values = _resolve(lote, pointer) if pointer else []
         if kind == "obrigatorio":

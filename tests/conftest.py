@@ -86,8 +86,10 @@ def mcp_cases():
             assert json.loads(domain_table.contents[0].text)["tabela"] == "23"
             operator_profile = await session.read_resource("tiss://operadoras/005711")
             assert json.loads(operator_profile.contents[0].text) == operadoras.perfil("005711")
-            with pytest.raises(McpError):
-                await session.read_resource("tiss://regras/000000")
+            simulated_rules = await session.read_resource("tiss://regras/000000")
+            assert json.loads(simulated_rules.contents[0].text) == json.loads(
+                (ROOT / "src/voa_tiss/rules/000000.json").read_text()
+            )
             templates = await session.list_resource_templates()
             assert [item.uriTemplate for item in templates.resourceTemplates] == [
                 "tiss://tuss/{tabela}/{pagina}",

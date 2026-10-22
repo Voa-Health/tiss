@@ -162,6 +162,13 @@
                     "additionalProperties": true,
                     "properties": {},
                     "type": "object"
+                  },
+                  "operadora": {
+                    "pattern": "^[0-9]{5,6}$",
+                    "type": [
+                      "string",
+                      "object"
+                    ]
                   }
                 },
                 "required": [
@@ -181,6 +188,93 @@
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "additionalProperties": false,
                   "properties": {
+                    "decisao": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "needs": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "rules": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "mantenedor": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "registro_ans": {
+                                    "type": "string"
+                                  },
+                                  "tipo": {
+                                    "enum": [
+                                      "comunidade",
+                                      "operadora"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "tipo"
+                                ],
+                                "type": "object"
+                              },
+                              "source": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "acesso": {
+                                    "type": "string"
+                                  },
+                                  "data": {
+                                    "type": "string"
+                                  },
+                                  "official": {
+                                    "type": "boolean"
+                                  },
+                                  "titulo": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "url",
+                                  "titulo",
+                                  "data",
+                                  "acesso",
+                                  "official"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "source",
+                              "mantenedor"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "tipo": {
+                          "enum": [
+                            "aprovar_por_regra",
+                            "pendente",
+                            "encaminhar_auditor"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "tipo",
+                        "rules",
+                        "needs"
+                      ],
+                      "type": "object"
+                    },
                     "findings": {
                       "items": {
                         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -200,6 +294,10 @@
                               "audit.tabela_fora_de_vigencia",
                               "audit.tabela_sem_procedimentos",
                               "audit.valor_nao_positivo",
+                              "autorizacao.carteirinha",
+                              "autorizacao.dado_ausente",
+                              "autorizacao.exige_auditoria",
+                              "autorizacao.sem_regra",
                               "guia.carteirinha_ausente",
                               "guia.executante_ausente",
                               "guia.sequencial",
@@ -213,6 +311,7 @@
                               "lote.valor_total_geral",
                               "lote.vazio",
                               "regra.combinacao_proibida",
+                              "regra.exige_autorizacao",
                               "regra.max_itens",
                               "regra.obrigatorio",
                               "regra.padrao",
@@ -379,6 +478,171 @@
           }
         },
         "summary": "Auth Login"
+      }
+    },
+    "/v1/autorizacoes/build": {
+      "post": {
+        "operationId": "autorizacao_build_v1_autorizacoes_build_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "mensagem": {
+                    "additionalProperties": true,
+                    "properties": {},
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "mensagem"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "hash": {
+                      "type": "string"
+                    },
+                    "xml": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "xml",
+                    "hash"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Autorizacao Build"
+      }
+    },
+    "/v1/autorizacoes/check": {
+      "post": {
+        "operationId": "autorizacao_check_v1_autorizacoes_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "contexto": {
+                    "additionalProperties": true,
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "solicitacao": {
+                    "additionalProperties": true,
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "xml": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "properties": {},
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Autorizacao Check"
+      }
+    },
+    "/v1/autorizacoes/parse": {
+      "post": {
+        "operationId": "autorizacao_parse_v1_autorizacoes_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "xml": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "xml"
+                ],
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "mensagem": {
+                      "additionalProperties": true,
+                      "properties": {},
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "mensagem"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Autorizacao Parse"
       }
     },
     "/v1/build": {
@@ -1709,6 +1973,69 @@
         "summary": "Sadt Missing"
       }
     },
+    "/v1/sandbox/autorizacoes": {
+      "post": {
+        "operationId": "sandbox_autorizacao_v1_sandbox_autorizacoes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "cenario": {
+                    "enum": [
+                      "aprovado",
+                      "pendente",
+                      "negado"
+                    ]
+                  },
+                  "solicitacao": {
+                    "additionalProperties": true,
+                    "properties": {},
+                    "type": "object"
+                  },
+                  "xml": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "xml": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "xml"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          }
+        },
+        "summary": "Sandbox Autorizacao"
+      }
+    },
     "/v1/sandbox/lotes": {
       "post": {
         "operationId": "sandbox_enviar_lote_v1_sandbox_lotes_post",
@@ -1727,6 +2054,10 @@
                       "falha_transitoria",
                       "falha_permanente"
                     ]
+                  },
+                  "registro_ans": {
+                    "pattern": "^[0-9]{5,6}$",
+                    "type": "string"
                   },
                   "tentativa": {
                     "minimum": 1.0,
@@ -2088,6 +2419,93 @@
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "additionalProperties": false,
                   "properties": {
+                    "decisao": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "needs": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "rules": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "mantenedor": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "registro_ans": {
+                                    "type": "string"
+                                  },
+                                  "tipo": {
+                                    "enum": [
+                                      "comunidade",
+                                      "operadora"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "tipo"
+                                ],
+                                "type": "object"
+                              },
+                              "source": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "acesso": {
+                                    "type": "string"
+                                  },
+                                  "data": {
+                                    "type": "string"
+                                  },
+                                  "official": {
+                                    "type": "boolean"
+                                  },
+                                  "titulo": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "url",
+                                  "titulo",
+                                  "data",
+                                  "acesso",
+                                  "official"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "source",
+                              "mantenedor"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "tipo": {
+                          "enum": [
+                            "aprovar_por_regra",
+                            "pendente",
+                            "encaminhar_auditor"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "tipo",
+                        "rules",
+                        "needs"
+                      ],
+                      "type": "object"
+                    },
                     "findings": {
                       "items": {
                         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2107,6 +2525,10 @@
                               "audit.tabela_fora_de_vigencia",
                               "audit.tabela_sem_procedimentos",
                               "audit.valor_nao_positivo",
+                              "autorizacao.carteirinha",
+                              "autorizacao.dado_ausente",
+                              "autorizacao.exige_auditoria",
+                              "autorizacao.sem_regra",
                               "guia.carteirinha_ausente",
                               "guia.executante_ausente",
                               "guia.sequencial",
@@ -2120,6 +2542,7 @@
                               "lote.valor_total_geral",
                               "lote.vazio",
                               "regra.combinacao_proibida",
+                              "regra.exige_autorizacao",
                               "regra.max_itens",
                               "regra.obrigatorio",
                               "regra.padrao",

@@ -23,6 +23,10 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
 | `glosa_explain` | `GET /v1/glosas/{codigo}` | `glosa_explain` | Explica um código da Tabela 38 da ANS. Quando usar: ao interpretar uma glosa recebida. Quando não usar: para validar ou corrigir o lote. | 1000 |
 | `dominio` | `GET /v1/dominio` | `tiss_dominio` | Consulta tabelas e códigos de domínio TISS. Quando usar: para localizar um código ou termo de domínio. Quando não usar: para buscar procedimentos TUSS; use tuss_search. | 1000 |
 | `operadora_lookup` | `GET /v1/operadoras` | `operadora_lookup` | Busca operadoras ativas pelo nome, registro, CNPJ ou localidade. Quando usar: para localizar uma operadora na base pública. Quando não usar: para consultar vínculos hospitalares; use tiss_rede. | 1000 |
+| `autorizacao_build` | `POST /v1/autorizacoes/build` | `tiss_autorizacao_build` | Gera XML TISS 4.03.00 para solicitação ou resposta de autorização SP/SADT. | 1500 |
+| `autorizacao_parse` | `POST /v1/autorizacoes/parse` | `tiss_autorizacao_parse` | Interpreta solicitações e respostas de autorização SP/SADT. | 1500 |
+| `autorizacao_check` | `POST /v1/autorizacoes/check` | `tiss_autorizacao_check` | Valida uma solicitação SP/SADT e retorna uma decisão explicável. | 2000 |
+| `sandbox_autorizacao` | `POST /v1/sandbox/autorizacoes` | `tiss_sandbox_autorizacao` | Gera uma resposta SP/SADT sintética nos cenários disponíveis. | 1500 |
 | `buscar_docs` | `GET /v1/docs` | `buscar_docs` | Busca trechos da documentação local da biblioteca. Quando usar: para encontrar instruções e referências da API. Quando não usar: para consultar dados clínicos ou códigos específicos. | 2000 |
 
 ## Acesso
