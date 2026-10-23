@@ -1,6 +1,7 @@
 /** Caminhos de `/api/v1/` que o painel pode chamar, com os métodos de cada um. */
 const ROTAS: { padrao: RegExp; metodos: readonly string[] }[] = [
   { padrao: /^tiss\/organizations\/$/, metodos: ["GET", "POST"] },
+  { padrao: /^tiss\/organizations\/lookup\/$/, metodos: ["GET"] },
   { padrao: /^tiss\/org\/$/, metodos: ["GET"] },
   { padrao: /^tiss\/org\/keys\/$/, metodos: ["GET", "POST"] },
   { padrao: /^tiss\/org\/keys\/[\w-]+\/$/, metodos: ["DELETE"] },

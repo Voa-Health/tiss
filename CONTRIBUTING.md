@@ -39,7 +39,7 @@ uv run pytest --nbmake docs/tutoriais
 Para o site em `web/`, execute:
 
 ```sh
-cd web && pnpm install && pnpm lint && pnpm typecheck && pnpm build
+cd web && pnpm install && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
 O site permite indexação quando `VERCEL_ENV=production`. Em previews e no
