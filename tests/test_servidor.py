@@ -780,38 +780,6 @@ def test_http_mcp_parity_and_token_budgets(
     assert recorder.requests == []
 
 
-@pytest.mark.parametrize(
-    ("key", "status", "error_code", "expected_secret"),
-    [
-        ("sk_voa_caso", HTTP_OK, None, "a" * 64),
-        ("sk_tiss_caso", HTTP_OK, None, "a" * 64),
-        ("sk_outro_caso", HTTP_UNAUTHORIZED, "chave_invalida", None),
-    ],
-)
-def test_organization_key_prefixes(key, status, error_code, expected_secret, tiss_service):
-    registered_keys = ("sk_voa_caso", "sk_tiss_caso", "sk_outro_caso")
-    for registered_key in registered_keys:
-        tiss_service.add_key(registered_key)
-    tiss_service.map_enabled = True
-    _rejection_map.clear_cache()
-    assert _rejection_map.secret(key) == expected_secret
-
-    with TestClient(create_app()) as client:
-        response = client.post(
-            "/v1/validate",
-            json={"xml": examples.load("lote-valido").decode()},
-            headers={"Authorization": f"Bearer {key}"},
-        )
-
-    assert response.status_code == status
-    if error_code is not None:
-        assert response.json()["erro"]["codigo"] == error_code
-    if status == HTTP_UNAUTHORIZED:
-        assert key not in tiss_service.introspections
-    else:
-        assert key in tiss_service.introspections
-
-
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
     """Verifica chaves, escopos, uso, níveis, telemetria e privacidade dos logs."""
     monkeypatch.setenv("POSTHOG_KEY", "test-posthog-key")
@@ -882,6 +850,7 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
         response = client.post(validate[0], json=validate[1], headers=_bearer())
         assert response.status_code == HTTP_OK
         assert time.perf_counter() - started < 2
+        _check_key_prefixes(client, tiss_service)
         _usage.wait(5)
         tiss_service.usage_failures = []
 
@@ -1191,6 +1160,39 @@ def _map_workers():
         if worker.name == "tiss-map":
             worker.join(5)
             assert not worker.is_alive()
+
+
+def _check_key_prefixes(client, service):
+    for key in ("sk_voa_caso", "sk_tiss_caso", "sk_outro_caso"):
+        service.add_key(key)
+    previous_map_enabled = service.map_enabled
+    service.map_enabled = True
+    try:
+        cases = (
+            ("sk_voa_caso", HTTP_OK, None, "a" * 64),
+            ("sk_tiss_caso", HTTP_OK, None, "a" * 64),
+            ("sk_outro_caso", HTTP_UNAUTHORIZED, "chave_invalida", None),
+        )
+        xml = examples.load("lote-valido").decode()
+        for key, status, error_code, expected_secret in cases:
+            _rejection_map.clear_cache()
+            assert _rejection_map.secret(key) == expected_secret
+            response = client.post(
+                "/v1/validate",
+                json={"xml": xml},
+                headers={"Authorization": f"Bearer {key}"},
+            )
+            assert response.status_code == status
+            if error_code is not None:
+                assert response.json()["erro"]["codigo"] == error_code
+            if status == HTTP_UNAUTHORIZED:
+                assert key not in service.introspections
+            else:
+                assert key in service.introspections
+            _map_workers()
+    finally:
+        service.map_enabled = previous_map_enabled
+        _rejection_map.clear_cache()
 
 
 def _check_hosted_maps(monkeypatch, caplog, service):
