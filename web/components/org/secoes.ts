@@ -10,24 +10,28 @@ export const secoesDaOrg = [
   { key: "regras", label: "Regras", descricao: "Pacote, validação, diferenças e versões publicadas." },
   { key: "auditoria", label: "Auditoria", descricao: "Pendências que aguardam decisão da Área Auditoria." },
   { key: "contas", label: "Contas", descricao: "Contas analisadas e decisões registradas." },
+  { key: "mapa", label: "Mapa de rejeição", descricao: "Achados por prestador e mês, com coleta opcional." },
 ] as const;
 
 export type SecaoDaOrg = (typeof secoesDaOrg)[number]["key"];
 
-export function secoesVisiveisDaOrg(org?: Pick<EstadoDaOrg, "type" | "is_admin" | "my_areas">) {
+type OrgDaNavegacao = Pick<EstadoDaOrg, "type" | "is_admin" | "my_areas" | "rejection_map">;
+
+export function secoesVisiveisDaOrg(org?: OrgDaNavegacao) {
   if (!org) return secoesDaOrg;
   const deOperadora = org.type === "pay";
   const podeVerRegras = deOperadora && (
     org.is_admin || org.my_areas.includes("auditoria") || org.my_areas.includes("administration")
   );
   return secoesDaOrg.filter((secao) => {
+    if (secao.key === "mapa") return podeVerRegras && org.rejection_map?.eligible === true;
     if (secao.key === "regras" || secao.key === "auditoria") return podeVerRegras;
     if (secao.key === "contas") return deOperadora;
     return true;
   });
 }
 
-export function secaoValida(valor?: string, org?: Pick<EstadoDaOrg, "type" | "is_admin" | "my_areas">): SecaoDaOrg {
+export function secaoValida(valor?: string, org?: OrgDaNavegacao): SecaoDaOrg {
   return secoesVisiveisDaOrg(org).find((secao) => secao.key === valor)?.key ?? "visao";
 }
 
