@@ -42,7 +42,7 @@ export function BillingSection({ podeVer, rotuloFinanceiro }: { podeVer: boolean
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<FalhaDoPedido | null>(null);
   const erros = [cobranca.erro, faturas.erro, erro];
-  const indisponivel = erros.some((item) => item?.status === 503 && item.code === "billing_disabled");
+  const indisponivel = cobranca.dados?.enabled === false || erros.some((item) => item?.status === 503 && item.code === "billing_disabled");
 
   const cadastrar = async () => {
     setEnviando(true);
