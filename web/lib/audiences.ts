@@ -92,7 +92,7 @@ export const cliFeature: AudienceItem = {
   linkLabel: "Ver tutorial",
   demo: terminalDemo(
     "cli",
-    "Terminal: tiss validate acha quatro erros no lote, tiss fix corrige valor, total e hash e pede só a data, o lote revalida sem erros e tiss glosa explica um código.",
+    "Terminal: tiss validate aprova o lote sem erros, tiss hash confere o epílogo, tiss tuss consulta um procedimento e tiss glosa explica um código.",
   ),
 };
 
