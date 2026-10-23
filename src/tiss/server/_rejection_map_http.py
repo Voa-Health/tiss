@@ -13,7 +13,7 @@ import tiss
 
 from . import _rejection_map
 from ._context import CURRENT_CONTEXT
-from ._keys import KEY_PREFIX
+from ._keys import KEY_PREFIXES
 from ._service import ServiceError
 
 
@@ -23,7 +23,7 @@ def _error(status: int, code: str) -> JSONResponse:
 
 async def _handle(request: Request) -> JSONResponse:
     ctx = CURRENT_CONTEXT.get()
-    if ctx is None or ctx.access is None or not ctx.key.startswith(KEY_PREFIX):
+    if ctx is None or ctx.access is None or not ctx.key.startswith(KEY_PREFIXES):
         return _error(401, "key_required")
     if "tiss:rules" not in ctx.access.scopes:
         return _error(403, "scope_missing")

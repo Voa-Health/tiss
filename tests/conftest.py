@@ -53,7 +53,7 @@ class FakeService:
         self.keys[key] = {
             "active": True,
             "revoked": False,
-            "key_id": "id-" + key.removeprefix("sk_tiss_"),
+            "key_id": "id-" + key.split("_", 2)[2],
             "organization": {"id": "org-1", "name": "Clínica Exemplo"},
             "scopes": list(scopes or [f"tiss:{scope}" for scope in TISS_SCOPES]),
             "environment": "production",
@@ -67,7 +67,7 @@ class FakeService:
         self.keys[key] = {
             "active": False,
             "revoked": True,
-            "key_id": "id-" + key.removeprefix("sk_tiss_"),
+            "key_id": "id-" + key.split("_", 2)[2],
         }
 
     def __call__(self, path: str, body: dict[str, Any]) -> Any:
@@ -109,7 +109,7 @@ def tiss_service(monkeypatch):
     monkeypatch.setattr(_usage, "RETRY_SECONDS", 0.0)
     service = FakeService()
     for tier in ("login", "verified"):
-        service.add_key(f"sk_tiss_{tier}", tier)
+        service.add_key(f"sk_voa_{tier}", tier)
     clear_cache()
     _published_rules.clear_cache()
     _rejection_map.clear_cache()

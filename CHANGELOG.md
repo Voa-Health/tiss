@@ -1,5 +1,9 @@
 # Registro de alterações
 
+## Não lançado
+
+- API hospedada aceita chaves `sk_voa_` da organização, válidas para os produtos da Voa; `sk_tiss_` continuam aceitas.
+
 ## 0.4.0
 
 - Action GitHub `Voa-Health/tiss@v0` para validar XML TISS.

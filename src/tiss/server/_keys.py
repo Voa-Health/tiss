@@ -10,7 +10,8 @@ from typing import Any
 
 from ._service import ServiceError, configured, post
 
-KEY_PREFIX = "sk_tiss_"
+KEY_PREFIX = "sk_voa_"
+KEY_PREFIXES = (KEY_PREFIX, "sk_tiss_")
 CACHE_SECONDS = 60
 ANONYMOUS_LIMIT = 10
 TIER_LIMITS = {"login": 50, "verified": 1_000}
@@ -22,7 +23,11 @@ LIMITS = {
     "limite_diario": None,
     "sem_chave": {"operacoes": ["sandbox_*", "lista_de_espera"], "chaves": KEYS_URL},
     "niveis": sorted(TIER_LIMITS),
-    "chave": {"prefixo": KEY_PREFIX, "revogacao_segundos": CACHE_SECONDS},
+    "chave": {
+        "prefixo": KEY_PREFIX,
+        "prefixos_aceitos": list(KEY_PREFIXES),
+        "revogacao_segundos": CACHE_SECONDS,
+    },
     "chave_invalida": {"status": 401},
     "escopo_ausente": {"status": 403},
 }
@@ -93,7 +98,7 @@ def _access(data: Any) -> Access | None:
 
 def resolve(key: str) -> Access | None:
     """Devolva o acesso da chave, consultando o backend no máximo uma vez a cada 60 s."""
-    if not key.startswith(KEY_PREFIX):
+    if not key.startswith(KEY_PREFIXES):
         return None
     digest = hashlib.sha256(key.encode()).hexdigest()
     now = _now()
@@ -140,6 +145,7 @@ __all__ = [
     "ENTERPRISE_URL",
     "KEYS_URL",
     "KEY_PREFIX",
+    "KEY_PREFIXES",
     "LIMITS",
     "SITE_URL",
     "TIER_LIMITS",
