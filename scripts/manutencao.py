@@ -82,7 +82,7 @@ STYLE_TERMS = (
     r"\bUS\d+\b",
     r"\bD[0-9]{1,2}\b",
     r"(?<!SSE-)(?<!AWS::)\bS[1-7][bc]?\b(?![.:/])(?!\s+cp\b)",
-    r"\bPR\b",
+    r"(?<!official-)\bPR\b",
     r"\bissue\b",
     r"pull request",
     r"\bsess[aã]o(?:\s+S[1-7])?\b",

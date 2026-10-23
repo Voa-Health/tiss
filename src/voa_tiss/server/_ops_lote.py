@@ -84,6 +84,7 @@ LOTE_OPS = (
             "Quando não usar: para corrigir achados; use tiss_apply_fixes."
         ),
         3000,
+        scope="tiss:build",
     ),
     Op(
         "hash",
@@ -96,6 +97,7 @@ LOTE_OPS = (
             "Quando não usar: para validar o conteúdo; use tiss_validate."
         ),
         1000,
+        scope="tiss:validate",
     ),
     Op(
         "audit",
@@ -119,6 +121,8 @@ LOTE_OPS = (
             "Quando não usar: para aplicar correções; use tiss_apply_fixes."
         ),
         1000,
+        scope="tiss:rules",
+        rules_input="operadora",
     ),
     Op(
         "rejection_map",
@@ -147,6 +151,8 @@ LOTE_OPS = (
         ),
         4000,
         path="/v1/rejection-map",
+        scope="tiss:rules",
+        rules_input="regras",
     ),
     Op(
         "apply_fixes",
@@ -162,6 +168,7 @@ LOTE_OPS = (
             "Quando não usar: para inventar dados ausentes; peça-os ao usuário."
         ),
         1500,
+        scope="tiss:build",
     ),
 )
 

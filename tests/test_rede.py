@@ -14,7 +14,6 @@ from scripts._manutencao_rede import bake_rede
 from voa_tiss import rede
 from voa_tiss.operadoras import lookup
 from voa_tiss.server._http import create_app
-from voa_tiss.server._keys import issue_key
 from voa_tiss.server._ops import OPS, token_estimate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -129,17 +128,16 @@ def test_rede_download_cache_offline_e_hash_invalido(
 
 
 def test_rede_rotas_http(
-    rede_sintetica: tuple[Path, dict[str, Any], Path], monkeypatch: pytest.MonkeyPatch
+    rede_sintetica: tuple[Path, dict[str, Any], Path],
+    monkeypatch: pytest.MonkeyPatch,
+    tiss_service: Any,
 ) -> None:
     """Expõe as consultas HTTP com validação de entrada."""
     banco, _, _ = rede_sintetica
     monkeypatch.setenv("VOA_TISS_REDE", str(banco))
-    monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
-    monkeypatch.setenv("VOA_AUTH_ISSUER", "https://auth.example")
     rede._conectar.cache_clear()
-    token, _ = issue_key("org-test", "verified")
     app = create_app()
-    with TestClient(app, headers={"Authorization": f"Bearer {token}"}) as cliente:
+    with TestClient(app, headers={"Authorization": "Bearer sk_tiss_verified"}) as cliente:
         resposta = cliente.get("/v1/rede", params={"cnes": "0123456", "limite": 1})
         assert resposta.status_code == 200
         assert token_estimate(resposta.json()) <= next(

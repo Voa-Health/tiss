@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -17,12 +17,96 @@ import voa_tiss
 from voa_tiss import dominio, examples, operadoras, parse_lote
 from voa_tiss._schema import parser
 from voa_tiss.codes import CODES
+from voa_tiss.server import _published_rules, _usage
+from voa_tiss.server._keys import clear_cache
 from voa_tiss.server._ops import OPS
+from voa_tiss.server._service import ServiceError, set_transport
 
 ROOT = Path(__file__).resolve().parents[1]
 NS = "http://www.ans.gov.br/padroes/tiss/schemas"
 ANS = {"ans": NS}
 TUSS_PAGE_SIZE = 200
+
+
+TISS_SCOPES = ("validate", "build", "sandbox", "accounts", "authorization", "rules")
+
+
+@dataclass
+class FakeService:
+    """Backend sintético de chaves e uso."""
+
+    keys: dict[str, dict[str, Any]] = field(default_factory=dict)
+    introspections: list[str] = field(default_factory=list)
+    batches: list[list[dict[str, Any]]] = field(default_factory=list)
+    usage: list[dict[str, Any]] = field(default_factory=list)
+    usage_failures: list[int] = field(default_factory=list)
+    rules: dict[str, dict[str, Any]] = field(default_factory=dict)
+    rules_requests: list[str] = field(default_factory=list)
+    rules_failures: list[int] = field(default_factory=list)
+    down: bool = False
+
+    def add_key(
+        self, key: str, tier: str = "verified", scopes: Any = None, billing: Any = None
+    ) -> None:
+        self.keys[key] = {
+            "active": True,
+            "revoked": False,
+            "key_id": "id-" + key.removeprefix("sk_tiss_"),
+            "organization": {"id": "org-1", "name": "Clínica Exemplo"},
+            "scopes": list(scopes or [f"tiss:{scope}" for scope in TISS_SCOPES]),
+            "environment": "production",
+            "tier": tier,
+            "terms_accepted": True,
+        }
+        if billing is not None:
+            self.keys[key]["billing"] = billing
+
+    def revoke(self, key: str) -> None:
+        self.keys[key] = {
+            "active": False,
+            "revoked": True,
+            "key_id": "id-" + key.removeprefix("sk_tiss_"),
+        }
+
+    def __call__(self, path: str, body: dict[str, Any]) -> Any:
+        if path == "/tiss/service/keys/introspect":
+            self.introspections.append(body["key"])
+            if self.down:
+                raise ServiceError(503)
+            return self.keys.get(body["key"], {"active": False})
+        if path == "/tiss/service/rules":
+            self.rules_requests.append(body["key"])
+            if self.rules_failures:
+                raise ServiceError(self.rules_failures.pop(0))
+            org = self.keys[body["key"]]["organization"]["id"]
+            if org not in self.rules:
+                raise ServiceError(404)
+            return {"organization_id": org, "version": 1, "package": self.rules[org]}
+        assert path == "/tiss/service/usage"
+        self.batches.append(body["events"])
+        if self.usage_failures:
+            raise ServiceError(self.usage_failures.pop(0))
+        self.usage.extend(body["events"])
+        return {"accepted": len(body["events"]), "duplicates": 0}
+
+
+@pytest.fixture
+def tiss_service(monkeypatch):
+    """Liga o servidor a um backend sintético de chaves e uso."""
+    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+    monkeypatch.setenv("VOA_TISS_SERVICE_SECRET", "s" * 16)
+    monkeypatch.setattr(_usage, "RETRY_SECONDS", 0.0)
+    service = FakeService()
+    for tier in ("login", "verified"):
+        service.add_key(f"sk_tiss_{tier}", tier)
+    clear_cache()
+    _published_rules.clear_cache()
+    set_transport(service)
+    yield service
+    _usage.wait(5)
+    set_transport(None)
+    clear_cache()
+    _published_rules.clear_cache()
 
 
 @pytest.fixture

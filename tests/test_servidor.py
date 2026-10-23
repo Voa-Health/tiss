@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import datetime as dt
 import io
 import json
 import logging
 import re
 import socket
+import time
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from pathlib import Path
@@ -25,12 +27,13 @@ from voa_tiss import dominio, examples, operadoras, sandbox
 from voa_tiss import sandbox as sandbox_module
 from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
-from voa_tiss.server import _auth, _docs
-from voa_tiss.server._auth import CLIENT_DOCUMENT, BackendError
+from voa_tiss.server import _docs, _keys, _ops, _published_rules, _usage
+from voa_tiss.server._context import CallContext
 from voa_tiss.server._docs import search_docs
 from voa_tiss.server._http import create_app
-from voa_tiss.server._keys import ANONYMOUS_LIMIT, LIMITS, issue_key, read_key, sign
-from voa_tiss.server._ops import OPS, _docs_corpus, token_estimate
+from voa_tiss.server._keys import ANONYMOUS_LIMIT, LIMITS
+from voa_tiss.server._ops import OPS, _docs_corpus, call, token_estimate
+from voa_tiss.server._ops_schemas import PAID_KINDS, Op, _object
 from voa_tiss.server._prompts import PROMPTS
 from voa_tiss.server._quota import set_counter
 from voa_tiss.server._telemetry import set_sink
@@ -41,6 +44,8 @@ HTTP_OK = 200
 HTTP_ACCEPTED = 202
 HTTP_FOUND = 302
 HTTP_UNAUTHORIZED = 401
+HTTP_PAYMENT_REQUIRED = 402
+HTTP_FORBIDDEN = 403
 HTTP_NOT_FOUND = 404
 HTTP_TOO_MANY = 429
 HTTP_UNPROCESSABLE = 422
@@ -49,10 +54,8 @@ PROTOCOL_NUMBER_LENGTH = 12
 
 
 @pytest.fixture(autouse=True)
-def server_state(monkeypatch):
-    """Isola telemetria, segredo e contador diário entre os testes."""
-    monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
-    monkeypatch.setenv("VOA_AUTH_ISSUER", "https://auth.example")
+def server_state(tiss_service):
+    """Isola telemetria, chaves e contador diário entre os testes."""
     used: dict[str, int] = {}
     set_sink(None)
     set_counter(lambda key, ttl: used.update({key: used.get(key, 0) + 1}) or used[key])
@@ -62,7 +65,7 @@ def server_state(monkeypatch):
 
 
 def _bearer(tier: str = "verified") -> dict[str, str]:
-    return {"Authorization": f"Bearer {issue_key('org-1', tier)[0]}"}
+    return {"Authorization": f"Bearer sk_tiss_{tier}"}
 
 
 def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
@@ -386,32 +389,9 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
     asyncio.run(mcp_cases(mcp_app, cases, _factory(mcp_app), _bearer()))
 
 
-def _fake_backend(calls: list[tuple[str, dict[str, str] | None]]):
-    def backend(path: str, *, form: dict[str, str] | None = None, token: str = "") -> Any:
-        calls.append((path, form))
-        if path == "/oauth/token":
-            if form and form.get("refresh_token") == "revogado":
-                raise BackendError(400)
-            return {"access_token": f"at-{len(calls)}", "refresh_token": f"rt-{len(calls)}"}
-        assert token.startswith("at-")
-        return {
-            "organization": {"id": "org-1", "name": "Clínica Exemplo"},
-            "user_id": "user-1",
-            "tier": "verified",
-            "cnpj": "11222333000181",
-            "match": "catalog",
-            "terms_version": "1",
-        }
-
-    return backend
-
-
-def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
-    """Verifica login, chaves, níveis, telemetria e privacidade dos logs."""
+def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
+    """Verifica chaves, escopos, uso, níveis, telemetria e privacidade dos logs."""
     monkeypatch.setenv("POSTHOG_KEY", "test-posthog-key")
-    calls: list[tuple[str, dict[str, str] | None]] = []
-    original_backend = _auth._backend
-    monkeypatch.setattr(_auth, "_backend", _fake_backend(calls))
     events: list[tuple[str, dict[str, Any]]] = []
     set_sink(lambda event, properties: events.append((event, properties)))
     marker = "TISS_PRIVACY_MARKER_74a9b4"
@@ -425,50 +405,63 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
             candidate.setLevel(logging.DEBUG)
     caplog.set_level(logging.DEBUG)
     with TestClient(app, base_url="https://testserver", follow_redirects=False) as client:
-        assert client.get("/oauth/client.json").json() == CLIENT_DOCUMENT
-        login = client.get("/v1/auth/login")
-        assert login.status_code == HTTP_FOUND
-        query = dict(httpx.URL(login.headers["location"]).params)
-        assert login.headers["location"].startswith("https://auth.example/oauth/authorize?")
-        assert query["resource"] == "https://tiss-api.voa.health"
-        assert query["scope"] == "voa:tiss"
-        assert query["client_id"] == CLIENT_DOCUMENT["client_id"]
-        assert query["code_challenge_method"] == "S256"
-        callback = client.get("/v1/auth/callback", params={"code": "c", "state": query["state"]})
-        fragment = dict(httpx.QueryParams(httpx.URL(callback.headers["location"]).fragment))
-        assert read_key(fragment["chave"]) is not None
-        rejected = client.get("/v1/auth/callback", params={"code": "c", "state": "outro"})
-        assert rejected.headers["location"].endswith("/chaves#erro=login_invalido")
-        assert fragment["nivel"] == "verified"
-        token_form = calls[0][1] or {}
-        assert token_form["grant_type"] == "authorization_code"
-        assert token_form["resource"] == query["resource"]
-        assert _auth._challenge(token_form["code_verifier"]) == query["code_challenge"]
-        assert events.pop() == (
-            "tiss_chave_emitida",
-            {
-                "tier": "verified",
-                "organizacao": "org-1",
-                "$process_person_profile": False,
-                "$geoip_disable": True,
-            },
-        )
-        refreshes = [
-            ({"refresh_token": fragment["refresh_token"]}, HTTP_OK),
-            ({"refresh_token": "revogado"}, HTTP_UNAUTHORIZED),
-            ({}, HTTP_UNPROCESSABLE),
-        ]
-        for body, status in refreshes:
-            refreshed = client.post("/v1/keys/refresh", json=body)
-            assert refreshed.status_code == status
-        assert read_key(client.post("/v1/keys/refresh", json=refreshes[0][0]).json()["chave"])
-        monkeypatch.setattr(_auth, "issuer", lambda: "http://127.0.0.1:9")
-        monkeypatch.setattr(_auth, "_backend", original_backend)
-        assert client.post("/v1/keys/refresh", json=refreshes[0][0]).status_code == 503
-
-        expired = "vt_" + sign("key", {"o": "org-1", "n": "login", "e": 1})
         sandbox = ("/v1/sandbox/lotes", {"xml": examples.load("lote-valido").decode()})
         validate = ("/v1/validate", {"xml": xml})
+        key = "sk_tiss_verified"
+        for _ in range(2):
+            response = client.post(validate[0], json=validate[1], headers=_bearer())
+            assert response.status_code == HTTP_OK
+        assert tiss_service.introspections == [key]
+        assert key not in repr(_keys._cache)
+        tiss_service.revoke(key)
+        assert client.post(validate[0], json=validate[1], headers=_bearer()).status_code == 200
+        expired_at = time.monotonic() + _keys.CACHE_SECONDS + 1
+        monkeypatch.setattr(_keys, "_now", lambda: expired_at)
+        revoked = client.post(validate[0], json=validate[1], headers=_bearer())
+        assert revoked.status_code == HTTP_UNAUTHORIZED
+        assert revoked.json()["erro"]["codigo"] == "chave_invalida"
+        monkeypatch.setattr(_keys, "_now", time.monotonic)
+        tiss_service.add_key(key)
+        _keys.clear_cache()
+        tiss_service.add_key("sk_tiss_sandbox", scopes=["tiss:sandbox"])
+        only_sandbox = {"Authorization": "Bearer sk_tiss_sandbox"}
+        denied = client.post(validate[0], json=validate[1], headers=only_sandbox)
+        assert denied.status_code == HTTP_FORBIDDEN
+        assert denied.json()["erro"]["codigo"] == "escopo_ausente"
+        assert client.post(sandbox[0], json=sandbox[1], headers=only_sandbox).status_code == 200
+        assert client.get("/v1/limits", headers=only_sandbox).status_code == HTTP_OK
+        tiss_service.down = True
+        unknown = {"Authorization": "Bearer sk_tiss_desconhecida"}
+        unavailable = client.post(validate[0], json=validate[1], headers=unknown)
+        assert unavailable.status_code == HTTP_UNAVAILABLE
+        assert unavailable.headers["retry-after"] == "1"
+        tiss_service.down = False
+        assert client.post(validate[0], json=validate[1], headers=unknown).status_code == 401
+
+        _usage.wait(5)
+        tiss_service.batches.clear()
+        tiss_service.usage.clear()
+        tiss_service.usage_failures = [HTTP_UNAVAILABLE]
+        for _ in range(2):
+            response = client.post(validate[0], json=validate[1], headers=_bearer())
+            assert response.status_code == HTTP_OK
+        _usage.wait(5)
+        delivered = [event["source_event_id"] for event in tiss_service.usage]
+        assert len(delivered) == len(set(delivered)) == 2
+        assert [event["source_event_id"] for event in tiss_service.batches[0]] == delivered[:1]
+        first = tiss_service.usage[0]
+        assert set(first) == {"source_event_id", "key_id", "kind", "occurred_at", "metadata"}
+        assert (first["key_id"], first["kind"]) == ("id-verified", "tiss_api_call")
+        assert first["metadata"] == {"operation": "validate"}
+        assert dt.datetime.fromisoformat(first["occurred_at"]).tzinfo is not None
+        tiss_service.usage_failures = [HTTP_UNAVAILABLE] * 20
+        started = time.perf_counter()
+        response = client.post(validate[0], json=validate[1], headers=_bearer())
+        assert response.status_code == HTTP_OK
+        assert time.perf_counter() - started < 2
+        _usage.wait(5)
+        tiss_service.usage_failures = []
+
         tiers = [
             ({}, sandbox, 9, HTTP_OK),
             ({}, sandbox, 10, HTTP_TOO_MANY),
@@ -477,7 +470,6 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
             (_bearer("login"), validate, 50, HTTP_TOO_MANY),
             (_bearer("verified"), validate, 999, HTTP_OK),
             (_bearer("verified"), validate, 1000, HTTP_TOO_MANY),
-            ({"Authorization": f"Bearer {expired}"}, sandbox, 0, HTTP_UNAUTHORIZED),
             ({"Authorization": "Bearer invalid"}, sandbox, 0, HTTP_UNAUTHORIZED),
         ]
         for headers, (route, body), used, status in tiers:
@@ -504,9 +496,13 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
         monkeypatch.delenv("KV_REST_API_URL")
         assert client.post(sandbox[0], json=sandbox[1]).status_code == HTTP_OK
         assert client.post("/v1/validate", json={"xml": xml}).status_code == HTTP_UNAUTHORIZED
-        monkeypatch.delenv("VOA_TISS_KEY_SECRET")
-        assert client.post("/v1/validate", json={"xml": xml}).status_code == HTTP_OK
-        monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
+        delivered_before = len(tiss_service.usage)
+        monkeypatch.delenv("VOA_TISS_BACKEND_URL")
+        for headers in ({}, {"Authorization": "Bearer qualquer"}):
+            assert client.post(validate[0], json=validate[1], headers=headers).status_code == 200
+        _usage.wait(5)
+        assert len(tiss_service.usage) == delivered_before
+        monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
         events.clear()
         set_counter(lambda key, ttl: 1)
         assert (
@@ -631,9 +627,6 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
             == HTTP_OK
         )
         assert not events
-        monkeypatch.delenv("VOA_TISS_KEY_SECRET")
-        assert client.get("/v1/auth/login").status_code == HTTP_UNAVAILABLE
-        monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
         set_counter(lambda key, ttl: 1)
         events.clear()
         dominios = operadoras._data()["dominios"]
@@ -736,11 +729,9 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
             "$geoip_disable",
         }
         assert all(set(properties) <= allowed for _, properties in events)
-    assert fragment["chave"] not in caplog.text
-    assert fragment["refresh_token"] not in caplog.text
+    assert key not in caplog.text
 
     events.clear()
-    monkeypatch.setenv("VOA_TISS_KEY_SECRET", "test-secret")
     mcp_app = create_app()
 
     async def run_mcp():
@@ -768,6 +759,123 @@ def test_login_keys_tiers_telemetry_and_privacy(monkeypatch, caplog):
     assert [event for event, _ in events] == ["tiss_operacao"]
     assert marker not in caplog.text
     assert auth_password not in caplog.text
+    _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service)
+
+
+def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
+    set_counter(None)
+    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+    _published_rules.clear_cache()
+    tiss_service.rules_requests.clear()
+    package = json.loads((ROOT / "src/voa_tiss/rules/000000.json").read_text())
+    tiss_service.rules["org-1"] = package
+    xml = examples.load("lote-valido").decode()
+    lote = voa_tiss.parse_lote(xml)
+    published = [
+        ("/v1/validate", {"lote": lote}, voa_tiss.check(lote, operadora=package).to_dict()),
+        ("/v1/validate", {"xml": xml}, voa_tiss.validate(xml, operadora=package).to_dict()),
+        ("/v1/audit", {"lote": lote}, voa_tiss.audit(lote, operadora=package).to_dict()),
+        ("/v1/rejection-map", {"lotes": [lote]}, voa_tiss.rejection_map([lote], operadora=package)),
+        ("/v1/sandbox/lotes", {"xml": xml}, enviar_lote(xml, registro_ans=package)),
+    ]
+    explicit = [
+        ("/v1/validate", {"lote": lote, "operadora": "123456"}, voa_tiss.check(lote).to_dict()),
+        (
+            "/v1/audit",
+            {"lote": lote, "operadora": "123456"},
+            voa_tiss.audit(lote, operadora="123456").to_dict(),
+        ),
+        (
+            "/v1/rejection-map",
+            {"lotes": [lote], "operadora": "123456"},
+            voa_tiss.rejection_map([lote], operadora="123456"),
+        ),
+        ("/v1/sandbox/lotes", {"xml": xml, "registro_ans": "999999"}, enviar_lote(xml)),
+    ]
+    plain = voa_tiss.check(lote).to_dict()
+    assert published[0][2] != plain
+    with TestClient(create_app(), base_url="https://testserver") as client:
+
+        def post(route: str, body: dict[str, Any], headers: Any = None) -> Any:
+            response = client.post(
+                route, json=body, headers=_bearer() if headers is None else headers
+            )
+            assert response.status_code == HTTP_OK, response.text
+            return response.json()
+
+        for route, body, expected in published:
+            assert post(route, body) == expected, route
+        assert tiss_service.rules_requests == ["sk_tiss_verified"]
+        for route, body, expected in explicit:
+            assert post(route, body) == expected, route
+        assert post("/v1/sandbox/lotes", {"xml": xml}, {}) == enviar_lote(xml)
+        assert len(tiss_service.rules_requests) == 1
+
+        expired = time.monotonic() + _keys.CACHE_SECONDS + 1
+        monkeypatch.setattr(_published_rules, "_now", lambda: expired)
+        tiss_service.rules_failures = [HTTP_UNAVAILABLE]
+        caplog.set_level(logging.WARNING, logger="voa_tiss.server")
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert "op=regras status=503" in caplog.text
+        assert "sk_tiss_verified" not in caplog.text
+        assert post("/v1/validate", {"lote": lote}) == published[0][2]
+        assert len(tiss_service.rules_requests) == 3
+        del tiss_service.rules["org-1"]
+        monkeypatch.setattr(_published_rules, "_now", lambda: expired * 2)
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert len(tiss_service.rules_requests) == 4
+        monkeypatch.delenv("VOA_TISS_BACKEND_URL")
+        _published_rules.clear_cache()
+        tiss_service.rules["org-1"] = package
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert len(tiss_service.rules_requests) == 4
+    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+
+    billing = {
+        "enforced": True,
+        "payment_method_active": False,
+        "billing_url": "https://painel.example/org/cobranca",
+        "cloud_free_remaining": 0,
+    }
+    payment_required = {
+        "code": "payment_required",
+        "detail": "Cadastre uma forma de pagamento para usar este módulo.",
+        "billing_url": billing["billing_url"],
+    }
+    default_url = {**payment_required, "billing_url": _keys.BILLING_URL}
+    assert {
+        "tiss_cloud_guia",
+        "tiss_extractor",
+        "tiss_appeal",
+        "tiss_accounts_review",
+        "tiss_authorization",
+    } == PAID_KINDS
+    cases = [
+        ("tiss_extractor", billing, HTTP_PAYMENT_REQUIRED, payment_required),
+        ("tiss_appeal", {**billing, "billing_url": None}, HTTP_PAYMENT_REQUIRED, default_url),
+        ("tiss_cloud_guia", billing, HTTP_PAYMENT_REQUIRED, payment_required),
+        ("tiss_cloud_guia", {**billing, "cloud_free_remaining": 3}, HTTP_OK, {"ok": True}),
+        ("tiss_extractor", {**billing, "payment_method_active": True}, HTTP_OK, {"ok": True}),
+        ("tiss_extractor", {**billing, "enforced": False}, HTTP_OK, {"ok": True}),
+        ("tiss_extractor", None, HTTP_OK, {"ok": True}),
+        ("tiss_api_call", billing, HTTP_OK, {"ok": True}),
+    ]
+    for index, (kind, case_billing, status, expected) in enumerate(cases):
+        key = f"sk_tiss_caso{index}"
+        tiss_service.add_key(key, billing=case_billing)
+        case_access = _keys.resolve(key)
+        op = Op(
+            "modulo_sintetico",
+            lambda value: {"ok": True},
+            _object({}),
+            _object({}, additional=True),
+            "Módulo sintético.",
+            10,
+            usage_kind=kind,
+        )
+        monkeypatch.setitem(_ops._VALIDATORS, op.name, _ops._VALIDATORS["sadt_catalog"])
+        assert call(op, {}, CallContext(access=case_access)) == (status, expected), index
 
 
 @pytest.mark.parametrize(

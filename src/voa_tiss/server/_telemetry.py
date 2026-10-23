@@ -161,25 +161,4 @@ def operation_event(
     _submit("tiss_operacao", properties, background_tasks)
 
 
-def key_issued(
-    tier: str,
-    organizacao: str,
-    *,
-    telemetry_off: bool,
-    background_tasks: Any | None = None,
-) -> None:
-    if telemetry_off:
-        return
-    _submit(
-        "tiss_chave_emitida",
-        {
-            "tier": tier,
-            "organizacao": organizacao,
-            "$process_person_profile": False,
-            "$geoip_disable": True,
-        },
-        background_tasks,
-    )
-
-
-__all__ = ["key_issued", "operation_event", "set_sink", "waitlist_join"]
+__all__ = ["operation_event", "set_sink", "waitlist_join"]

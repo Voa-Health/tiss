@@ -39,19 +39,8 @@ export function docsPageUrl(slug?: string): string {
 export const siteContentWidth = 1120;
 export const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
 
-export type KeyCredentials = {
-  chave: string;
-  refresh_token: string;
-  nivel: "login" | "verified";
-  expira_em: number;
-};
-
-export function keyLevelLabel(level: KeyCredentials["nivel"]): string {
+export function keyLevelLabel(level: "login" | "verified"): string {
   return level === "verified" ? "CNPJ verificado" : "Login Voa";
-}
-
-export function formatDateTime(unixTimestamp: number): string {
-  return new Date(unixTimestamp * 1000).toLocaleString("pt-BR");
 }
 
 export function formatDateTimeShort(unixTimestamp: number): string {
@@ -72,25 +61,6 @@ export function loginSimulationEnabled(): boolean {
   return process.env.NEXT_PUBLIC_LOGIN_SIMULADO === "1";
 }
 
-export function createMockCredentials(): KeyCredentials {
-  const suffix = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-  return {
-    chave: `vt_exemplo_${suffix}`,
-    refresh_token: `rt_exemplo_${suffix}`,
-    nivel: "login",
-    expira_em: Math.floor(Date.now() / 1000) + 24 * 60 * 60,
-  };
-}
-
-export function keyFragmentUrl(credentials: KeyCredentials): string {
-  return `/chaves#${new URLSearchParams({
-    chave: credentials.chave,
-    refresh_token: credentials.refresh_token,
-    nivel: credentials.nivel,
-    expira_em: String(credentials.expira_em),
-  })}`;
-}
-
 export function indexingEnabled(): boolean {
   return process.env.VERCEL_ENV === "production" && process.env.NEXT_PUBLIC_INDEXAR !== "0";
 }
@@ -99,11 +69,4 @@ export function robotsPolicy() {
   return indexingEnabled()
     ? { index: true, follow: true }
     : { index: false, follow: false };
-}
-
-export function loginUrl(): string {
-  if (loginSimulationEnabled()) {
-    return keyFragmentUrl(createMockCredentials());
-  }
-  return `${process.env.NEXT_PUBLIC_API_URL ?? ""}/v1/auth/login`;
 }

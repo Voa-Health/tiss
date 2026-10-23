@@ -1,74 +1,91 @@
 "use client";
 
 import { CheckCircleFilled } from "@ant-design/icons";
-import { Alert, Card, Descriptions, Flex, Grid, Tag, theme, Typography } from "antd";
-import { formatDate } from "@/lib/site";
-import { maskCnpj, type Org } from "@/lib/org-mock";
+import { Alert, Card, Col, Descriptions, Grid, Row, Tag, theme, Typography } from "antd";
+import Link from "next/link";
+import { dataHora, mascararCnpj } from "@/lib/org/formato";
+import type { Cobranca, EstadoDaOrg } from "@/lib/org/tipos";
+import { useRecurso } from "@/lib/org/cliente";
+import { hrefDaOrg, ROTULO_DO_TIPO } from "./secoes";
 
-const typeLabels = {
-  prov: "Prestador",
-  pay: "Operadora",
-  bus: "Empresa/healthtech",
-} as const;
+type Atalho = { titulo: string; descricao: string; href: string };
 
-export function OverviewSection({ org }: { org: Org }) {
+const ATALHOS_DO_PRESTADOR: Atalho[] = [
+  { titulo: "Validar lote", descricao: "Achados do XML antes do envio, grátis.", href: "/playground" },
+  { titulo: "Recurso de glosa", descricao: "Peça de recurso a partir do demonstrativo.", href: "/recurso" },
+  { titulo: "Extrator", descricao: "Guia SP/SADT a partir de PDF ou imagem.", href: "/extrator" },
+];
+
+const ATALHOS_DA_OPERADORA: Atalho[] = [
+  { titulo: "Análise de contas", descricao: "Indícios por guia para a Auditoria decidir.", href: "/analise-contas" },
+  { titulo: "Autorização", descricao: "Parecer proposto; a negativa é sempre humana.", href: "/autorizacao" },
+  { titulo: "Regras de envio", descricao: "Cadastre e teste as regras com o assistente.", href: hrefDaOrg("visao", true) },
+];
+
+export function OverviewSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const screens = Grid.useBreakpoint();
-  const items = [
-    { key: "name", label: "Nome", children: org.nome },
-    {
-        key: "cnpj",
-        label: "CNPJ",
-        children: (
-          <Flex wrap align="center" gap={token.marginSM}>
-          <Typography.Text code style={{ whiteSpace: "nowrap" }}>
-            {maskCnpj(org.cnpj)}
-          </Typography.Text>
-          {org.cnpj_verificado && (
-            <Tag
-              color="success"
-              icon={<CheckCircleFilled />}
-              style={{ color: token.colorText }}
-            >
-              CNPJ verificado
-            </Tag>
-          )}
-        </Flex>
-      ),
-    },
-    { key: "type", label: "Tipo", children: typeLabels[org.tipo] },
-    ...(org.tipo === "pay" && org.registro_ans
-      ? [{ key: "ans", label: "Registro ANS", children: org.registro_ans }]
-      : []),
-    {
-      key: "terms",
-      label: "Termos",
-      children: org.termos
-        ? `Versão ${org.termos.versao}, aceitos por ${org.termos.aceito_por} em ${formatDate(org.termos.aceito_em)}`
-        : "Não aceitos",
-    },
-  ];
+  const cobranca = useRecurso<Cobranca>(org.is_admin || org.my_areas.includes("finance") ? "tiss/org/billing/" : null);
+  const operadora = org.type === "pay";
+  const atalhos = operadora ? ATALHOS_DA_OPERADORA : ATALHOS_DO_PRESTADOR;
+  const rotulos = new Map(org.available_areas.map((area) => [area.value, area.label]));
+  const aceite = org.terms.accepted
+    ? `Versão ${org.terms.version}${org.terms.accepted_by ? `, aceitos por ${org.terms.accepted_by}` : ""} em ${dataHora(org.terms.accepted_at)}`
+    : "Não aceitos";
 
   return (
-    <Card title="Dados da organização">
-      {org.termos ? (
+    <>
+      {!cobranca.carregando && !cobranca.erro && cobranca.dados && !cobranca.dados.payment_method_active && (
+        <Alert type="info" showIcon title={<>Nenhum cartão cadastrado. <Link href={hrefDaOrg("cobranca")}>Configurar cobrança</Link></>} />
+      )}
+      <Row gutter={[token.margin, token.margin]}>
+        {atalhos.map((atalho) => (
+          <Col key={atalho.titulo} xs={24} md={8}>
+            <Link href={atalho.href} style={{ display: "block", height: "100%", textDecoration: "none" }}>
+              <Card hoverable style={{ height: "100%" }}>
+                <Typography.Text strong style={{ display: "block" }}>{atalho.titulo}</Typography.Text>
+                <Typography.Text type="secondary">{atalho.descricao}</Typography.Text>
+              </Card>
+            </Link>
+          </Col>
+        ))}
+      </Row>
+      <Card title="Dados da organização">
         <Descriptions
           bordered
           column={1}
           layout={screens.md ? "horizontal" : "vertical"}
-          items={items}
+          items={[
+            { key: "nome", label: "Nome", children: org.name },
+            {
+              key: "tipo",
+              label: "Tipo",
+              children: `${ROTULO_DO_TIPO[org.type] ?? org.type_display}${org.subtype_display ? ` · ${org.subtype_display}` : ""}`,
+            },
+            {
+              key: "cnpj",
+              label: "CNPJ",
+              children: (
+                <>
+                  <Typography.Text code>{mascararCnpj(org.cnpj)}</Typography.Text>{" "}
+                  {org.tier === "verified" && (
+                    <Tag color="success" icon={<CheckCircleFilled />}>CNPJ verificado</Tag>
+                  )}
+                </>
+              ),
+            },
+            ...(operadora ? [{ key: "ans", label: "Registro ANS", children: org.registro_ans || "—" }] : []),
+            { key: "termos", label: "Termos", children: aceite },
+            {
+              key: "areas",
+              label: "Minhas Áreas",
+              children: org.my_areas.length
+                ? org.my_areas.map((area) => <Tag key={area}>{rotulos.get(area) ?? area}</Tag>)
+                : "Nenhuma",
+            },
+          ]}
         />
-      ) : (
-        <Flex vertical gap={token.margin}>
-          <Descriptions
-            bordered
-            column={1}
-            layout={screens.md ? "horizontal" : "vertical"}
-            items={items.filter((item) => item.key !== "terms")}
-          />
-          <Alert type="warning" showIcon title="Os termos da organização não foram aceitos." />
-        </Flex>
-      )}
-    </Card>
+      </Card>
+    </>
   );
 }

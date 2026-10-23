@@ -1,106 +1,152 @@
+"""Valida as chaves de organização no backend Voa."""
+
 from __future__ import annotations
 
-import base64
 import hashlib
-import hmac
-import json
-import os
+import threading
 import time
 from dataclasses import dataclass
 from typing import Any
 
-KEY_TTL_SECONDS = 86_400
+from ._service import ServiceError, configured, post
+
+KEY_PREFIX = "sk_tiss_"
+CACHE_SECONDS = 60
 ANONYMOUS_LIMIT = 10
 TIER_LIMITS = {"login": 50, "verified": 1_000}
 SITE_URL = "https://tiss-api.voa.health"
-LOGIN_URL = f"{SITE_URL}/chaves"
+KEYS_URL = f"{SITE_URL}/org"
+BILLING_URL = f"{KEYS_URL}/cobranca"
 ENTERPRISE_URL = "https://voa.health"
 LIMITS = {
     "limite_diario": None,
-    "sem_chave": {"operacoes": ["sandbox_*", "lista_de_espera"], "login": LOGIN_URL},
+    "sem_chave": {"operacoes": ["sandbox_*", "lista_de_espera"], "chaves": KEYS_URL},
     "niveis": sorted(TIER_LIMITS),
+    "chave": {"prefixo": KEY_PREFIX, "revogacao_segundos": CACHE_SECONDS},
     "chave_invalida": {"status": 401},
-    "validade_chave_segundos": KEY_TTL_SECONDS,
+    "escopo_ausente": {"status": 403},
 }
+_CACHE_LIMIT = 10_000
+_HTTP_OK = 200
+_HTTP_UNAUTHORIZED = 401
+_HTTP_UNAVAILABLE = 503
+_cache: dict[str, tuple[float, Access | None]] = {}
+_lock = threading.Lock()
+_now = time.monotonic
 
 
-class KeyConfigurationError(RuntimeError):
-    pass
+@dataclass(frozen=True)
+class Billing:
+    enforced: bool
+    payment_method_active: bool
+    billing_url: str
+    cloud_free_remaining: int
 
 
 @dataclass(frozen=True)
 class Access:
+    key_id: str
     org: str
     tier: str
+    scopes: frozenset[str]
+    billing: Billing | None = None
 
 
-def _b64(value: bytes) -> str:
-    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
+def _billing(value: Any) -> Billing | None:
+    if not isinstance(value, dict):
+        return None
+    url = value.get("billing_url")
+    remaining = value.get("cloud_free_remaining")
+    return Billing(
+        enforced=value.get("enforced") is True,
+        payment_method_active=value.get("payment_method_active") is True,
+        billing_url=url if isinstance(url, str) and url else BILLING_URL,
+        cloud_free_remaining=(
+            remaining if isinstance(remaining, int) and not isinstance(remaining, bool) else 0
+        ),
+    )
 
 
-def _secret() -> bytes:
-    secret = os.environ.get("VOA_TISS_KEY_SECRET")
-    if not secret:
-        raise KeyConfigurationError("Emissão de chaves indisponível.")
-    return secret.encode()
+def _access(data: Any) -> Access | None:
+    if not isinstance(data, dict) or "active" not in data:
+        raise ServiceError(_HTTP_UNAVAILABLE)
+    if data["active"] is not True:
+        return None
+    organization = data.get("organization")
+    scopes = data.get("scopes")
+    if (
+        not isinstance(organization, dict)
+        or organization.get("id") in (None, "")
+        or data.get("key_id") in (None, "")
+        or data.get("tier") not in TIER_LIMITS
+        or not isinstance(scopes, list)
+    ):
+        raise ServiceError(_HTTP_UNAVAILABLE)
+    return Access(
+        key_id=str(data["key_id"]),
+        org=str(organization["id"]),
+        tier=data["tier"],
+        scopes=frozenset(str(scope) for scope in scopes),
+        billing=_billing(data.get("billing")),
+    )
 
 
-def _mac(kind: str, payload: str) -> str:
-    return _b64(hmac.new(_secret(), f"{kind}.{payload}".encode(), hashlib.sha256).digest())
+def resolve(key: str) -> Access | None:
+    """Devolva o acesso da chave, consultando o backend no máximo uma vez a cada 60 s."""
+    if not key.startswith(KEY_PREFIX):
+        return None
+    digest = hashlib.sha256(key.encode()).hexdigest()
+    now = _now()
+    with _lock:
+        cached = _cache.get(digest)
+    if cached is not None and cached[0] > now:
+        return cached[1]
+    access = _access(post("/tiss/service/keys/introspect", {"key": key}))
+    with _lock:
+        if len(_cache) >= _CACHE_LIMIT:
+            for stale in [item for item, (expires, _) in _cache.items() if expires <= now]:
+                del _cache[stale]
+            if len(_cache) >= _CACHE_LIMIT:
+                _cache.clear()
+        _cache[digest] = (now + CACHE_SECONDS, access)
+    return access
 
 
-def sign(kind: str, data: dict[str, Any]) -> str:
-    payload = _b64(json.dumps(data, separators=(",", ":")).encode())
-    return f"{payload}.{_mac(kind, payload)}"
+def clear_cache() -> None:
+    with _lock:
+        _cache.clear()
 
 
-def unsign(kind: str, token: str | None) -> dict[str, Any] | None:
-    """Devolva os dados assinados e ainda válidos, ou `None`."""
+def bearer_key(header: str | None) -> str:
+    prefix, _, value = (header or "").partition(" ")
+    return value.strip() if prefix.lower() == "bearer" else ""
+
+
+def authenticate(header: str | None) -> tuple[int, Access | None]:
+    """Separe pedido sem chave, chave válida, chave inválida e backend indisponível."""
+    if header is None or not configured():
+        return _HTTP_OK, None
     try:
-        payload, signature = (token or "").split(".", 1)
-        if not hmac.compare_digest(signature, _mac(kind, payload)):
-            return None
-        data: Any = json.loads(base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)))
-    except (KeyConfigurationError, ValueError, TypeError):
-        return None
-    if not isinstance(data, dict) or not isinstance(data.get("e"), int):
-        return None
-    return data if data["e"] > time.time() else None
-
-
-def issue_key(org: str, tier: str) -> tuple[str, int]:
-    expires = int(time.time()) + KEY_TTL_SECONDS
-    return f"vt_{sign('key', {'o': org, 'n': tier, 'e': expires})}", expires
-
-
-def read_key(value: str) -> Access | None:
-    data = unsign("key", value[3:]) if value.startswith("vt_") else None
-    if data is None or set(data) != {"o", "n", "e"} or data["n"] not in TIER_LIMITS:
-        return None
-    return Access(org=str(data["o"]), tier=data["n"])
-
-
-def authorize(header: str | None) -> tuple[bool, Access | None]:
-    """Separe pedido sem chave, chave válida e chave inválida ou expirada."""
-    if header is None:
-        return True, None
-    prefix, _, value = header.partition(" ")
-    access = read_key(value) if prefix.lower() == "bearer" else None
-    return access is not None, access
+        access = resolve(bearer_key(header))
+    except ServiceError:
+        return _HTTP_UNAVAILABLE, None
+    return (_HTTP_OK, access) if access is not None else (_HTTP_UNAUTHORIZED, None)
 
 
 __all__ = [
     "ANONYMOUS_LIMIT",
+    "BILLING_URL",
+    "CACHE_SECONDS",
     "ENTERPRISE_URL",
+    "KEYS_URL",
+    "KEY_PREFIX",
     "LIMITS",
-    "LOGIN_URL",
     "SITE_URL",
     "TIER_LIMITS",
     "Access",
-    "KeyConfigurationError",
-    "authorize",
-    "issue_key",
-    "read_key",
-    "sign",
-    "unsign",
+    "Billing",
+    "authenticate",
+    "bearer_key",
+    "clear_cache",
+    "resolve",
 ]

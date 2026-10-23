@@ -6,26 +6,6 @@
   },
   "openapi": "3.1.0",
   "paths": {
-    "/oauth/client.json": {
-      "get": {
-        "operationId": "oauth_client_oauth_client_json_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Oauth Client Oauth Client Json Get",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          }
-        },
-        "summary": "Oauth Client"
-      }
-    },
     "/v1/apply_fixes": {
       "post": {
         "operationId": "apply_fixes_v1_apply_fixes_post",
@@ -444,40 +424,6 @@
           }
         },
         "summary": "Audit"
-      }
-    },
-    "/v1/auth/callback": {
-      "get": {
-        "operationId": "auth_callback_v1_auth_callback_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          }
-        },
-        "summary": "Auth Callback"
-      }
-    },
-    "/v1/auth/login": {
-      "get": {
-        "operationId": "auth_login_v1_auth_login_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "title": "Response Auth Login V1 Auth Login Get"
-                }
-              }
-            },
-            "description": "Successful Response"
-          }
-        },
-        "summary": "Auth Login"
       }
     },
     "/v1/autorizacoes/build": {
@@ -1005,40 +951,6 @@
           }
         },
         "summary": "Hash"
-      }
-    },
-    "/v1/keys/refresh": {
-      "post": {
-        "operationId": "refresh_key_v1_keys_refresh_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "refresh_token": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "refresh_token"
-                ],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          }
-        },
-        "summary": "Refresh Key"
       }
     },
     "/v1/limits": {

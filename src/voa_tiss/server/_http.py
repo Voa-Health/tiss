@@ -19,9 +19,8 @@ from starlette.types import Receive, Scope, Send
 
 import voa_tiss
 
-from ._auth import register_auth
 from ._context import CURRENT_CONTEXT, CallContext
-from ._keys import LIMITS, LOGIN_URL, authorize
+from ._keys import KEYS_URL, LIMITS, authenticate, bearer_key
 from ._mcp import create_mcp
 from ._ops import OPS, call
 from ._quota import seconds_until_reset
@@ -30,12 +29,16 @@ from ._waitlist import register_waitlist
 _logger = logging.getLogger("voa_tiss.server")
 _HTTP_SERVICE_UNAVAILABLE = 503
 _HTTP_TOO_MANY_REQUESTS = 429
+_HTTP_UNAUTHORIZED = 401
 _INVALID_KEY = {
     "erro": {
         "codigo": "chave_invalida",
-        "mensagem": "A chave de acesso é inválida ou expirou.",
-        "link": LOGIN_URL,
+        "mensagem": "A chave de acesso é inválida ou foi revogada.",
+        "link": KEYS_URL,
     }
+}
+_KEYS_UNAVAILABLE = {
+    "erro": {"codigo": "chaves_indisponiveis", "mensagem": "Validação de chaves indisponível."}
 }
 
 
@@ -106,10 +109,14 @@ def _client_ip(request: Request) -> str:
 
 
 async def _request_context(request: Request, call_next: Any) -> Any:
-    allowed, access = authorize(request.headers.get("authorization"))
-    if not allowed:
+    header = request.headers.get("authorization")
+    status, access = await asyncio.to_thread(authenticate, header)
+    if status == _HTTP_UNAUTHORIZED:
         _logger.info("op=auth status=401 ms=0.0")
-        return JSONResponse(_INVALID_KEY, status_code=401)
+        return JSONResponse(_INVALID_KEY, status_code=status)
+    if status == _HTTP_SERVICE_UNAVAILABLE:
+        _logger.info("op=auth status=503 ms=0.0")
+        return JSONResponse(_KEYS_UNAVAILABLE, status_code=status, headers={"Retry-After": "1"})
     telemetry_off = request.headers.get("x-voa-telemetry", "").lower() == "off"
     context_token = CURRENT_CONTEXT.set(
         CallContext(
@@ -117,6 +124,7 @@ async def _request_context(request: Request, call_next: Any) -> Any:
             background_tasks=_background_tasks(request.url.path),
             access=access,
             client_ip=_client_ip(request),
+            key=bearer_key(header) if access is not None else "",
         )
     )
     try:
@@ -258,7 +266,6 @@ def create_app() -> FastAPI:
     )
     app.middleware("http")(_request_context)
     _register_ops(app)
-    register_auth(app)
     register_waitlist(app)
     app.add_api_route("/v1/limits", _limits, methods=["GET"], name="limits")
     app.router.routes.append(Route("/mcp", _MCPApp(mcp_manager), methods=["GET", "POST", "DELETE"]))

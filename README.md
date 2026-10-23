@@ -201,9 +201,9 @@ curl https://tiss-api.voa.health/v1/validate \
 Consulte o [OpenAPI](https://tiss-api.voa.health/openapi.json) e o
 [catálogo de operações](https://github.com/Voa-Health/tiss/blob/main/docs/api.md).
 
-Sem chave, só as operações do sandbox respondem. Para as demais, entre com a
-conta Voa em [tiss-api.voa.health/chaves](https://tiss-api.voa.health/chaves) e
-envie a chave recebida. Não há limite diário.
+Sem chave, só as operações do sandbox respondem. Para as demais, crie uma chave
+`sk_tiss_` no [painel da organização](https://tiss-api.voa.health/org) e envie-a
+em `Authorization: Bearer`. Não há limite diário.
 
 ```sh
 curl https://tiss-api.voa.health/v1/validate \
@@ -212,19 +212,16 @@ curl https://tiss-api.voa.health/v1/validate \
   --data-binary @lote.xml
 ```
 
-A chave vale 24 horas. Renove com o `refresh_token` recebido no login; chave
-inválida ou expirada retorna `401`:
-
-```sh
-curl https://tiss-api.voa.health/v1/keys/refresh \
-  -H 'Content-Type: application/json' \
-  -d '{"refresh_token": "..."}'
-```
+Chave inválida ou revogada retorna `401`, e a revogação vale em até 60 segundos.
+Chave sem o escopo da operação (`tiss:validate`, `tiss:build`, `tiss:sandbox`,
+`tiss:accounts`, `tiss:authorization` ou `tiss:rules`) retorna `403`. Cada
+chamada com chave entra no uso da organização, por operação e por chave.
+Auto-hospedado, sem `VOA_TISS_BACKEND_URL` e `VOA_TISS_SERVICE_SECRET`, o
+servidor não exige chave.
 
 O serviço não armazena nem registra payloads e não os usa para treinar modelos.
 Quando ativada por `POSTHOG_KEY`, a telemetria agregada contém operação,
-códigos de achados, registro ANS, versão TISS e data; na emissão de chave,
-inclui nível e identificador da organização, sem e-mail. Envie
+códigos de achados, registro ANS, versão TISS e data, sem e-mail. Envie
 `X-Voa-Telemetry: off` para desativá-la. A biblioteca local permanece offline e
 nunca envia telemetria. `VOA_TISS_API_KEY` é a variável que clientes HTTP locais
 podem ler para enviar uma chave de acesso.

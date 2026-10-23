@@ -74,3 +74,17 @@ textarea:focus-visible,
 .solution-link:hover {
   background: rgba(0, 0, 0, 0.04);
 }
+
+.org-skip {
+  position: absolute;
+  top: -80px;
+  left: var(--ant-padding-lg);
+  z-index: 70;
+  padding: var(--ant-padding-sm) var(--ant-padding);
+  border-radius: var(--ant-border-radius);
+  background: var(--ant-color-bg-container);
+}
+
+.org-skip:focus {
+  top: var(--ant-padding-sm);
+}
