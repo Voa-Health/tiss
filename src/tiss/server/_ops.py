@@ -11,8 +11,8 @@ import jsonschema
 import tiss
 from tiss import operadoras, sandbox
 from tiss import rede as _rede_module
+from tiss._dados_remotos import DadosIndisponiveis
 from tiss._retorno import Decisao, RetornoError
-from tiss.rede import RedeIndisponivel
 from tiss.sandbox import SandboxError
 from tiss.tuss import lookup, search
 
@@ -548,9 +548,9 @@ def call(
                 "permanente": exc.permanente,
             }
         }
-    except RedeIndisponivel as exc:
+    except DadosIndisponiveis as exc:
         status = 503
-        result = {"erro": {"codigo": "rede_indisponivel", "mensagem": str(exc)}}
+        result = {"erro": {"codigo": exc.codigo, "mensagem": str(exc)}}
     except LookupError as exc:
         status = 404
         result = {"erro": {"codigo": "nao_encontrado", "mensagem": str(exc.args[0])}}

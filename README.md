@@ -115,10 +115,10 @@ que foi cobrado. Para testar sem operadora real, use a
 ## O que vem no pacote
 
 - **[Biblioteca Python](#referência)**: validação, correção, geração, hash,
-  auditoria, demonstrativos, TUSS, operadoras e rede hospitalar.
+  auditoria, demonstrativos, TUSS, operadoras, rede hospitalar e referência D-TISS.
 - **[API HTTP](#api-http)**: as mesmas operações em
   `https://tiss-api.voa.health`, com [OpenAPI](https://tiss-api.voa.health/openapi.json).
-- **[MCP remoto](#conectar-agentes)**: 24 ferramentas e 3 prompts para agentes,
+- **[MCP remoto](#conectar-agentes)**: 25 ferramentas e 3 prompts para agentes,
   no [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss).
 - **[Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)**: envie
   lotes e receba protocolo, demonstrativo e glosas sem tocar em produção.
@@ -361,11 +361,15 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "tiss[pdf]"`.
 | `tuss.lookup` | Consulta um código TUSS. |
 | `tuss.search` | Busca registros TUSS por texto. |
 | `rede.*` | Consulta vínculos da rede hospitalar da ANS. |
+| `tiss_referencia` | Consulta valores unitários de referência D-TISS da ANS por TUSS. |
 | `json_schema` | Retorna o esquema JSON de um tipo público. |
 | `examples` | Disponibiliza exemplos sintéticos do pacote. |
 
 `tiss.rede` baixa e verifica os dados na primeira consulta. Defina
 `TISS_REDE` com o caminho de um SQLite local para usar uma cópia própria.
+`tiss.referencia` consulta valores unitários de referência da ANS por TUSS, UF e
+semestre; o valor pago é somente o pago diretamente ao fornecedor, não o total
+pago pela operadora. Defina `TISS_REFERENCIA` para usar um SQLite local.
 
 </details>
 

@@ -3,27 +3,36 @@
 from __future__ import annotations
 
 import argparse
-import gzip
-import hashlib
 import json
 import os
 import re
 import sqlite3
-import tempfile
 import unicodedata
-import urllib.request
 from functools import cache
 from pathlib import Path
 from typing import Any, cast
 
 from tiss import operadoras
+from tiss._dados_remotos import (
+    DadosIndisponiveis,
+    baixar_verificado,
+    caminho_cache,
+    validar_manifesto,
+)
+from tiss._dados_remotos import (
+    conectar as conectar_remoto,
+)
+from tiss._dados_remotos import (
+    sha256 as sha256_remoto,
+)
 
 _MANIFEST_PATH = Path(__file__).parent / "_data" / "manifesto.json"
-_CHUNK_SIZE = 1024 * 1024
 
 
-class RedeIndisponivel(RuntimeError):
+class RedeIndisponivel(DadosIndisponiveis):
     """Indica que os dados da rede não puderam ser verificados ou lidos."""
+
+    codigo = "rede_indisponivel"
 
 
 def _ler_manifesto() -> dict[str, Any]:
@@ -37,75 +46,15 @@ def _ler_manifesto() -> dict[str, Any]:
 
 
 def _validar_manifesto(manifesto: dict[str, Any]) -> None:
-    for chave in ("sha256", "sqlite_sha256"):
-        if not isinstance(manifesto.get(chave), str) or not re.fullmatch(
-            r"[0-9a-f]{64}", manifesto[chave]
-        ):
-            raise RedeIndisponivel("O manifesto da rede hospitalar é inválido.")
-    for chave in ("tamanho", "sqlite_tamanho"):
-        if not isinstance(manifesto.get(chave), int) or manifesto[chave] < 0:
-            raise RedeIndisponivel("O manifesto da rede hospitalar é inválido.")
-    if not isinstance(manifesto.get("url"), str) or not manifesto["url"]:
-        raise RedeIndisponivel("O manifesto da rede hospitalar é inválido.")
+    validar_manifesto(manifesto, RedeIndisponivel)
 
 
 def _sha256(path: Path) -> tuple[str, int]:
-    digest = hashlib.sha256()
-    tamanho = 0
-    with path.open("rb") as source:
-        while bloco := source.read(_CHUNK_SIZE):
-            digest.update(bloco)
-            tamanho += len(bloco)
-    return digest.hexdigest(), tamanho
+    return sha256_remoto(path)
 
 
 def _baixar_verificado(destino: Path, manifesto: dict[str, Any]) -> Path:
-    _validar_manifesto(manifesto)
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    temporarios: list[Path] = []
-    try:
-        descritor, nome = tempfile.mkstemp(dir=destino.parent, prefix=".rede-", suffix=".gz")
-        os.close(descritor)
-        compactado = Path(nome)
-        temporarios.append(compactado)
-        digest = hashlib.sha256()
-        tamanho = 0
-        with (
-            urllib.request.urlopen(manifesto["url"], timeout=60) as resposta,
-            compactado.open("wb") as arquivo,
-        ):
-            while bloco := resposta.read(_CHUNK_SIZE):
-                arquivo.write(bloco)
-                digest.update(bloco)
-                tamanho += len(bloco)
-        if tamanho != manifesto["tamanho"] or digest.hexdigest() != manifesto["sha256"]:
-            raise RedeIndisponivel("O arquivo compactado da rede não corresponde ao manifesto.")
-
-        descritor, nome = tempfile.mkstemp(dir=destino.parent, prefix=".rede-", suffix=".sqlite")
-        os.close(descritor)
-        banco_temporario = Path(nome)
-        temporarios.append(banco_temporario)
-        digest = hashlib.sha256()
-        tamanho = 0
-        with gzip.open(compactado, "rb") as origem, banco_temporario.open("wb") as arquivo:
-            while bloco := origem.read(_CHUNK_SIZE):
-                arquivo.write(bloco)
-                digest.update(bloco)
-                tamanho += len(bloco)
-        if (
-            tamanho != manifesto["sqlite_tamanho"]
-            or digest.hexdigest() != manifesto["sqlite_sha256"]
-        ):
-            raise RedeIndisponivel("O banco da rede não corresponde ao manifesto.")
-        os.replace(banco_temporario, destino)
-        return destino
-    except RedeIndisponivel:
-        raise
-    except Exception as exc:
-        raise RedeIndisponivel("Não foi possível baixar e verificar a rede hospitalar.") from exc
-    finally:
-        for temporario in temporarios:
-            temporario.unlink(missing_ok=True)
+    return baixar_verificado(destino, manifesto, RedeIndisponivel, "rede")
 
 
 def _caminho_banco() -> Path:
@@ -118,26 +67,16 @@ def _caminho_banco() -> Path:
 
     manifesto = _ler_manifesto()
     _validar_manifesto(manifesto)
-    raiz_cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")).expanduser()
-    caminho = (raiz_cache / "tiss" / f"rede-{manifesto['sqlite_sha256'][:16]}.sqlite").resolve()
-    if caminho.is_file():
-        digest, tamanho = _sha256(caminho)
-        if digest == manifesto["sqlite_sha256"] and tamanho == manifesto["sqlite_tamanho"]:
-            return caminho
+    caminho, valido = caminho_cache(f"rede-{manifesto['sqlite_sha256'][:16]}", manifesto)
+    if valido:
+        return caminho
     return _baixar_verificado(caminho, manifesto)
 
 
 @cache
 def _conectar(caminho: str) -> sqlite3.Connection:
     try:
-        banco = sqlite3.connect(
-            f"{Path(caminho).as_uri()}?mode=ro",
-            uri=True,
-            check_same_thread=False,
-        )
-        banco.row_factory = sqlite3.Row
-        banco.execute("SELECT valor FROM meta LIMIT 1")
-        return banco
+        return conectar_remoto(caminho, RedeIndisponivel, "rede hospitalar")
     except sqlite3.Error as exc:
         raise RedeIndisponivel("O banco SQLite da rede não pôde ser aberto.") from exc
 

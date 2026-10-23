@@ -210,6 +210,8 @@ def _operation_openapi_extra(operation: Any) -> dict[str, Any]:
     }
     if operation.name in {"rede", "operadora_rede"}:
         extra["responses"]["503"] = {"description": "Rede hospitalar indisponível."}
+    if operation.name == "referencia":
+        extra["responses"]["503"] = {"description": "Referência D-TISS indisponível."}
     if request_body is not None:
         extra["requestBody"] = request_body
     path_parameters = re.findall(r"\{([^}]+)\}", operation.route)

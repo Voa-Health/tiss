@@ -6,6 +6,8 @@ demais, envie `Authorization: Bearer <chave>` com a chave `sk_tiss_` criada no
 painel da organização.
 Para autorizações SP/SADT, use `tiss_autorizacao_build`,
 `tiss_autorizacao_parse`, `tiss_autorizacao_check` e `tiss_sandbox_autorizacao`.
+Para valores unitários de referência D-TISS da ANS por TUSS, use `tiss_referencia`;
+preços contratados ou glosas específicas ficam nas ferramentas de operadoras.
 
 ## Exemplos de chamadas
 

@@ -32,6 +32,8 @@ ou `tiss_sandbox_autorizacao`.
 
 Para operadoras, use `tiss_rejection_map` ou `rejection_map` para agregar achados
 por prestador com CPF pseudonimizado.
+Para valores de referência D-TISS por TUSS, use `tiss_referencia`; não use para
+glosa ou preço contratado de uma operadora.
 
 Atende operadoras, prestadores (hospitais, clínicas e laboratórios),
 profissionais de saúde, pacientes e gestores do SUS e do governo que consultam

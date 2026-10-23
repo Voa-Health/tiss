@@ -14,6 +14,8 @@ Use o MCP remoto em `https://tiss-api.voa.health/mcp` ou a biblioteca Python
 - Calcular o hash do epílogo.
 - Interpretar glosas e demonstrativos.
 - Consultar códigos TUSS, domínios TISS e dados de operadoras da ANS.
+- Consultar valores unitários D-TISS por TUSS com `tiss_referencia`; não é preço
+  contratado nem valor total pago pela operadora.
 - Conferir campos de guias SP/SADT ou testar envios no sandbox.
 - Para operadoras, use `tiss_rejection_map` ou `rejection_map` para agregar
   achados por prestador com CPF pseudonimizado.

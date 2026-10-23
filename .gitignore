@@ -40,6 +40,7 @@ pnpm-debug.log*
 
 # Dados baixados sob demanda
 src/tiss/rede/_data/*.sqlite*
+src/tiss/referencia/_data/*.sqlite*
 
 # Segredos e certificados (inclusive ICP-Brasil A1)
 .env*
