@@ -27,7 +27,7 @@ export function VerificarEmail({ chave }: { chave: string }) {
     <Flex vertical align="center" justify="center" style={{ minHeight: "100vh", padding: token.paddingLG, background: token.colorBgLayout }}>
       <Card style={{ width: "100%", maxWidth: 480 }}>
         <Flex vertical gap={token.margin}>
-          <Link href="/" aria-label="voa-tiss, página inicial" style={{ display: "inline-flex" }}>
+          <Link href="/" aria-label="tiss, página inicial" style={{ display: "inline-flex" }}>
             <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
           </Link>
           {erro ? (

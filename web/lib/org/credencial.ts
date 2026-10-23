@@ -42,7 +42,7 @@ export function apagarPar(resposta: NextResponse): void {
 }
 
 /** O cadastro não guarda o nome; ele vai ao perfil na confirmação do e-mail. */
-export const COOKIE_DO_NOME = "voa_tiss_nome";
+export const COOKIE_DO_NOME = "tiss_nome";
 
 export function gravarNome(resposta: NextResponse, nome: string): void {
   resposta.cookies.set(COOKIE_DO_NOME, Buffer.from(nome).toString("base64url"), {

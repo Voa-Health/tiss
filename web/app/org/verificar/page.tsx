@@ -3,7 +3,7 @@ import { VerificarEmail } from "@/components/org/VerificarEmail";
 
 export const metadata: Metadata = {
   title: "Confirmar e-mail",
-  description: "Confirme o e-mail da sua conta Voa para criar a organização no voa-tiss.",
+  description: "Confirme o e-mail da sua conta Voa para criar a organização no tiss.",
   robots: { index: false, follow: false },
 };
 

@@ -275,7 +275,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
               type="warning"
               showIcon
               title={emUso.mensagem}
-              description="A empresa já tem uma organização no voa-tiss. Peça a quem administra que convide você em Membros: o convite chega por e-mail e você entra com esta mesma conta, sem criar outra organização."
+              description="A empresa já tem uma organização no tiss. Peça a quem administra que convide você em Membros: o convite chega por e-mail e você entra com esta mesma conta, sem criar outra organização."
               style={{ marginBottom: token.margin }}
             />
           )}
