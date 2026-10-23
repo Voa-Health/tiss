@@ -17,6 +17,14 @@ export function dia(valor: string): string {
   return Number.isNaN(data.getTime()) ? valor : data.toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit" });
 }
 
+export function dataCompleta(valor: string | null): string {
+  if (!valor) return "—";
+  const data = new Date(`${valor.slice(0, 10)}T00:00:00Z`);
+  return Number.isNaN(data.getTime())
+    ? valor
+    : data.toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
 const reais = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 export function brl(valor: string | number): string {
