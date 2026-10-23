@@ -162,12 +162,9 @@ export function OrgCasca({
             gap={token.marginLG}
             style={{ maxWidth: LARGURA, margin: "0 auto", padding: `${token.paddingLG}px ${token.paddingLG}px ${token.paddingXL}px` }}
           >
-            <Flex vertical gap={token.marginXXS}>
-              <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading2 }}>
-                {atual.label}
-              </Typography.Title>
-              <Typography.Text type="secondary">{atual.descricao}</Typography.Text>
-            </Flex>
+            <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading2 }}>
+              {atual.label}
+            </Typography.Title>
             {children}
             <Flex wrap gap={token.margin} style={{ borderTop: borda, paddingTop: token.padding }}>
               <Link href="/termos">Termos de uso</Link>
