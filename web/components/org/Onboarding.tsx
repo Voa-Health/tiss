@@ -40,12 +40,13 @@ const ICONE_DO_SUBTIPO: Record<string, ReactNode> = {
   autogestao: <TeamOutlined />,
   healthtech_consultoria: <CodeOutlined />,
   sus_governo: <GlobalOutlined />,
+  outro: <AppstoreOutlined />,
 };
 
 const GRUPOS = [
   { rotulo: "Prestador", tipos: ["prov"] },
   { rotulo: "Operadora", tipos: ["pay"] },
-  { rotulo: "Outros", tipos: ["bus", "govt"] },
+  { rotulo: "Outros", tipos: ["bus", "govt", "other"] },
 ];
 
 function PapelDaOrg({
@@ -65,7 +66,7 @@ function PapelDaOrg({
   ].filter((grupo) => grupo.itens.length > 0);
 
   return (
-    <Flex vertical gap={token.margin} role="radiogroup" aria-label="Quem é a organização">
+    <Flex vertical gap={token.margin} role="radiogroup" aria-label="Tipo da sua empresa">
       {grupos.map((grupo) => (
         <Flex key={grupo.rotulo} vertical gap={token.marginXS}>
           <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
@@ -226,7 +227,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 />
               </Form.Item>
             )}
-            <Form.Item name="subtype" label="Quem é a organização" rules={[{ required: true, message: "Escolha o tipo." }]}>
+            <Form.Item name="subtype" label="Tipo da sua empresa" rules={[{ required: true, message: "Escolha o tipo." }]}>
               <PapelDaOrg subtipos={catalogo.subtypes} />
             </Form.Item>
             {destino === NOVA && (

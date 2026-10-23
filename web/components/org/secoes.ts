@@ -43,6 +43,7 @@ export const ROTULO_DO_TIPO: Record<string, string> = {
   pay: "Operadora",
   bus: "Empresa",
   govt: "Governo",
+  other: "Outro",
 };
 
 export type PacoteDeRegras = { registro: string; razaoSocial: string; regras: number };
