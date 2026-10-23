@@ -66,6 +66,27 @@ pronta. Requer Python 3.10+.
 Prefere testar no navegador? Abra o
 [playground](https://tiss-api.voa.health/playground).
 
+## CLI
+
+Instale a CLI com `pip install tiss` ou execute sem instalar com
+`uvx tiss validate lote.xml`.
+
+| Comando | Uso |
+| --- | --- |
+| `tiss validate <paths...>` | Valida arquivos XML/JSON ou pastas. Use `--operadora REGISTRO` para aplicar regras. |
+| `tiss fix <arquivo>` | Mostra um diff; use `--write` ou `-o CAMINHO` para gravar. |
+| `tiss hash <arquivo>` | Calcula o hash; `--check` compara com o epílogo. |
+| `tiss glosa <código>` | Consulta a Tabela 38. |
+| `tiss tuss <código\|termo>` | Busca códigos e descrições TUSS. |
+| `tiss operadora <registro>` | Consulta o perfil da operadora. |
+| `tiss mapa <pasta>` | Gera o mapa agregado de rejeição. |
+| `tiss mcp` | Inicia o MCP local em stdio; requer `tiss[mcp]`. |
+| `tiss serve` | Inicia a API HTTP local; requer `tiss[server]`. |
+
+Os códigos de saída são `0` para sucesso, `1` para achados ou itens não
+encontrados e `2` para uso inválido ou entrada ilegível. Para integração com
+GitHub Actions, use `tiss validate --format github lote.xml`.
+
 ## Para quem é
 
 | Você é | O tiss ajuda a |
@@ -250,7 +271,7 @@ Instale o extra do servidor e inicie a API local:
 
 ```sh
 pip install "tiss[server]"
-python -m tiss.server --host 127.0.0.1 --port 8000
+tiss serve --host 127.0.0.1 --port 8000
 ```
 
 Valide XML como JSON ou como corpo XML:

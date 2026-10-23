@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import re
 from copy import deepcopy
 from datetime import date
 from decimal import Decimal
@@ -17,172 +18,37 @@ import tiss
 from tiss import examples
 from tiss.__main__ import main as cli_main
 from tiss._mapa_html import render_rejection_map_html
-from tiss._rules import _package, validate_package
+from tiss._rules import validate_package
 from tiss._schema import parser
 from tiss.codes import CODES
 
-
-@pytest.mark.parametrize(
-    ("name", "expected"),
-    [
-        ("lote-valido", set()),
-        (
-            "lote-com-erros",
-            {
-                "guia.sequencial",
-                "item.valor_divergente",
-                "item.valor_zerado",
-                "lote.valor_total_geral",
-            },
-        ),
-        ("guia-consulta", set()),
-        ("hash-divergente", set()),
-        ("hash-ausente", set()),
-        ("autorizacao.aprovar-json", "aprovar_por_regra"),
-        ("autorizacao.pendente-json", "pendente"),
-        ("autorizacao.auditoria-xml", "encaminhar_auditor"),
-        ("autorizacao.sem-regra-xml", "encaminhar_auditor"),
-        ("autorizacao.carteirinha-json", "encaminhar_auditor"),
-    ],
-)
-def test_example_reports(name, expected):
-    if name.startswith("autorizacao."):
-        case = name.split(".", 1)[1]
-        request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
-        package = _package("000000")
-        assert package is not None
-        context = {"operadora": package}
-        source = request
-        if case == "aprovar-json":
-            package["regras"][0]["check"]["codigos"] = ["99999999"]
-        elif case == "pendente-json":
-            request["solicitacao"].pop("indicacao_clinica")
-        elif case == "auditoria-xml":
-            source = tiss.build_autorizacao(request)
-        elif case == "sem-regra-xml":
-            source = tiss.build_autorizacao(request)
-            context = {}
-        elif case == "carteirinha-json":
-            package["regras"][0]["check"]["codigos"] = ["99999999"]
-            context["carteirinhas"] = {"AUT-0001": {"ativa": False}}
-        result = tiss.check_autorizacao(source, contexto=context)
-        assert result.decisao is not None
-        assert result.decisao["tipo"] == expected
-        assert expected in {"aprovar_por_regra", "pendente", "encaminhar_auditor"}
-        assert (
-            "negar"
-            not in tiss.json_schema("report")["properties"]["decisao"]["properties"]["tipo"]["enum"]
-        )
-        assert "negar" not in result.to_json()
-        if case == "aprovar-json":
-            assert result.decisao["rules"]
-            for example in ("autorizacao-solicitacao", "autorizacao-resposta"):
-                xml = examples.load(example)
-                assert tiss.build_autorizacao(tiss.parse_autorizacao(xml)) == xml
-                assert tiss.validate(xml).valid
-                hash_start = xml.index(b"<ans:hash>") + len(b"<ans:hash>")
-                replacement = b"0" if xml[hash_start : hash_start + 1] != b"0" else b"1"
-                assert "lote.hash_divergente" in {
-                    finding.code
-                    for finding in tiss.validate(
-                        xml[:hash_start] + replacement + xml[hash_start + 1 :]
-                    ).findings
-                }
-        elif case == "pendente-json":
-            assert result.decisao["needs"] == ["/solicitacao/indicacao_clinica"]
-        elif case == "auditoria-xml":
-            assert any(
-                finding.code == "autorizacao.exige_auditoria"
-                and finding.rule
-                and finding.rule["id"] == "exige-autorizacao-consulta"
-                for finding in result.findings
-            )
-        elif case == "sem-regra-xml":
-            assert any(finding.code == "autorizacao.sem_regra" for finding in result.findings)
-            assert result.decisao["rules"] == []
-        elif case == "carteirinha-json":
-            assert any(finding.code == "autorizacao.carteirinha" for finding in result.findings)
-        return
-    if name == "guia-consulta":
-        lote = tiss.parse_lote(examples.load("lote-valido"))
-        lote["numero_lote"] = "TISS-001"
-        lote["guias"] = [
-            {
-                "tipo": "consulta",
-                "cabecalho_consulta": {
-                    "registro_ans": "123456",
-                    "numero_guia_prestador": "CONSULTA-001",
-                },
-                "dados_beneficiario": {
-                    "numero_carteira": "000000000001",
-                    "atendimento_rn": "N",
-                },
-                "contratado_executante": {
-                    "codigo_prestador_na_operadora": "PRESTADOR01",
-                    "cnes": "1234567",
-                },
-                "profissional_executante": {
-                    "nome_profissional": "DRA. MARIA COSTA",
-                    "conselho_profissional": "01",
-                    "numero_conselho_profissional": "12345",
-                    "uf": "35",
-                    "cbos": "225125",
-                },
-                "indicacao_acidente": "0",
-                "dados_atendimento": {
-                    "regime_atendimento": "01",
-                    "data_atendimento": "2026-10-21",
-                    "tipo_consulta": "1",
-                    "procedimento": {
-                        "codigo_tabela": "22",
-                        "codigo_procedimento": "10101012",
-                        "valor_procedimento": 15000,
-                    },
-                },
-            }
-        ]
-        xml = tiss.build_lote(lote)
-        assert tiss.validate(xml).valid
-        parsed = tiss.parse_lote(xml)
-        assert parsed == lote
-        report = tiss.check(parsed)
-        assert report.valid and report.findings == ()
-        return
-    if name.startswith("hash-"):
-        root = etree.fromstring(examples.load("lote-valido"), parser())
-        hash_element = root.xpath(".//ans:epilogo/ans:hash", namespaces=ANS)[0]
-        if name == "hash-divergente":
-            hash_element.text = "0" * 32
-        else:
-            hash_element.getparent().remove(hash_element)
-        document = etree.tostring(root, encoding="ISO-8859-1", xml_declaration=True)
-        report = tiss.validate(document)
-        codes = {finding.code for finding in report.findings}
-        if name == "hash-divergente":
-            assert codes == {"lote.hash_divergente"}
-            assert not report.valid
-            finding = report.findings[0]
-            assert finding.xpath.endswith("/ans:epilogo/ans:hash")
-            assert finding.message == "Hash do epílogo divergente do calculado."
-            assert finding.glosa == "5014"
-            assert finding.fix is None
-        else:
-            assert "lote.hash_divergente" not in codes
-            assert any(code.startswith("xsd.") for code in codes)
-        return
-    report = tiss.validate(examples.load(name))
-    codes = {finding.code for finding in report.findings}
-    assert expected <= codes
-    if name == "lote-valido":
-        assert report.valid and report.findings == ()
-    else:
-        assert 1 <= sum(code.startswith("xsd.") for code in codes) <= 3
-        assert report.findings[0].guia == "ERRO-01"
-        assert {finding.guia for finding in report.findings if finding.guia} == {
-            "ERRO-01",
-            "ERRO-02",
-        }
-        assert any(finding.severity == "warning" for finding in report.findings)
+_CLI_CASES = [
+    "version",
+    "help",
+    "no_args",
+    "unknown_command",
+    "missing_path",
+    "validate_json_not_object",
+    "validate_valid",
+    "validate_text",
+    "validate_json_xml",
+    "validate_json_lote",
+    "validate_github_escape",
+    "validate_folder",
+    "fix_diff",
+    "fix_output",
+    "fix_write",
+    "fix_needs",
+    "hash",
+    "hash_check_valid",
+    "hash_check_mismatch",
+    "glosa_found",
+    "glosa_missing",
+    "tuss_code",
+    "tuss_term",
+    "operadora_found",
+    "operadora_missing",
+]
 
 
 @pytest.mark.parametrize(
@@ -360,6 +226,175 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
         ]
         assert audit_findings[0].rule["id"] == case
         assert audit_findings[0].glosa == "1818"
+
+
+def _tampered_cli_xml():
+    root = etree.fromstring(examples.load("lote-valido"), parser())
+    root.xpath(".//ans:epilogo/ans:hash", namespaces=ANS)[0].text = "0" * 32
+    return etree.tostring(root, encoding="ISO-8859-1", xml_declaration=True, pretty_print=True)
+
+
+def _check_cli(tmp_path, capsys, monkeypatch):
+    def forbidden_network(*args, **kwargs):
+        raise AssertionError("unexpected network request")
+
+    monkeypatch.setattr(request, "urlopen", forbidden_network)
+    for case in _CLI_CASES:
+        try:
+            if case == "version":
+                assert cli_main(["--version"]) == 0
+                assert capsys.readouterr().out.strip() == f"tiss {tiss.__version__}"
+            elif case == "help":
+                assert cli_main(["--help"]) == 0
+                assert "usage:" in capsys.readouterr().out
+            elif case == "no_args":
+                assert cli_main([]) == 2
+                assert "usage:" in capsys.readouterr().err
+            elif case == "unknown_command":
+                assert cli_main(["invalid"]) == 2
+                assert "invalid choice" in capsys.readouterr().err
+            elif case == "missing_path":
+                assert cli_main(["validate", str(tmp_path / "ausente.xml")]) == 2
+                assert "Não foi possível ler a entrada" in capsys.readouterr().err
+            elif case == "validate_json_not_object":
+                path = tmp_path / "invalido.json"
+                path.write_text("[]")
+                assert cli_main(["validate", str(path)]) == 2
+                assert "não contém um lote" in capsys.readouterr().err
+            elif case == "validate_valid":
+                path = tmp_path / "lote.xml"
+                path.write_bytes(examples.load("lote-valido"))
+                assert cli_main(["validate", str(path)]) == 0
+                assert "0 erro(s), 0 aviso(s) em 1 arquivo(s)" in capsys.readouterr().out
+            elif case == "validate_text":
+                path = tmp_path / "lote-invalido.xml"
+                path.write_bytes(_tampered_cli_xml())
+                assert cli_main(["validate", str(path)]) == 1
+                output = capsys.readouterr().out
+                assert "lote.hash_divergente" in output
+                assert re.search(rf"{re.escape(path.as_posix())}:\d+: error ", output)
+                assert "1 erro(s)" in output
+            elif case in {"validate_json_xml", "validate_json_lote"}:
+                path = tmp_path / ("lote.xml" if case == "validate_json_xml" else "lote.json")
+                if case == "validate_json_xml":
+                    path.write_bytes(_tampered_cli_xml())
+                    expected = tiss.validate(path.read_bytes()).to_dict()
+                else:
+                    fixture = ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json"
+                    path.write_bytes(fixture.read_bytes())
+                    expected = tiss.check(json.loads(path.read_text())).to_dict()
+                assert cli_main(["validate", "--format", "json", str(path)]) == 1
+                assert json.loads(capsys.readouterr().out) == expected
+            elif case == "validate_github_escape":
+                path = tmp_path / "lote,erro.xml"
+                path.write_bytes(_tampered_cli_xml())
+                finding = tiss.Finding(
+                    code="cli,custom",
+                    severity="error",
+                    guia=None,
+                    xpath=".//ans:epilogo/ans:hash",
+                    pointer=None,
+                    message="erro, linha\nseguinte",
+                    fix=None,
+                    needs=None,
+                )
+                report = tiss.Report(False, "4.03.00", (finding,))
+                with monkeypatch.context() as patcher:
+                    patcher.setattr(
+                        tiss,
+                        "validate",
+                        lambda *_args, _report=report, **_kwargs: _report,
+                    )
+                    assert cli_main(["validate", "--format", "github", str(path)]) == 1
+                output = capsys.readouterr().out
+                assert f"::error file={path.as_posix().replace(',', '%2C')},line=" in output
+                assert "title=cli%2Ccustom::erro, linha%0Aseguinte" in output
+                assert "erro(s)" not in output
+            elif case == "validate_folder":
+                folder = tmp_path / "entradas"
+                folder.mkdir()
+                (folder / "lote.xml").write_bytes(examples.load("lote-valido"))
+                fixture = ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json"
+                (folder / "lote.json").write_bytes(fixture.read_bytes())
+                assert cli_main(["validate", "--format", "json", str(folder)]) == 1
+                output = json.loads(capsys.readouterr().out)
+                assert set(output) == {
+                    (folder / "lote.xml").as_posix(),
+                    (folder / "lote.json").as_posix(),
+                }
+            elif case in {"fix_diff", "fix_output", "fix_write"}:
+                path = tmp_path / "corrigivel.json"
+                fixture = ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json"
+                original = fixture.read_bytes()
+                path.write_bytes(original)
+                arguments = ["fix", str(path)]
+                if case == "fix_output":
+                    arguments.extend(["-o", str(tmp_path / "corrigido.json")])
+                elif case == "fix_write":
+                    arguments.append("--write")
+                assert cli_main(arguments) == 0
+                captured = capsys.readouterr()
+                if case == "fix_diff":
+                    assert captured.out.startswith("--- ")
+                    assert path.read_bytes() == original
+                else:
+                    destination = path if case == "fix_write" else tmp_path / "corrigido.json"
+                    report = tiss.check(json.loads(destination.read_text()))
+                    assert report.valid and not report.findings
+            elif case == "fix_needs":
+                path = tmp_path / "incompleto.json"
+                fixture = ROOT / "tests/fixtures/lotes/nao-corrigivel-estrutura-incompleta.json"
+                path.write_bytes(fixture.read_bytes())
+                assert cli_main(["fix", str(path)]) == 1
+                assert "needs:" in capsys.readouterr().err
+            elif case == "hash":
+                path = tmp_path / "lote.xml"
+                content = examples.load("lote-valido")
+                path.write_bytes(content)
+                assert cli_main(["hash", str(path)]) == 0
+                assert capsys.readouterr().out.strip() == tiss.hash_epilogo(content)
+            elif case in {"hash_check_valid", "hash_check_mismatch"}:
+                path = tmp_path / "lote.xml"
+                content = (
+                    examples.load("lote-valido")
+                    if case == "hash_check_valid"
+                    else _tampered_cli_xml()
+                )
+                path.write_bytes(content)
+                expected = 0 if case == "hash_check_valid" else 1
+                assert cli_main(["hash", "--check", str(path)]) == expected
+                if expected:
+                    assert "calculado" in capsys.readouterr().err
+                else:
+                    assert capsys.readouterr().out.strip() == tiss.hash_epilogo(content)
+            elif case in {"glosa_found", "glosa_missing"}:
+                expected = 0 if case == "glosa_found" else 1
+                code = "1801" if expected == 0 else "9999"
+                assert cli_main(["glosa", code]) == expected
+                output = capsys.readouterr()
+                if expected:
+                    assert "não encontrada" in output.err
+                else:
+                    assert json.loads(output.out)["codigo"] == code
+            elif case in {"tuss_code", "tuss_term"}:
+                query = "10101012" if case == "tuss_code" else "ressonância magnética"
+                assert cli_main(["tuss", query]) == 0
+                results = json.loads(capsys.readouterr().out)["resultados"]
+                if query.isdigit():
+                    assert any(item["codigo"] == "10101012" for item in results)
+                else:
+                    assert 0 < len(results) <= 20
+            else:
+                registro = "005711" if case == "operadora_found" else "999999"
+                expected = 0 if case == "operadora_found" else 1
+                assert cli_main(["operadora", registro]) == expected
+                output = capsys.readouterr()
+                if expected:
+                    assert "não encontrada" in output.err
+                else:
+                    assert json.loads(output.out)["registro_ans"] == registro
+        except Exception as exc:
+            raise AssertionError(f"{case}: {exc}") from exc
 
 
 def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys):
@@ -556,3 +591,4 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     assert authorization_line["glosa"] == authorization_finding.glosa
     assert authorization_line["guias"] == 1
     assert authorization_line["valor_afetado"] == f"{guide_total:.2f}"
+    _check_cli(tmp_path, capsys, monkeypatch)

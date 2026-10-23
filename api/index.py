@@ -12,6 +12,6 @@ if rede.is_file():
 else:
     os.environ.setdefault("XDG_CACHE_HOME", "/tmp")
 
-app = import_module("tiss.server").app
+app = import_module("tiss.server._http").create_app()
 
 __all__ = ["app"]

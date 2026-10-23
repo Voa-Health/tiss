@@ -7,11 +7,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import httpx
 import pytest
 from lxml import etree
 from mcp.client.session import ClientSession
-from mcp.client.streamable_http import streamablehttp_client
 from mcp.shared.exceptions import McpError
 
 import tiss
@@ -135,106 +133,96 @@ def valid_lote():
 @pytest.fixture
 def mcp_cases():
     async def run(
-        app: Any,
+        session: ClientSession,
         cases: list[tuple[str, dict[str, Any], dict[str, Any]]],
-        client_factory: Callable[..., httpx.AsyncClient],
-        headers: dict[str, str],
-    ) -> None:
-        async with (
-            app.router.lifespan_context(app),
-            streamablehttp_client(
-                "http://test/mcp", headers=headers, httpx_client_factory=client_factory
-            ) as (
-                read_stream,
-                write_stream,
-                _,
-            ),
-            ClientSession(read_stream, write_stream) as session,
-        ):
-            initialized = await session.initialize()
-            assert initialized.serverInfo.name == "tiss"
-            tools = await session.list_tools()
-            definitions = {tool.name: tool for tool in tools.tools}
-            assert set(definitions) == {op.tool_name for op in OPS}
-            for name, entrada, expected in cases:
-                op = next(operation for operation in OPS if operation.name == name)
-                tool = definitions[op.tool_name]
-                assert tool.inputSchema == op.input_schema
-                assert tool.outputSchema == op.output_schema
-                result = await session.call_tool(op.tool_name, entrada)
-                assert result.isError is False
-                assert result.structuredContent == expected
-            code_resource = await session.read_resource("tiss://codigos")
-            assert json.loads(code_resource.contents[0].text) == CODES
-            sadt_resource = await session.read_resource("tiss://sadt/catalogo")
-            assert json.loads(sadt_resource.contents[0].text) == tiss.sadt_catalog()
-            domain_resource = await session.read_resource("tiss://dominio/tabelas")
-            assert json.loads(domain_resource.contents[0].text) == {
-                "tabelas": dominio.tables(),
-                "fonte": dominio.info(),
-            }
-            healthplan_resource = await session.read_resource("tiss://operadoras")
-            assert json.loads(healthplan_resource.contents[0].text) == operadoras.info()
-            rules_resource = await session.read_resource("tiss://regras/schema")
-            assert json.loads(rules_resource.contents[0].text) == tiss.json_schema("rules")
-            lote_schema_resource = await session.read_resource("tiss://schemas/lote")
-            assert json.loads(lote_schema_resource.contents[0].text) == tiss.json_schema("lote")
-            tuss_resource = await session.read_resource("tiss://tuss/22/1")
-            page = json.loads(tuss_resource.contents[0].text)
-            assert page["tabela"] == "22"
-            assert page["pagina"] == 1
-            assert len(page["resultados"]) <= TUSS_PAGE_SIZE
-            domain_table = await session.read_resource("tiss://dominio/23")
-            assert json.loads(domain_table.contents[0].text)["tabela"] == "23"
-            healthplan_profile = await session.read_resource("tiss://operadoras/005711")
-            assert json.loads(healthplan_profile.contents[0].text) == operadoras.perfil("005711")
-            simulated_rules = await session.read_resource("tiss://regras/000000")
-            assert json.loads(simulated_rules.contents[0].text) == json.loads(
-                (ROOT / "src/tiss/rules/000000.json").read_text()
-            )
-            templates = await session.list_resource_templates()
-            assert [item.uriTemplate for item in templates.resourceTemplates] == [
-                "tiss://tuss/{tabela}/{pagina}",
-                "tiss://dominio/{tabela}",
-                "tiss://operadoras/{registro_ans}",
-                "tiss://regras/{registro_ans}",
-            ]
-            prompts = await session.list_prompts()
-            assert {prompt.name for prompt in prompts.prompts} == {
-                "montar_lote",
-                "corrigir_lote_rejeitado",
-                "tratar_demonstrativo",
-            }
-            prompt = await session.get_prompt("montar_lote", {"atendimentos": "x"})
-            prompt_text = prompt.messages[0].content.text
-            assert "tiss_validate" in prompt_text and "tiss_apply_fixes" in prompt_text
-            assert "Operadora: não informado" in prompt_text
-            with pytest.raises(McpError):
-                await session.get_prompt("montar_lote", {})
-            with pytest.raises(McpError):
-                await session.get_prompt("inexistente", {})
-            lote = json.loads(
-                (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
-            )
-            for _ in range(2):
-                checked = await session.call_tool("tiss_validate", {"lote": lote})
-                report = checked.structuredContent
-                if report["valid"] and not report["findings"]:
-                    break
-                fixed = await session.call_tool(
-                    "tiss_apply_fixes", {"lote": lote, "report": report}
-                )
-                assert fixed.isError is False
-                lote = fixed.structuredContent["lote"]
-            assert report["valid"] and not report["findings"]
-            readme_resource = await session.read_resource("tiss://docs/readme")
-            assert readme_resource.contents[0].text
-            api_resource = await session.read_resource("tiss://docs/api")
-            assert "sandbox_enviar_lote" in api_resource.contents[0].text
-            assert "## Prompts MCP" in api_resource.contents[0].text
-            assert "## Resources MCP" in api_resource.contents[0].text
-            assert "tiss://regras/{registro_ans}" in api_resource.contents[0].text
-            assert "tiss://schemas/lote" in api_resource.contents[0].text
+    ) -> tuple[str, list[tuple[str, Any, Any, str]]]:
+        initialized = await session.initialize()
+        assert initialized.serverInfo.name == "tiss"
+        tools = await session.list_tools()
+        definitions = {tool.name: tool for tool in tools.tools}
+        assert set(definitions) == {op.tool_name for op in OPS}
+        for name, entrada, expected in cases:
+            op = next(operation for operation in OPS if operation.name == name)
+            tool = definitions[op.tool_name]
+            assert tool.inputSchema == op.input_schema
+            assert tool.outputSchema == op.output_schema
+            result = await session.call_tool(op.tool_name, entrada)
+            assert result.isError is False
+            assert result.structuredContent == expected
+        code_resource = await session.read_resource("tiss://codigos")
+        assert json.loads(code_resource.contents[0].text) == CODES
+        sadt_resource = await session.read_resource("tiss://sadt/catalogo")
+        assert json.loads(sadt_resource.contents[0].text) == tiss.sadt_catalog()
+        domain_resource = await session.read_resource("tiss://dominio/tabelas")
+        assert json.loads(domain_resource.contents[0].text) == {
+            "tabelas": dominio.tables(),
+            "fonte": dominio.info(),
+        }
+        healthplan_resource = await session.read_resource("tiss://operadoras")
+        assert json.loads(healthplan_resource.contents[0].text) == operadoras.info()
+        rules_resource = await session.read_resource("tiss://regras/schema")
+        assert json.loads(rules_resource.contents[0].text) == tiss.json_schema("rules")
+        lote_schema_resource = await session.read_resource("tiss://schemas/lote")
+        assert json.loads(lote_schema_resource.contents[0].text) == tiss.json_schema("lote")
+        tuss_resource = await session.read_resource("tiss://tuss/22/1")
+        page = json.loads(tuss_resource.contents[0].text)
+        assert page["tabela"] == "22"
+        assert page["pagina"] == 1
+        assert len(page["resultados"]) <= TUSS_PAGE_SIZE
+        domain_table = await session.read_resource("tiss://dominio/23")
+        assert json.loads(domain_table.contents[0].text)["tabela"] == "23"
+        healthplan_profile = await session.read_resource("tiss://operadoras/005711")
+        assert json.loads(healthplan_profile.contents[0].text) == operadoras.perfil("005711")
+        simulated_rules = await session.read_resource("tiss://regras/000000")
+        assert json.loads(simulated_rules.contents[0].text) == json.loads(
+            (ROOT / "src/tiss/rules/000000.json").read_text()
+        )
+        templates = await session.list_resource_templates()
+        assert [item.uriTemplate for item in templates.resourceTemplates] == [
+            "tiss://tuss/{tabela}/{pagina}",
+            "tiss://dominio/{tabela}",
+            "tiss://operadoras/{registro_ans}",
+            "tiss://regras/{registro_ans}",
+        ]
+        prompts = await session.list_prompts()
+        assert {prompt.name for prompt in prompts.prompts} == {
+            "montar_lote",
+            "corrigir_lote_rejeitado",
+            "tratar_demonstrativo",
+        }
+        prompt = await session.get_prompt("montar_lote", {"atendimentos": "x"})
+        prompt_text = prompt.messages[0].content.text
+        assert "tiss_validate" in prompt_text and "tiss_apply_fixes" in prompt_text
+        assert "Operadora: não informado" in prompt_text
+        with pytest.raises(McpError):
+            await session.get_prompt("montar_lote", {})
+        with pytest.raises(McpError):
+            await session.get_prompt("inexistente", {})
+        lote = json.loads(
+            (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
+        )
+        for _ in range(2):
+            checked = await session.call_tool("tiss_validate", {"lote": lote})
+            assert checked.isError is False
+            report = checked.structuredContent
+            if report["valid"] and not report["findings"]:
+                break
+            fixed = await session.call_tool("tiss_apply_fixes", {"lote": lote, "report": report})
+            assert fixed.isError is False
+            lote = fixed.structuredContent["lote"]
+        assert report["valid"] and not report["findings"]
+        readme_resource = await session.read_resource("tiss://docs/readme")
+        assert readme_resource.contents[0].text
+        api_resource = await session.read_resource("tiss://docs/api")
+        assert "sandbox_enviar_lote" in api_resource.contents[0].text
+        assert "## Prompts MCP" in api_resource.contents[0].text
+        assert "## Resources MCP" in api_resource.contents[0].text
+        assert "tiss://regras/{registro_ans}" in api_resource.contents[0].text
+        assert "tiss://schemas/lote" in api_resource.contents[0].text
+        return initialized.serverInfo.name, [
+            (tool.name, tool.inputSchema, tool.outputSchema, tool.description)
+            for tool in tools.tools
+        ]
 
     return run
 

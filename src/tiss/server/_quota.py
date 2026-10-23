@@ -63,8 +63,8 @@ def admit(
 ) -> tuple[int, dict[str, Any]] | None:
     """Devolva a recusa da chamada, ou `None` quando ela cabe no escopo e no nível."""
     access = ctx.access
-    # Sem backend de chaves, o servidor é local ou auto-hospedado e não exige chave.
-    if not configured():
+    # O modo local e instalações sem backend não dependem de chaves.
+    if ctx.local or not configured():
         return None
     if access is None and not op_name.startswith(_ANONYMOUS_OPERATIONS):
         return _denied(

@@ -5,6 +5,11 @@
 - Action GitHub `Voa-Health/tiss@v0` para validar XML TISS.
 - Hook pre-commit `tiss-validate` para validar XML TISS.
 - MCP local no registro oficial, com pacote PyPI e transporte stdio em `server.json`.
+- A CLI `tiss` oferece `validate`, `fix`, `hash`, `glosa`, `tuss`, `operadora`,
+  `mapa`, `mcp` e `serve`; os códigos de saída distinguem sucesso, achados e uso
+  inválido, e `validate --format github` gera comandos do GitHub Actions.
+- `tiss mcp` inicia um servidor MCP local em stdio; instale o extra opcional
+  com `pip install "tiss[mcp]"`.
 - A distribuição Python passa a se chamar `tiss`: instale com `pip install tiss`
   e importe com `import tiss`.
 - As variáveis de ambiente passam a usar o prefixo `TISS_*`, sem alias de
