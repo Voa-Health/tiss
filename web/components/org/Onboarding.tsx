@@ -94,7 +94,7 @@ function PapelDaOrg({
   ].filter((grupo) => grupo.itens.length > 0);
 
   return (
-    <Flex vertical gap={token.margin} role="radiogroup" aria-label="Tipo da sua empresa">
+    <Flex vertical gap={token.margin} role="radiogroup" aria-label="Tipo">
       {grupos.map((grupo) => (
         <Flex key={grupo.rotulo} vertical gap={token.marginXS}>
           <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
@@ -237,7 +237,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
     <Flex vertical align="center" style={{ minHeight: "100vh", padding: token.paddingLG, background: token.colorBgLayout }}>
       <Flex vertical gap={token.marginLG} style={{ width: "100%", maxWidth: 720 }}>
         <Flex align="center" justify="space-between" gap={token.margin}>
-          <Link href="/" aria-label="voa-tiss, página inicial" style={{ display: "inline-flex" }}>
+          <Link href="/" aria-label="tiss, página inicial" style={{ display: "inline-flex" }}>
             <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
           </Link>
           <Flex gap={token.marginSM}>
@@ -245,17 +245,11 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
             <Button onClick={() => void sair()}>Sair</Button>
           </Flex>
         </Flex>
-        <Flex vertical gap={token.marginXXS}>
-          <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading2 }}>
-            Sua organização no voa-tiss
-          </Typography.Title>
-          <Typography.Text type="secondary">
-            Diga quem a organização é para receber o produto certo: prestadores validam e recorrem,
-            operadoras analisam contas e autorizações.
-          </Typography.Text>
-        </Flex>
+        <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading2 }}>
+          Cadastre sua organização
+        </Typography.Title>
         {prontas.length > 0 && (
-          <Card title="Abrir uma organização">
+          <Card title="Suas organizações">
             <Flex vertical gap={token.marginSM}>
               {prontas.map((org) => (
                 <Flex key={org.id} wrap align="center" justify="space-between" gap={token.marginSM}>
@@ -268,14 +262,14 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
             </Flex>
           </Card>
         )}
-        <Card title="Criar organização">
+        <Card>
           {erro && <Alert type="error" showIcon title={erro} style={{ marginBottom: token.margin }} />}
           {emUso && emUso.chave === chaveAtual && (
             <Alert
               type="warning"
               showIcon
               title={emUso.mensagem}
-              description="A empresa já tem uma organização no tiss. Peça a quem administra que convide você em Membros: o convite chega por e-mail e você entra com esta mesma conta, sem criar outra organização."
+              description="Peça a quem administra que convide você em Membros."
               style={{ marginBottom: token.margin }}
             />
           )}
@@ -296,14 +290,9 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 />
               </Form.Item>
             )}
-            <Form.Item name="subtype" label="Tipo da sua empresa" rules={[{ required: true, message: "Escolha o tipo." }]}>
+            <Form.Item name="subtype" label="Tipo" rules={[{ required: true, message: "Escolha o tipo." }]}>
               <PapelDaOrg subtipos={catalogo.subtypes} />
             </Form.Item>
-            {destino === NOVA && (
-              <Form.Item name="name" label="Nome" rules={[{ required: true, whitespace: true, message: "Informe o nome." }]}>
-                <Input autoComplete="organization" placeholder="Como a organização é conhecida" />
-              </Form.Item>
-            )}
             <Row gutter={token.margin}>
               <Col xs={24} sm={tipo === "pay" ? 14 : 24}>
                 <Form.Item name="cnpj" label="CNPJ" rules={[{ required: true, whitespace: true, message: "Informe o CNPJ." }]}>
@@ -322,7 +311,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 </Col>
               )}
             </Row>
-            {situacao && (
+            {situacao?.mensagem && (
               <AvisoDaBusca
                 situacao={situacao}
                 nomeAtual={form.getFieldValue("name")}
@@ -330,13 +319,18 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
               />
             )}
             {situacao?.status === "ambigua" && situacao.unidades.length > 0 && (
-              <Form.Item name="cnes" label="Sua unidade" extra="Escolha o estabelecimento desta organização no CNES.">
+              <Form.Item name="cnes" label="Unidade no CNES">
                 <Select
                   allowClear
                   showSearch={{ optionFilterProp: "label" }}
                   placeholder="Escolha a unidade"
                   options={situacao.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
                 />
+              </Form.Item>
+            )}
+            {destino === NOVA && (
+              <Form.Item name="name" label="Nome" rules={[{ required: true, whitespace: true, message: "Informe o nome." }]}>
+                <Input autoComplete="organization" />
               </Form.Item>
             )}
             <Form.Item
@@ -353,7 +347,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 (versão {catalogo.terms_version})
               </Checkbox>
             </Form.Item>
-            <Button type="primary" htmlType="submit" loading={enviando}>Criar organização</Button>
+            <Button type="primary" htmlType="submit" loading={enviando}>Cadastrar</Button>
           </Form>
         </Card>
       </Flex>
