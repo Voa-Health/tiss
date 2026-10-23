@@ -43,6 +43,12 @@ revalide com `tiss_validate`. Consulte o esquema do lote em
 
 ## Clientes
 
+Servidor local em stdio:
+
+```sh
+claude mcp add tiss -- uvx --from "tiss[mcp]" tiss mcp
+```
+
 Claude Code:
 
 ```sh

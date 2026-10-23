@@ -103,6 +103,8 @@ export function HomeContent() {
           <Col xs={24} md={12}>
             <Card title="Cliente MCP">
               <CodeBlock code={site.mcpCommand} />
+              <Typography.Text type="secondary">Servidor local</Typography.Text>
+              <CodeBlock code={site.mcpLocalCommand} />
             </Card>
           </Col>
         </Row>

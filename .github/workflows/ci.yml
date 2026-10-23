@@ -83,6 +83,31 @@ jobs:
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
       - run: uv build
       - run: uvx twine check --strict dist/*
+      - run: python -m venv /tmp/tiss-mcp
+      - run: wheel=$(printf '%s\n' dist/*.whl) && /tmp/tiss-mcp/bin/pip install "${wheel}[mcp]"
+      - run: if /tmp/tiss-mcp/bin/python -c "import fastapi"; then exit 1; fi
+      - run: |
+          /tmp/tiss-mcp/bin/python - <<'PY'
+          import asyncio
+          import sys
+
+          from mcp.client.session import ClientSession
+          from mcp.client.stdio import StdioServerParameters, stdio_client
+
+          async def check():
+              parameters = StdioServerParameters(
+                  command=sys.executable,
+                  args=["-m", "tiss", "mcp"],
+              )
+              async with stdio_client(parameters) as (read_stream, write_stream):
+                  async with ClientSession(read_stream, write_stream) as session:
+                      initialized = await session.initialize()
+                      tools = await session.list_tools()
+                      assert initialized.serverInfo.name == "tiss"
+                      assert any(tool.name == "tiss_validate" for tool in tools.tools)
+
+          asyncio.run(check())
+          PY
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
