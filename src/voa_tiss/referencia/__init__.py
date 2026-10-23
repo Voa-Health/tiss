@@ -130,8 +130,9 @@ def aviso(semestre: str) -> str | None:
 
 def _aviso(semestre: str) -> str | None:
     return (
-        "A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025; os itens acima "
-        "de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída é publicada."
+        "A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025; quando IQR > 0, "
+        "os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída "
+        "é publicada."
         if semestre.startswith("2025-")
         else None
     )

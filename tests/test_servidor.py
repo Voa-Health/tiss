@@ -114,7 +114,7 @@ def _rows(semester: str) -> tuple[list[tuple[str, ...]], list[tuple[str, ...]]]:
                     "123",
                     "Consulta",
                     "Médio",
-                    "1000,00" if current == 30 else ("20,00" if current == 0 else "10,00"),
+                    "1000,00" if current == 30 else ("20,00" if current in {0, 29} else "10,00"),
                     "2" if current == 0 else "1",
                     ("100,00" if current == 28 else "5,00") if current < 29 else "",
                     "1" if current < 2 else "0",
@@ -125,6 +125,9 @@ def _rows(semester: str) -> tuple[list[tuple[str, ...]], list[tuple[str, ...]]]:
         add(("123", "Exame", "Médio", "10,00", "1", "5,00", "0"))
         for _ in range(30):
             add(("124", "Consulta", "Pequeno", "20,00", "2", "", "0"))
+        for valor, contagem in (("10,00", 10), ("20,00", 10), ("30,00", 9), ("1000,00", 1)):
+            for _ in range(contagem):
+                add(("125", "Consulta", "Pequeno", valor, "1", "", "0"))
         for _ in range(29):
             add(("999", "Consulta", "Pequeno", "7,00", "1", "", "0"))
         add(("777", "Consulta", "Médio", "2,00", "1", "", "0"))
@@ -219,10 +222,10 @@ def _referencia_pipeline_e_interfaces(
     assert manifest["semestres"] == ["2024-1", "2025-2"]
     assert len(manifest["fontes"]) == 48
     assert manifest["contagens"] == {
-        "eventos": 132,
-        "itens_lidos": 132,
-        "itens_usados": 124,
-        "celulas_publicadas": 12,
+        "eventos": 162,
+        "itens_lidos": 162,
+        "itens_usados": 154,
+        "celulas_publicadas": 16,
         "celulas_suprimidas": 6,
         "blocos_pago_publicados": 2,
     }
@@ -263,14 +266,15 @@ def _referencia_pipeline_e_interfaces(
     assert expected is not None
     assert expected["n"] == 31
     assert expected["aviso"] == (
-        "A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025; os itens acima "
-        "de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída é publicada."
+        "A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025; quando IQR > 0, "
+        "os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída "
+        "é publicada."
     )
     assert expected["valor_unitario_informado"] == {
         "mediana": 10.0,
         "p25": 10.0,
         "p75": 10.0,
-        "excluidos_pct": 3.23,
+        "excluidos_pct": 0.0,
     }
     assert expected["pacote_pct"] == 14.71
     assert expected["valor_unitario_pago_fornecedor"] is None
@@ -279,8 +283,18 @@ def _referencia_pipeline_e_interfaces(
     assert marginal["n"] == 32
     assert marginal["valor_unitario_pago_fornecedor"]["n"] == 30
     assert marginal["valor_unitario_pago_fornecedor"]["mediana"] == 5.0
-    assert marginal["valor_unitario_pago_fornecedor"]["excluidos_pct"] == 3.33
+    assert marginal["valor_unitario_pago_fornecedor"]["p25"] == 5.0
+    assert marginal["valor_unitario_pago_fornecedor"]["p75"] == 5.0
+    assert marginal["valor_unitario_pago_fornecedor"]["excluidos_pct"] == 0.0
     assert marginal["pacote_pct"] == 14.29
+    positive_iqr = referencia.valor("125", uf="SP")
+    assert positive_iqr is not None and positive_iqr["n"] == 30
+    assert positive_iqr["valor_unitario_informado"] == {
+        "mediana": 20.0,
+        "p25": 10.0,
+        "p75": 30.0,
+        "excluidos_pct": 3.33,
+    }
     assert referencia.valor("124", uf="SP")["valor_unitario_informado"]["mediana"] == 10.0
     assert referencia.valor("999", uf="SP") is None
     with sqlite3.connect(banco) as connection:

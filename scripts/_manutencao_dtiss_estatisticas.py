@@ -41,9 +41,14 @@ def value_reais(value: Decimal) -> float:
 def estatisticas(distribution: Counter[int]) -> dict[str, Any]:
     q1 = quantile(distribution, Decimal("0.25"))
     q3 = quantile(distribution, Decimal("0.75"))
-    fence = q3 + Decimal(3) * (q3 - q1)
-    filtered = Counter({value: count for value, count in distribution.items() if value <= fence})
     n = sum(distribution.values())
+    if q3 == q1:
+        filtered = distribution
+    else:
+        fence = q3 + Decimal(3) * (q3 - q1)
+        filtered = Counter(
+            {value: count for value, count in distribution.items() if value <= fence}
+        )
     excluded = n - sum(filtered.values())
     return {
         "n": n,

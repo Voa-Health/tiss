@@ -87,12 +87,12 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
 - Contagens: 397.561.447 eventos, 889.926.454 itens lidos, 823.498.908 itens usados,
   360.760 células publicadas, 864.127 células suprimidas e 44.067 blocos de pagamento
   direto publicados.
-- Carga: 1 h 25 min 50 s, com oito trabalhadores; pico de memória residente de 9.177.872
+- Carga: 1 h 17 min 58 s, com oito trabalhadores; pico de memória residente de 9.171.068
   KiB (aproximadamente 8,75 GiB). Foram baixados 11.359.335.950 bytes.
-- Arquivo SQLite `referencia-dtiss.sqlite`: 32.579.584 bytes;
-  SHA-256 `8428574b028b0bd5bfea4d4e0b239b71b0fd72bd7e81a527ddacfc840d5d1818`.
-- Arquivo distribuível `referencia-dtiss.sqlite.gz`: 7.474.196 bytes;
-  SHA-256 `7770324310f98c66c2f4a6047a87a0b2af3b343b636c960b0ff87cee949469c8`.
+- Arquivo SQLite `referencia-dtiss.sqlite`: 32.223.232 bytes;
+  SHA-256 `e7f1245de2eada3bf6349d90116bd126f96122e976c0efbf025846430ea10b43`.
+- Arquivo distribuível `referencia-dtiss.sqlite.gz`: 7.352.260 bytes;
+  SHA-256 `be9ddf33c31c52ca4cc27a9fbade00adf98205a051d2bdfa32a5cc7b913fc3d5`.
 - URL do manifesto: https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz.
 - Cada valor unitário é o valor total informado dividido pela quantidade, arredondado
   para centavos por `ROUND_HALF_UP`. As células usam código TUSS, tabela, UF, modalidade,
@@ -105,17 +105,17 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
   e `IND_TABELA_PROPRIA` também se aplicam às linhas de pacote. A supressão continua
   baseada em `n >= 30`.
 - A mediana, p25 e p75 usam quantis tipo 7 sobre a distribuição ponderada após as
-  exclusões. Só são publicadas células com pelo menos 30 itens. O limite para exclusão
-  de valores atípicos é Q3 + 3×IQR, calculado sobre a célula completa; `n` é anterior à
-  exclusão e a fração excluída é informada.
-- Quando p25 = p75 (IQR = 0), o limite é Q3; qualquer valor acima dele é excluído. Isso
-  ocorre em UFs com amostras pequenas; por exemplo, 25% dos itens do código 40301630 em AC.
+  exclusões. Só são publicadas células com pelo menos 30 itens. Quando IQR > 0, o limite
+  para exclusão de valores atípicos é Q3 + 3×IQR, calculado sobre a célula completa; `n`
+  é anterior à exclusão e a fração excluída é informada.
+- Quando IQR = 0 (Q1 = Q3) na célula e métrica, não há corte e a fração excluída é 0; o
+  limite Q3 + 3×IQR só vale com IQR > 0.
 - Os valores pagos consideram somente pagamentos positivos feitos diretamente ao
   fornecedor, não o total pago pela operadora; têm contagem mínima e exclusão de atípicos
   próprias.
 - Aviso para 2025: “A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025;
-  os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída é
-  publicada.”
+  quando IQR > 0, os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração
+  excluída é publicada.”
 
 ## Hash do epílogo
 

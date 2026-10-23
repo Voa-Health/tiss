@@ -662,9 +662,9 @@
   "semestres": [
     "2025-2"
   ],
-  "sha256": "7770324310f98c66c2f4a6047a87a0b2af3b343b636c960b0ff87cee949469c8",
-  "sqlite_sha256": "8428574b028b0bd5bfea4d4e0b239b71b0fd72bd7e81a527ddacfc840d5d1818",
-  "sqlite_tamanho": 32579584,
-  "tamanho": 7474196,
+  "sha256": "be9ddf33c31c52ca4cc27a9fbade00adf98205a051d2bdfa32a5cc7b913fc3d5",
+  "sqlite_sha256": "e7f1245de2eada3bf6349d90116bd126f96122e976c0efbf025846430ea10b43",
+  "sqlite_tamanho": 32223232,
+  "tamanho": 7352260,
   "url": "https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz"
 }
