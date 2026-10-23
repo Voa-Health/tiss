@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import asyncio
+import csv
 import datetime as dt
 import io
 import json
 import logging
 import re
 import socket
+import sqlite3
 import time
 import urllib.request
+import zipfile
 from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from typing import Any
@@ -23,7 +26,8 @@ from mcp.client.streamable_http import streamablehttp_client
 
 import voa_tiss
 from scripts._manutencao_ans import _DOMINIOS_GENERICOS
-from voa_tiss import dominio, examples, operadoras, sandbox
+from scripts._manutencao_dtiss import bake_dtiss
+from voa_tiss import dominio, examples, operadoras, referencia, sandbox
 from voa_tiss import sandbox as sandbox_module
 from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
@@ -51,6 +55,318 @@ HTTP_TOO_MANY = 429
 HTTP_UNPROCESSABLE = 422
 HTTP_UNAVAILABLE = 503
 PROTOCOL_NUMBER_LENGTH = 12
+
+_CONS_HEADER = (
+    "ID_EVENTO_ATENCAO_SAUDE",
+    "CD_MODALIDADE",
+    "NM_MODALIDADE",
+    "UF_PRESTADOR",
+    "PORTE",
+)
+_DET_HEADER = (
+    "ID_EVENTO_ATENCAO_SAUDE",
+    "CD_PROCEDIMENTO",
+    "CD_TABELA_REFERENCIA",
+    "QT_ITEM_EVENTO_INFORMADO",
+    "VL_ITEM_EVENTO_INFORMADO",
+    "VL_ITEM_PAGO_FORNECEDOR",
+    "IND_PACOTE",
+    "IND_TABELA_PROPRIA",
+)
+
+
+def _csv(header: tuple[str, ...], rows: list[tuple[str, ...]]) -> bytes:
+    content = io.StringIO()
+    writer = csv.writer(content, delimiter=";", lineterminator="\r\n")
+    writer.writerow(header)
+    writer.writerows(rows)
+    return ("\ufeff" + content.getvalue()).encode("utf-8")
+
+
+def _write_zip(path: Path, filename: str, content: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(path, "w") as archive:
+        mes = path.name.split("_")[1]
+        info = zipfile.ZipInfo(
+            filename,
+            date_time=(int(mes[:4]), int(mes[4:]), 28, 0, 0, 0),
+        )
+        info.compress_type = zipfile.ZIP_DEFLATED
+        archive.writestr(info, content)
+
+
+def _rows(semester: str) -> tuple[list[tuple[str, ...]], list[tuple[str, ...]]]:
+    cons: list[tuple[str, ...]] = []
+    det: list[tuple[str, ...]] = []
+    index = 1
+
+    def add(row: tuple[str, ...]) -> None:
+        nonlocal index
+        code, modality, size, total, qty, paid, package = row
+        cons.append((str(index), "1", modality, "SP", size))
+        det.append((str(index), code, "22", qty, total, paid, package, "0"))
+        index += 1
+
+    if semester == "2025-2":
+        for current in range(31):
+            add(
+                (
+                    "123",
+                    "Consulta",
+                    "Médio",
+                    "1000,00" if current == 30 else ("20,00" if current in {0, 29} else "10,00"),
+                    "2" if current == 0 else "1",
+                    ("100,00" if current == 28 else "5,00") if current < 29 else "",
+                    "1" if current < 2 else "0",
+                )
+            )
+        for _ in range(3):
+            add(("123", "Consulta", "Médio", "", "", "", "1"))
+        add(("123", "Exame", "Médio", "10,00", "1", "5,00", "0"))
+        for _ in range(30):
+            add(("124", "Consulta", "Pequeno", "20,00", "2", "", "0"))
+        for valor, contagem in (("10,00", 10), ("20,00", 10), ("30,00", 9), ("1000,00", 1)):
+            for _ in range(contagem):
+                add(("125", "Consulta", "Pequeno", valor, "1", "", "0"))
+        for _ in range(29):
+            add(("999", "Consulta", "Pequeno", "7,00", "1", "", "0"))
+        add(("777", "Consulta", "Médio", "2,00", "1", "", "0"))
+        det[-1] = (*det[-1][:2], "00", *det[-1][3:])
+        add(("782", "Consulta", "Médio", "2,00", "1", "", "0"))
+        det[-1] = (*det[-1][:2], "90", *det[-1][3:])
+        add(("783", "Consulta", "Médio", "2,00", "1", "", "0"))
+        det[-1] = (*det[-1][:2], "98", *det[-1][3:])
+        add(("778", "Consulta", "Médio", "2,00", "1", "", "0"))
+        det[-1] = (*det[-1][:7], "1")
+        add(("779", "Consulta", "Médio", "", "1", "", "0"))
+        add(("ABC", "Consulta", "Médio", "2,00", "1", "", "0"))
+        add(("780", "Consulta", "Médio", "2,00", "", "", "0"))
+        add(("781", "Consulta", "Médio", "2,00", "0", "", "0"))
+    elif semester == "2024-1":
+        for _ in range(30):
+            add(("456", "Consulta", "Médio", "12,00", "1", "", "0"))
+    return cons, det
+
+
+@pytest.fixture
+def referencia_sintetica(tmp_path: Path) -> tuple[Path, Path, Path]:
+    origem = tmp_path / "origem"
+    for semester, months in (("2025-2", range(7, 13)), ("2024-1", range(1, 7))):
+        year = semester[:4]
+        cons_rows, det_rows = _rows(semester)
+        for month in months:
+            month_id = f"{year}{month:02d}"
+            for category, kind in (("AMBULATORIAL", "AMB"), ("HOSPITALAR", "HOSP")):
+                directory = origem / category / year / "SP"
+                populated = semester in {"2025-2", "2024-1"} and month == months.start
+                current_cons = cons_rows if populated and kind == "AMB" else []
+                current_det = det_rows if populated and kind == "AMB" else []
+                prefix = f"SP_{month_id}_{kind}"
+                _write_zip(
+                    directory / f"{prefix}_CONS.zip",
+                    "cons.csv",
+                    _csv(_CONS_HEADER, current_cons),
+                )
+                _write_zip(
+                    directory / f"{prefix}_DET.zip",
+                    "det.csv",
+                    _csv(_DET_HEADER, current_det),
+                )
+    (origem / "AMBULATORIAL/2025/SP/SP_202507_AMB_REM.zip").write_bytes(b"conteudo invalido")
+    saida = tmp_path / "saida"
+    manifesto = tmp_path / "manifesto.json"
+    bake_dtiss(
+        ["2024-1", "2025-2"],
+        ufs=["SP"],
+        origem=origem,
+        out=saida,
+        manifesto=manifesto,
+        workers=1,
+        particoes=2,
+    )
+    return saida / "referencia-dtiss.sqlite", manifesto, origem
+
+
+def _referencia_pipeline_e_interfaces(
+    referencia_sintetica: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    banco, manifesto_path, origem = referencia_sintetica
+    bake_dtiss(
+        ["2024-1", "2025-2"],
+        ufs=["SP"],
+        origem=origem,
+        out=tmp_path / "segunda",
+        manifesto=tmp_path / "segundo-manifesto.json",
+        workers=1,
+        particoes=2,
+    )
+    second = tmp_path / "segunda"
+    assert banco.read_bytes() == (second / banco.name).read_bytes()
+    assert (
+        banco.with_name(f"{banco.name}.gz").read_bytes()
+        == (second / f"{banco.name}.gz").read_bytes()
+    )
+    assert (banco.parent / "semestres/2025-2.jsonl.gz").read_bytes() == (
+        second / "semestres/2025-2.jsonl.gz"
+    ).read_bytes()
+    assert (banco.parent / "semestres/2024-1.jsonl.gz").read_bytes() == (
+        second / "semestres/2024-1.jsonl.gz"
+    ).read_bytes()
+    assert json.loads(manifesto_path.read_text(encoding="utf-8")) == json.loads(
+        (tmp_path / "segundo-manifesto.json").read_text(encoding="utf-8")
+    )
+    manifest = json.loads(manifesto_path.read_text(encoding="utf-8"))
+    assert manifest["atualizado_em"] == "2025-12-28"
+    assert manifest["semestres"] == ["2024-1", "2025-2"]
+    assert len(manifest["fontes"]) == 48
+    assert manifest["contagens"] == {
+        "eventos": 162,
+        "itens_lidos": 162,
+        "itens_usados": 154,
+        "celulas_publicadas": 16,
+        "celulas_suprimidas": 6,
+        "blocos_pago_publicados": 2,
+    }
+    with pytest.raises(ValueError, match="a partir de 2023"):
+        bake_dtiss(
+            ["2022-2"],
+            ufs=["SP"],
+            origem=origem,
+            out=tmp_path / "inválida",
+            manifesto=tmp_path / "inválido.json",
+            workers=1,
+        )
+
+    compressed = banco.with_name(f"{banco.name}.gz")
+    remotes = json.loads(manifesto_path.read_text(encoding="utf-8"))
+    local_manifest = tmp_path / "local-manifest.json"
+    remotes["url"] = compressed.as_uri()
+    local_manifest.write_text(json.dumps(remotes), encoding="utf-8")
+    monkeypatch.setattr(referencia, "_MANIFEST_PATH", local_manifest)
+    monkeypatch.delenv("VOA_TISS_REFERENCIA", raising=False)
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    referencia._conectar.cache_clear()
+    assert referencia._caminho_banco().read_bytes() == banco.read_bytes()
+    remotes["url"] = (tmp_path / "ausente.gz").as_uri()
+    local_manifest.write_text(json.dumps(remotes), encoding="utf-8")
+    assert referencia.fonte().startswith("ANS, D-TISS")
+    remotes["url"] = compressed.as_uri()
+    remotes["sha256"] = "0" * 64
+    local_manifest.write_text(json.dumps(remotes), encoding="utf-8")
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache-invalido"))
+    with pytest.raises(referencia.ReferenciaIndisponivel, match="não corresponde"):
+        referencia._caminho_banco()
+
+    monkeypatch.setenv("VOA_TISS_REFERENCIA", str(banco))
+    referencia._conectar.cache_clear()
+    assert referencia.semestres() == ["2024-1", "2025-2"]
+    expected = referencia.valor("123", uf="sp", modalidade="CONSULTA", porte="MÉDIO")
+    assert expected is not None
+    assert expected["n"] == 31
+    assert expected["aviso"] == (
+        "A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025; quando IQR > 0, "
+        "os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída "
+        "é publicada."
+    )
+    assert expected["valor_unitario_informado"] == {
+        "mediana": 10.0,
+        "p25": 10.0,
+        "p75": 10.0,
+        "excluidos_pct": 0.0,
+    }
+    assert expected["pacote_pct"] == 14.71
+    assert expected["valor_unitario_pago_fornecedor"] is None
+    marginal = referencia.valor("123", uf="SP", porte="Médio")
+    assert marginal is not None
+    assert marginal["n"] == 32
+    assert marginal["valor_unitario_pago_fornecedor"]["n"] == 30
+    assert marginal["valor_unitario_pago_fornecedor"]["mediana"] == 5.0
+    assert marginal["valor_unitario_pago_fornecedor"]["p25"] == 5.0
+    assert marginal["valor_unitario_pago_fornecedor"]["p75"] == 5.0
+    assert marginal["valor_unitario_pago_fornecedor"]["excluidos_pct"] == 0.0
+    assert marginal["pacote_pct"] == 14.29
+    positive_iqr = referencia.valor("125", uf="SP")
+    assert positive_iqr is not None and positive_iqr["n"] == 30
+    assert positive_iqr["valor_unitario_informado"] == {
+        "mediana": 20.0,
+        "p25": 10.0,
+        "p75": 30.0,
+        "excluidos_pct": 3.33,
+    }
+    assert referencia.valor("124", uf="SP")["valor_unitario_informado"]["mediana"] == 10.0
+    assert referencia.valor("999", uf="SP") is None
+    with sqlite3.connect(banco) as connection:
+        assert (
+            connection.execute("SELECT 1 FROM celula WHERE codigo = ?", ("ABC",)).fetchone() is None
+        )
+    assert referencia.valor("780", uf="SP") is None
+    assert referencia.valor("781", uf="SP") is None
+    assert referencia.valor("782", uf="SP") is None
+    assert referencia.valor("783", uf="SP") is None
+    previous = referencia.valor("456", uf="SP", semestre="2024-1")
+    assert previous is not None and previous["aviso"] is None
+    with pytest.raises(ValueError, match="Valores válidos"):
+        referencia.valor("123", uf="SP", modalidade="Desconhecida")
+    with pytest.raises(ValueError, match=r"a partir de 2023|Semestres disponíveis"):
+        referencia.valor("123", uf="SP", semestre="2022-2")
+
+    app = create_app()
+    params = {"codigo": "123", "uf": "SP", "modalidade": "Consulta", "porte": "Médio"}
+    with TestClient(app, headers={"Authorization": "Bearer sk_tiss_verified"}) as client:
+        response = client.get("/v1/referencia", params=params)
+        assert response.status_code == 200
+        assert response.json()["referencia"] == expected
+        assert token_estimate(response.json()) <= next(
+            op.max_tokens for op in OPS if op.name == "referencia"
+        )
+        invalid_uf = client.get("/v1/referencia", params={"codigo": "123", "uf": "XX"})
+        assert invalid_uf.status_code == 422
+        invalid_modality = client.get(
+            "/v1/referencia",
+            params={**params, "modalidade": "Desconhecida"},
+        )
+        assert invalid_modality.status_code == 422
+        initialized = client.post(
+            "/mcp",
+            headers={"Accept": "application/json, text/event-stream"},
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2025-03-26",
+                    "capabilities": {},
+                    "clientInfo": {"name": "test", "version": "1"},
+                },
+            },
+        )
+        assert initialized.status_code == 200
+        tool_response = client.post(
+            "/mcp",
+            headers={
+                "Accept": "application/json, text/event-stream",
+                "MCP-Protocol-Version": "2025-03-26",
+            },
+            json={
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {"name": "tiss_referencia", "arguments": params},
+            },
+        )
+        assert tool_response.status_code == 200
+        assert tool_response.json()["result"]["structuredContent"]["referencia"] == expected
+        monkeypatch.setenv("VOA_TISS_REFERENCIA", str(tmp_path / "ausente.sqlite"))
+        unavailable = client.get("/v1/referencia", params=params)
+        assert unavailable.status_code == 503
+        assert unavailable.json()["erro"]["codigo"] == "referencia_indisponivel"
+        monkeypatch.delenv("VOA_TISS_REFERENCIA", raising=False)
+        monkeypatch.setattr(referencia, "_MANIFEST_PATH", tmp_path / "ausente.json")
+        unavailable_manifest = client.get("/v1/referencia", params=params)
+        assert unavailable_manifest.status_code == 503
+        assert unavailable_manifest.json()["erro"]["codigo"] == "referencia_indisponivel"
 
 
 @pytest.fixture(autouse=True)
@@ -222,7 +538,13 @@ def _factory(app: Any):
     return create_client
 
 
-def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
+def test_http_mcp_parity_and_token_budgets(
+    mcp_cases,
+    monkeypatch,
+    tmp_path,
+    referencia_sintetica,
+    tiss_service,
+):
     """Compara respostas HTTP, MCP e os limites de tokens."""
 
     def missing_metadata(package: str) -> Any:
@@ -234,7 +556,7 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
     assert _docs._load_readme() == readme
     cases = _cases()
     assert {name for name, _, _ in cases} == {
-        op.name for op in OPS if op.name not in {"rede", "operadora_rede"}
+        op.name for op in OPS if op.name not in {"rede", "operadora_rede", "referencia"}
     }
     app = create_app()
     routes = {op.name: op for op in OPS}
@@ -387,6 +709,7 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
             assert response.status_code == HTTP_UNAUTHORIZED, name
     mcp_app = create_app()
     asyncio.run(mcp_cases(mcp_app, cases, _factory(mcp_app), _bearer()))
+    _referencia_pipeline_e_interfaces(referencia_sintetica, tmp_path, monkeypatch)
 
 
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):

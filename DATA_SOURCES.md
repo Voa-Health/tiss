@@ -70,6 +70,53 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
 - Tamanho distribuído: `indicadores.json` 490,139 bytes.
 - A geração local usa `uv run python scripts/manutencao.py ans-glosa`.
 
+## Valores unitários D-TISS por TUSS
+
+- Fonte: ANS, dados abertos do Padrão TISS:
+  https://dadosabertos.ans.gov.br/FTP/PDA/TISS/
+- Recorte: semestre `2025-2`, de julho a dezembro de 2025, 27 UFs e as categorias
+  ambulatorial e hospitalar. Foram lidos 648 arquivos ZIP CONS e DET; os arquivos REM
+  não foram usados.
+- Data de referência dos arquivos: 2026-05-23.
+- Licença e atribuição: CC BY 4.0, atribuição à ANS.
+- Conforme o [dicionário de variáveis da ANS](https://dadosabertos.ans.gov.br/FTP/PDA/TISS/DICIONARIO/Dicionario_de_variaveis_a_partir_de_2023.ods),
+  foram excluídas as tabelas 00, 90 e 98 e as linhas com `IND_TABELA_PROPRIA = "1"`.
+  Os códigos das tabelas 90 e 98 representam pacotes criados pelas operadoras; as linhas
+  componentes usam códigos TUSS, mas não informam quantidade nem valor.
+- SHA-256 combinado dos 648 arquivos ZIP: `46bb6dc9f2f13bfbc2005bd29141f723ee19eec1229c179ee1009acc67305541`.
+- Contagens: 397.561.447 eventos, 889.926.454 itens lidos, 823.498.908 itens usados,
+  360.760 células publicadas, 864.127 células suprimidas e 44.067 blocos de pagamento
+  direto publicados.
+- Carga: 1 h 17 min 58 s, com oito trabalhadores; pico de memória residente de 9.171.068
+  KiB (aproximadamente 8,75 GiB). Foram baixados 11.359.335.950 bytes.
+- Arquivo SQLite `referencia-dtiss.sqlite`: 32.223.232 bytes;
+  SHA-256 `e7f1245de2eada3bf6349d90116bd126f96122e976c0efbf025846430ea10b43`.
+- Arquivo distribuível `referencia-dtiss.sqlite.gz`: 7.352.260 bytes;
+  SHA-256 `be9ddf33c31c52ca4cc27a9fbade00adf98205a051d2bdfa32a5cc7b913fc3d5`.
+- URL do manifesto: https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz.
+- Cada valor unitário é o valor total informado dividido pela quantidade, arredondado
+  para centavos por `ROUND_HALF_UP`. As células usam código TUSS, tabela, UF, modalidade,
+  porte e semestre; a UF vem de `UF_PRESTADOR` no CONS, com fallback para a UF do arquivo
+  quando ausente. Cada item também contribui para as marginais de modalidade ou porte,
+  sem agregação nacional. `pacote_pct = 100 × linhas aceitas com IND_PACOTE = "1" /
+  (itens precificados não pacote + linhas aceitas com IND_PACOTE = "1")`. Linhas de
+  pacote com preço contam também em `n`; componentes sem quantidade ou valor só contam
+  para `pacote_pct`, não para `n` nem para as distribuições. Os filtros de tabela, código
+  e `IND_TABELA_PROPRIA` também se aplicam às linhas de pacote. A supressão continua
+  baseada em `n >= 30`.
+- A mediana, p25 e p75 usam quantis tipo 7 sobre a distribuição ponderada após as
+  exclusões. Só são publicadas células com pelo menos 30 itens. Quando IQR > 0, o limite
+  para exclusão de valores atípicos é Q3 + 3×IQR, calculado sobre a célula completa; `n`
+  é anterior à exclusão e a fração excluída é informada.
+- Quando IQR = 0 (Q1 = Q3) na célula e métrica, não há corte e a fração excluída é 0; o
+  limite Q3 + 3×IQR só vale com IQR > 0.
+- Os valores pagos consideram somente pagamentos positivos feitos diretamente ao
+  fornecedor, não o total pago pela operadora; têm contagem mínima e exclusão de atípicos
+  próprias.
+- Aviso para 2025: “A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025;
+  quando IQR > 0, os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração
+  excluída é publicada.”
+
 ## Hash do epílogo
 
 O hash do epílogo é o MD5 do conteúdo da mensagem, sem o epílogo, codificado em

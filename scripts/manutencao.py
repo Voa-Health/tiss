@@ -32,6 +32,9 @@ if __package__:
     )
     from ._manutencao_common import download, write_json
     from ._manutencao_descoberta import descoberta
+    from ._manutencao_dtiss import MANIFEST_PATH as DTISS_MANIFEST
+    from ._manutencao_dtiss import OUT as DTISS_OUT
+    from ._manutencao_dtiss import bake_dtiss
     from ._manutencao_glosa import INDICADORES_OUT, baixar_painel, bake_painel, write_painel
     from ._manutencao_quality import normalise_notebooks
     from ._manutencao_quality import verificar as _verificar
@@ -60,6 +63,9 @@ else:
     )
     from _manutencao_common import download, write_json
     from _manutencao_descoberta import descoberta
+    from _manutencao_dtiss import MANIFEST_PATH as DTISS_MANIFEST
+    from _manutencao_dtiss import OUT as DTISS_OUT
+    from _manutencao_dtiss import bake_dtiss
     from _manutencao_glosa import INDICADORES_OUT, baixar_painel, bake_painel, write_painel
     from _manutencao_quality import normalise_notebooks
     from _manutencao_quality import verificar as _verificar
@@ -321,6 +327,14 @@ def main(argv: list[str] | None = None) -> int:
     rede.add_argument("--zip", type=Path, required=True)
     rede.add_argument("--out", type=Path, default=REDE_OUT)
     rede.add_argument("--manifesto", type=Path, default=REDE_MANIFEST)
+    dtiss = commands.add_parser("ans-dtiss", help="preparar a referência unitária D-TISS")
+    dtiss.add_argument("--semestre", action="append", required=True)
+    dtiss.add_argument("--uf", action="append")
+    dtiss.add_argument("--origem", type=Path)
+    dtiss.add_argument("--out", type=Path, default=DTISS_OUT)
+    dtiss.add_argument("--manifesto", type=Path, default=DTISS_MANIFEST)
+    dtiss.add_argument("--workers", type=int, default=8)
+    dtiss.add_argument("--particoes", type=int, default=1)
     avaliacao = commands.add_parser("descoberta", help="medir descoberta do voa-tiss em modelos")
     avaliacao.add_argument("--limite-usd", type=float, default=10.0)
     avaliacao.add_argument("--teto-chamada-usd", type=float, default=0.25)
@@ -361,6 +375,23 @@ def main(argv: list[str] | None = None) -> int:
         logging.info(
             "%s",
             json.dumps(bake_rede(args.zip, args.out, args.manifesto), ensure_ascii=False),
+        )
+        return 0
+    if args.command == "ans-dtiss":
+        logging.info(
+            "%s",
+            json.dumps(
+                bake_dtiss(
+                    args.semestre,
+                    ufs=args.uf,
+                    origem=args.origem,
+                    out=args.out,
+                    manifesto=args.manifesto,
+                    workers=args.workers,
+                    particoes=args.particoes,
+                ),
+                ensure_ascii=False,
+            ),
         )
         return 0
     if args.command == "ans-glosa":

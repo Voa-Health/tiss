@@ -1798,6 +1798,120 @@
         "summary": "Rede"
       }
     },
+    "/v1/referencia": {
+      "get": {
+        "operationId": "referencia_v1_referencia_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "codigo",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9]{1,10}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "uf",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z]{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tabela",
+            "required": false,
+            "schema": {
+              "pattern": "^[0-9]{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "modalidade",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "porte",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "semestre",
+            "required": false,
+            "schema": {
+              "pattern": "^[0-9]{4}-[12]$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "atualizado_em": {
+                      "type": "string"
+                    },
+                    "aviso": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "fonte": {
+                      "type": "string"
+                    },
+                    "minimo_n": {
+                      "type": "integer"
+                    },
+                    "referencia": {
+                      "additionalProperties": true,
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "semestre": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "referencia",
+                    "semestre",
+                    "fonte",
+                    "atualizado_em",
+                    "aviso",
+                    "minimo_n"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Resultado da operação."
+          },
+          "422": {
+            "description": "Entrada inválida."
+          },
+          "503": {
+            "description": "Referência D-TISS indisponível."
+          }
+        },
+        "summary": "Referencia"
+      }
+    },
     "/v1/rejection-map": {
       "post": {
         "operationId": "rejection_map_v1_rejection_map_post",
