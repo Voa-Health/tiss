@@ -9,6 +9,7 @@ import json
 import logging
 import re
 import socket
+import threading
 import time
 import urllib.request
 from importlib.metadata import PackageNotFoundError
@@ -27,7 +28,7 @@ from tiss import dominio, examples, operadoras, sandbox
 from tiss import sandbox as sandbox_module
 from tiss._glosa import glosa
 from tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
-from tiss.server import _docs, _keys, _ops, _published_rules, _usage
+from tiss.server import _docs, _keys, _ops, _published_rules, _rejection_map, _usage
 from tiss.server._context import CallContext
 from tiss.server._docs import search_docs
 from tiss.server._http import create_app
@@ -760,6 +761,155 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
     assert marker not in caplog.text
     assert auth_password not in caplog.text
     _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service)
+    _check_hosted_maps(monkeypatch, caplog, tiss_service)
+
+
+def _map_workers():
+    for worker in threading.enumerate():
+        if worker.name == "tiss-map":
+            worker.join(5)
+            assert not worker.is_alive()
+
+
+def _check_hosted_maps(monkeypatch, caplog, service):
+    set_counter(None)
+    lote = tiss.parse_lote(examples.load("lote-valido"))
+    lote["prestador"] = {"cpf": "00000000000"}
+    expected = tiss.rejection_map([lote], operadora="000000", segredo_pseudonimo="a" * 64)
+    with TestClient(create_app()) as client:
+        for name in ("validate", "audit"):
+            for enabled in (False, True):
+                _rejection_map.clear_cache()
+                service.map_requests.clear()
+                service.map_enabled = enabled
+                response = client.post(
+                    f"/v1/{name}", json={"lote": lote, "operadora": "000000"}, headers=_bearer()
+                )
+                assert response.status_code == 200
+                _map_workers()
+                assert len(service.map_requests) == int(enabled)
+                if enabled:
+                    assert service.map_requests[0] == {
+                        "key": "sk_tiss_verified",
+                        "source": "server",
+                        "map": expected,
+                    }
+            for failure in (403, 503):
+                _rejection_map.clear_cache()
+                service.map_failure = failure
+                response = client.post(
+                    f"/v1/{name}", json={"lote": lote, "operadora": "000000"}, headers=_bearer()
+                )
+                assert response.status_code == 200
+                _map_workers()
+            service.map_failure = 0
+
+        _rejection_map.clear_cache()
+        service.map_enabled = True
+        assert _rejection_map.secret("sk_tiss_verified") == "a" * 64
+        service.map_failure = 503
+        for name in ("validate", "audit"):
+            assert (
+                client.post(
+                    f"/v1/{name}", json={"lote": lote, "operadora": "000000"}, headers=_bearer()
+                ).status_code
+                == 200
+            )
+            _map_workers()
+        service.map_failure = 0
+
+        service.map_requests.clear()
+        xml = examples.load("lote-valido").decode("ISO-8859-1")
+        assert (
+            client.post(
+                "/v1/validate", json={"xml": xml, "operadora": "000000"}, headers=_bearer()
+            ).status_code
+            == 200
+        )
+        _map_workers()
+        assert service.map_requests[0]["map"] == tiss.rejection_map(
+            [xml], operadora="000000", segredo_pseudonimo="a" * 64
+        )
+
+        _check_map_routes(client, service, expected)
+        _check_map_nonblocking(client, monkeypatch, lote)
+    assert "00000000000" not in caplog.text
+    assert "a" * 64 not in caplog.text
+
+
+def _check_map_routes(client, service, value):
+    _rejection_map.clear_cache()
+    service.map_enabled = True
+    response = client.get("/v1/rejection-map/config", headers=_bearer())
+    assert response.json() == {"enabled": True, "secret": "a" * 64}
+    assert response.headers["cache-control"] == "no-store"
+    response = client.post("/v1/rejection-map/submit", json=value, headers=_bearer())
+    assert response.json() == {"status": "accepted"}
+    assert service.map_requests[-1]["source"] == "cli"
+    count = len(service.map_requests)
+    for extra in (
+        {**value, "guia": {}},
+        {**value, "prestadores": [{**value["prestadores"][0], "guia": {}}]},
+        {
+            **value,
+            "linhas": [
+                {
+                    "prestador": "codigo:SINTETICO",
+                    "mes": None,
+                    "codigo": "TEST",
+                    "glosa": None,
+                    "rule_id": None,
+                    "guias": 1,
+                    "valor_afetado": "0.00",
+                    "guia": {},
+                }
+            ],
+        },
+        {**value, "linhas": [{"prestador": "cpf:00000000000"}]},
+    ):
+        response = client.post("/v1/rejection-map/submit", json=extra, headers=_bearer())
+        assert response.status_code == 400
+    assert len(service.map_requests) == count
+    for path in ("config", "submit"):
+        method = client.get if path == "config" else client.post
+        assert method(f"/v1/rejection-map/{path}").status_code == 401
+    service.add_key("sk_tiss_no_rules", scopes=["tiss:validate"])
+    assert (
+        client.get(
+            "/v1/rejection-map/config", headers={"Authorization": "Bearer sk_tiss_no_rules"}
+        ).status_code
+        == 403
+    )
+    service.map_failure = 503
+    assert client.post("/v1/rejection-map/submit", json=value, headers=_bearer()).status_code == 503
+    service.map_failure = 0
+    service.map_enabled = False
+    assert _rejection_map.secret("sk_tiss_verified") == "a" * 64
+    assert _rejection_map.secret("sk_tiss_other") is None
+    _rejection_map.clear_cache()
+    assert client.get("/v1/rejection-map/config", headers=_bearer()).status_code == 403
+
+
+def _check_map_nonblocking(client, monkeypatch, lote):
+    started, release = threading.Event(), threading.Event()
+
+    def blocked_post(path, body):
+        started.set()
+        assert release.wait(5)
+        raise OSError("synthetic backend failure")
+
+    _rejection_map.clear_cache()
+    with monkeypatch.context() as patch:
+        patch.setattr(_rejection_map, "post", blocked_post)
+        try:
+            response = client.post(
+                "/v1/validate", json={"lote": lote, "operadora": "000000"}, headers=_bearer()
+            )
+            assert response.status_code == 200
+            assert started.wait(1)
+        finally:
+            release.set()
+            _map_workers()
 
 
 def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):

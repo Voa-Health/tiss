@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -15,6 +16,26 @@ from ._audit import AuditContext
 from ._mapa import rejection_map
 from ._mapa_html import render_rejection_map_html
 from ._rules import validate_package
+
+_MAP_URL = "https://tiss-api.voa.health/v1/rejection-map/submit"
+
+
+def _org_secret(url: str, key: str) -> str | None:
+    request = urllib.request.Request(
+        url.rsplit("/", 1)[0] + "/config",
+        headers={"Authorization": f"Bearer {key}"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            value = json.load(response)
+        if isinstance(value, dict) and value.get("enabled") is True:
+            secret = value.get("secret")
+            if isinstance(secret, str) and re.fullmatch(r"[0-9a-f]{64}", secret):
+                return secret
+    except (OSError, ValueError, TypeError):
+        pass
+    sys.stderr.write("Coleta indisponível para esta chave.\n")
+    return None
 
 
 def _json_file(path: Path) -> Any:
@@ -77,14 +98,21 @@ def _send_map(url: str, key: str, body: bytes) -> bool:
 def main(argv: list[str] | None = None) -> int:
     """Executa a CLI e retorna seu código de saída."""
     args = _arguments(argv)
+    url: str | None
     if args.enviar:
-        url = os.environ.get("TISS_MAPA_URL")
+        url = os.environ.get("TISS_MAPA_URL", _MAP_URL)
         key = os.environ.get("TISS_KEY")
         if not url or not key:
-            sys.stderr.write("Defina TISS_MAPA_URL e TISS_KEY para enviar o mapa.\n")
+            sys.stderr.write("Defina TISS_KEY para enviar o mapa.\n")
             return 2
     else:
         url = key = None
+
+    secret = os.environ.get("TISS_SEGREDO_PSEUDONIMO")
+    if args.enviar and not secret:
+        secret = _org_secret(url or _MAP_URL, key or "")
+        if secret is None:
+            return 2
 
     if not args.pasta.is_dir():
         sys.stderr.write("A pasta informada não existe ou não é um diretório.\n")
@@ -105,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
             lotes,
             contexto=contexto,
             operadora=rules,
-            segredo_pseudonimo=os.environ.get("TISS_SEGREDO_PSEUDONIMO"),
+            segredo_pseudonimo=secret,
         )
     except ValueError as exc:
         message = str(exc)

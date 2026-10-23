@@ -480,7 +480,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     monkeypatch.delenv("TISS_MAPA_URL", raising=False)
     monkeypatch.delenv("TISS_KEY", raising=False)
     assert cli_main(["mapa", str(folder), "--enviar"]) == 2
-    assert "Defina TISS_MAPA_URL e TISS_KEY" in capsys.readouterr().err
+    assert "Defina TISS_KEY" in capsys.readouterr().err
     sent: dict[str, object] = {}
 
     def urlopen(req, timeout):
@@ -497,6 +497,34 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     assert request_sent.get_header("Authorization") == f"Bearer {'k' * 16}"
     assert request_sent.get_header("Content-type") == "application/json"
     assert sent["timeout"] == 10
+
+    monkeypatch.delenv("TISS_SEGREDO_PSEUDONIMO")
+    monkeypatch.delenv("TISS_MAPA_URL")
+    requests = []
+
+    def hosted_urlopen(req, timeout):
+        requests.append(req)
+        if req.get_method() == "GET":
+            return io.BytesIO(json.dumps({"enabled": True, "secret": "a" * 64}).encode())
+        return io.BytesIO(b"{}")
+
+    monkeypatch.setattr(request, "urlopen", hosted_urlopen)
+    assert cli_main(["mapa", str(folder), "--json", str(json_path), "--enviar"]) == 0
+    assert [req.full_url for req in requests] == [
+        "https://tiss-api.voa.health/v1/rejection-map/config",
+        "https://tiss-api.voa.health/v1/rejection-map/submit",
+    ]
+    sent_map = json.loads(requests[-1].data)
+    expected_map = tiss.rejection_map([code_lote, hash_xml, cpf_lote], segredo_pseudonimo="a" * 64)
+    assert sent_map == expected_map
+    assert cpf not in requests[-1].data.decode()
+
+    def unavailable_urlopen(req, timeout):
+        return io.BytesIO(b'{"enabled": false}')
+
+    monkeypatch.setattr(request, "urlopen", unavailable_urlopen)
+    assert cli_main(["mapa", str(folder), "--enviar"]) == 2
+    assert "Coleta indisponível" in capsys.readouterr().err
 
     authorization_lote = tiss.parse_lote(examples.load("lote-valido"))
     authorization_lote["prestador"] = {"codigo_prestador_na_operadora": "CLINICA-AUTORIZACAO"}

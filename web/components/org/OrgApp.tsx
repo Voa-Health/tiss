@@ -17,6 +17,7 @@ import { ContasSection } from "./ContasSection";
 import { TissSection } from "./TissSection";
 import { UsageSection } from "./UsageSection";
 import { BillingSection } from "./BillingSection";
+import { MapaSection } from "./MapaSection";
 
 type Props = {
   configurado: boolean;
@@ -71,6 +72,7 @@ function OrgConectada({ secao: pedida, painel, nova, pacotes }: Omit<Props, "con
     regras: <RulesSection org={org} />,
     auditoria: <AuditoriaSection org={org} />,
     contas: <ContasSection org={org} />,
+    mapa: <MapaSection org={org} />,
   };
 
   return (

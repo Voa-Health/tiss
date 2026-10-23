@@ -35,8 +35,8 @@ from ._ops_schemas import (
     _string,
 )
 from ._prompts import PROMPTS
-from ._published_rules import with_published_rules
 from ._quota import admit, payment_required
+from ._rejection_map import run_with_collection
 from ._telemetry import operation_event
 from ._usage import API_CALL, record, wait
 
@@ -535,7 +535,7 @@ def call(
     status = _HTTP_OK
     try:
         _VALIDATORS[op.name].validate(entrada)
-        result = op.run(with_published_rules(op, entrada, ctx))
+        result = run_with_collection(op, entrada, ctx)
     except jsonschema.ValidationError as exc:
         status = 422
         result = {"erro": {"codigo": "entrada_invalida", "mensagem": exc.message}}

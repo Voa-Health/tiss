@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -17,7 +18,7 @@ import tiss
 from tiss import dominio, examples, operadoras, parse_lote
 from tiss._schema import parser
 from tiss.codes import CODES
-from tiss.server import _published_rules, _usage
+from tiss.server import _published_rules, _rejection_map, _usage
 from tiss.server._keys import clear_cache
 from tiss.server._ops import OPS
 from tiss.server._service import ServiceError, set_transport
@@ -44,6 +45,9 @@ class FakeService:
     rules_requests: list[str] = field(default_factory=list)
     rules_failures: list[int] = field(default_factory=list)
     down: bool = False
+    map_enabled: bool = False
+    map_failure: int = 0
+    map_requests: list[dict[str, Any]] = field(default_factory=list)
 
     def add_key(
         self, key: str, tier: str = "verified", scopes: Any = None, billing: Any = None
@@ -69,6 +73,15 @@ class FakeService:
         }
 
     def __call__(self, path: str, body: dict[str, Any]) -> Any:
+        if path == "/tiss/service/rejection-map/config":
+            if self.map_failure:
+                raise ServiceError(self.map_failure)
+            return {"enabled": self.map_enabled, "secret": "a" * 64}
+        if path == "/tiss/service/rejection-map":
+            if self.map_failure:
+                raise ServiceError(self.map_failure)
+            self.map_requests.append(body)
+            return {"status": "accepted"}
         if path == "/tiss/service/keys/introspect":
             self.introspections.append(body["key"])
             if self.down:
@@ -101,12 +114,17 @@ def tiss_service(monkeypatch):
         service.add_key(f"sk_tiss_{tier}", tier)
     clear_cache()
     _published_rules.clear_cache()
+    _rejection_map.clear_cache()
     set_transport(service)
     yield service
+    for worker in threading.enumerate():
+        if worker.name == "tiss-map":
+            worker.join(5)
     _usage.wait(5)
     set_transport(None)
     clear_cache()
     _published_rules.clear_cache()
+    _rejection_map.clear_cache()
 
 
 @pytest.fixture
