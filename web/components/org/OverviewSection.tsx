@@ -35,7 +35,7 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
 
   return (
     <>
-      {!cobranca.carregando && !cobranca.erro && cobranca.dados && !cobranca.dados.payment_method_active && (
+      {!cobranca.carregando && !cobranca.erro && cobranca.dados && cobranca.dados.enabled !== false && !cobranca.dados.payment_method_active && (
         <Alert type="info" showIcon title={<>Nenhum cartão cadastrado. <Link href={hrefDaOrg("cobranca")}>Configurar cobrança</Link></>} />
       )}
       <Row gutter={[token.margin, token.margin]}>

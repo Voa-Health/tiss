@@ -1,6 +1,7 @@
 export type AreaDisponivel = { value: string; label: string };
 
 export type Cobranca = {
+  enabled?: boolean;
   payment_method_active: boolean;
   payment_method: { brand: string; last4: string; exp_month: number; exp_year: number } | null;
   subscription_status: string | null;
