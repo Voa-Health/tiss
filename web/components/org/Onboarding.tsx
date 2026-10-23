@@ -147,7 +147,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
   const [form] = Form.useForm<Campos>();
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [emUso, setEmUso] = useState("");
+  const [emUso, setEmUso] = useState<{ chave: string; mensagem: string } | null>(null);
   const [busca, setBusca] = useState<{ chave: string; situacao: Situacao } | null>(null);
   const ultimaBusca = useRef("");
   const prontas = catalogo.organizations.filter((org) => org.tiss_org && org.terms.accepted);
@@ -204,7 +204,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
     const nova = (valores.destino ?? NOVA) === NOVA;
     setEnviando(true);
     setErro("");
-    setEmUso("");
+    setEmUso(null);
     try {
       await pedir("tiss/organizations/", {
         method: "POST",
@@ -224,7 +224,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
         const campos = Object.entries(motivo.campos).filter(([campo]) => nomes.has(campo));
         form.setFields(campos.map(([name, mensagem]) => ({ name: name as keyof Campos, errors: [mensagem] })));
         const ocupado = [...campos.map(([, mensagem]) => mensagem), motivo.message].find((mensagem) => EM_USO.test(mensagem));
-        if (ocupado) setEmUso(ocupado);
+        if (ocupado) setEmUso({ chave: chaveAtual, mensagem: ocupado });
         else if (campos.length === 0) setErro(motivo.message);
       } else {
         setErro("Não foi possível criar a organização.");
@@ -270,11 +270,11 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
         )}
         <Card title="Criar organização">
           {erro && <Alert type="error" showIcon title={erro} style={{ marginBottom: token.margin }} />}
-          {emUso && (
+          {emUso && emUso.chave === chaveAtual && (
             <Alert
               type="warning"
               showIcon
-              title={emUso}
+              title={emUso.mensagem}
               description="A empresa já tem uma organização no voa-tiss. Peça a quem administra que convide você em Membros: o convite chega por e-mail e você entra com esta mesma conta, sem criar outra organização."
               style={{ marginBottom: token.margin }}
             />
