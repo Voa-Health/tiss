@@ -13,13 +13,13 @@ import pytest
 from conftest import ANS, ROOT, mutate, remove_element, set_text
 from lxml import etree
 
-import voa_tiss
-from voa_tiss import examples
-from voa_tiss.__main__ import main as cli_main
-from voa_tiss._mapa_html import render_rejection_map_html
-from voa_tiss._rules import _package, validate_package
-from voa_tiss._schema import parser
-from voa_tiss.codes import CODES
+import tiss
+from tiss import examples
+from tiss.__main__ import main as cli_main
+from tiss._mapa_html import render_rejection_map_html
+from tiss._rules import _package, validate_package
+from tiss._schema import parser
+from tiss.codes import CODES
 
 
 @pytest.mark.parametrize(
@@ -58,35 +58,33 @@ def test_example_reports(name, expected):
         elif case == "pendente-json":
             request["solicitacao"].pop("indicacao_clinica")
         elif case == "auditoria-xml":
-            source = voa_tiss.build_autorizacao(request)
+            source = tiss.build_autorizacao(request)
         elif case == "sem-regra-xml":
-            source = voa_tiss.build_autorizacao(request)
+            source = tiss.build_autorizacao(request)
             context = {}
         elif case == "carteirinha-json":
             package["regras"][0]["check"]["codigos"] = ["99999999"]
             context["carteirinhas"] = {"AUT-0001": {"ativa": False}}
-        result = voa_tiss.check_autorizacao(source, contexto=context)
+        result = tiss.check_autorizacao(source, contexto=context)
         assert result.decisao is not None
         assert result.decisao["tipo"] == expected
         assert expected in {"aprovar_por_regra", "pendente", "encaminhar_auditor"}
         assert (
             "negar"
-            not in voa_tiss.json_schema("report")["properties"]["decisao"]["properties"]["tipo"][
-                "enum"
-            ]
+            not in tiss.json_schema("report")["properties"]["decisao"]["properties"]["tipo"]["enum"]
         )
         assert "negar" not in result.to_json()
         if case == "aprovar-json":
             assert result.decisao["rules"]
             for example in ("autorizacao-solicitacao", "autorizacao-resposta"):
                 xml = examples.load(example)
-                assert voa_tiss.build_autorizacao(voa_tiss.parse_autorizacao(xml)) == xml
-                assert voa_tiss.validate(xml).valid
+                assert tiss.build_autorizacao(tiss.parse_autorizacao(xml)) == xml
+                assert tiss.validate(xml).valid
                 hash_start = xml.index(b"<ans:hash>") + len(b"<ans:hash>")
                 replacement = b"0" if xml[hash_start : hash_start + 1] != b"0" else b"1"
                 assert "lote.hash_divergente" in {
                     finding.code
-                    for finding in voa_tiss.validate(
+                    for finding in tiss.validate(
                         xml[:hash_start] + replacement + xml[hash_start + 1 :]
                     ).findings
                 }
@@ -106,7 +104,7 @@ def test_example_reports(name, expected):
             assert any(finding.code == "autorizacao.carteirinha" for finding in result.findings)
         return
     if name == "guia-consulta":
-        lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        lote = tiss.parse_lote(examples.load("lote-valido"))
         lote["numero_lote"] = "TISS-001"
         lote["guias"] = [
             {
@@ -143,11 +141,11 @@ def test_example_reports(name, expected):
                 },
             }
         ]
-        xml = voa_tiss.build_lote(lote)
-        assert voa_tiss.validate(xml).valid
-        parsed = voa_tiss.parse_lote(xml)
+        xml = tiss.build_lote(lote)
+        assert tiss.validate(xml).valid
+        parsed = tiss.parse_lote(xml)
         assert parsed == lote
-        report = voa_tiss.check(parsed)
+        report = tiss.check(parsed)
         assert report.valid and report.findings == ()
         return
     if name.startswith("hash-"):
@@ -158,7 +156,7 @@ def test_example_reports(name, expected):
         else:
             hash_element.getparent().remove(hash_element)
         document = etree.tostring(root, encoding="ISO-8859-1", xml_declaration=True)
-        report = voa_tiss.validate(document)
+        report = tiss.validate(document)
         codes = {finding.code for finding in report.findings}
         if name == "hash-divergente":
             assert codes == {"lote.hash_divergente"}
@@ -172,7 +170,7 @@ def test_example_reports(name, expected):
             assert "lote.hash_divergente" not in codes
             assert any(code.startswith("xsd.") for code in codes)
         return
-    report = voa_tiss.validate(examples.load(name))
+    report = tiss.validate(examples.load(name))
     codes = {finding.code for finding in report.findings}
     assert expected <= codes
     if name == "lote-valido":
@@ -198,32 +196,30 @@ def test_example_reports(name, expected):
     ],
 )
 def test_parse_errors_and_versions(document, expected):
-    assert expected in {finding.code for finding in voa_tiss.validate(document).findings}
+    assert expected in {finding.code for finding in tiss.validate(document).findings}
 
 
 def test_doctype_encoding_version_and_input_contract():
-    malformed = voa_tiss.validate("<root>")
+    malformed = tiss.validate("<root>")
     assert "linha" in malformed.findings[0].message
     doctype = (ROOT / "tests/fixtures/xml/doctype.xml").read_bytes()
-    assert [finding.code for finding in voa_tiss.validate(doctype).findings] == ["xml.doctype"]
+    assert [finding.code for finding in tiss.validate(doctype).findings] == ["xml.doctype"]
     latin = '<?xml version="1.0" encoding="ISO-8859-1"?><root>João</root>'.encode("latin-1")
     for document in (latin, latin.decode("latin-1")):
-        assert "xml.encoding" not in {
-            finding.code for finding in voa_tiss.validate(document).findings
-        }
-    report = voa_tiss.validate(examples.load("lote-valido"))
+        assert "xml.encoding" not in {finding.code for finding in tiss.validate(document).findings}
+    report = tiss.validate(examples.load("lote-valido"))
     assert report.version == "4.03.00" and report.valid
-    divergent = voa_tiss.validate(examples.load("lote-valido"), version="4.01.00")
+    divergent = tiss.validate(examples.load("lote-valido"), version="4.01.00")
     assert {"versao.divergente", "versao.nao_suportada"} <= {
         finding.code for finding in divergent.findings
     }
     fixtures = ROOT / "tests/fixtures/xml"
-    valid_402 = voa_tiss.validate((fixtures / "4.02.00-valido.xml").read_bytes())
-    invalid_402 = voa_tiss.validate((fixtures / "4.02.00-invalido.xml").read_bytes())
+    valid_402 = tiss.validate((fixtures / "4.02.00-valido.xml").read_bytes())
+    invalid_402 = tiss.validate((fixtures / "4.02.00-invalido.xml").read_bytes())
     assert valid_402.version == "4.02.00" and valid_402.valid
     assert any(finding.code.startswith("xsd.") for finding in invalid_402.findings)
     with pytest.raises(TypeError):
-        voa_tiss.validate(42)  # type: ignore[arg-type]
+        tiss.validate(42)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -240,9 +236,7 @@ def test_doctype_encoding_version_and_input_contract():
     ],
 )
 def test_xsd_messages_are_specific(code, expected_fragments, requires_needs, xsd_cases):
-    finding = next(
-        item for item in voa_tiss.validate(xsd_cases[code]).findings if item.code == code
-    )
+    finding = next(item for item in tiss.validate(xsd_cases[code]).findings if item.code == code)
     assert "{" not in finding.message
     assert all(fragment in finding.message for fragment in expected_fragments)
     assert bool(finding.needs) is requires_needs
@@ -265,14 +259,14 @@ def test_rule_catalog_covers_fixtures_and_reports_validate(xsd_cases):
     documents["duplicate"] = mutate(duplicate_guide_number)
     documents["missing-card"] = mutate(lambda root: remove_element(root, ".//ans:numeroCarteira"))
     all_codes: set[str] = set()
-    validator = jsonschema.Draft202012Validator(voa_tiss.json_schema("report"))
+    validator = jsonschema.Draft202012Validator(tiss.json_schema("report"))
     for document in documents.values():
-        report = voa_tiss.validate(document)
+        report = tiss.validate(document)
         all_codes.update(finding.code for finding in report.findings)
         validator.validate(report.to_dict())
     all_codes.update(
         finding.code
-        for finding in voa_tiss.validate(examples.load("lote-valido"), version="4.02.00").findings
+        for finding in tiss.validate(examples.load("lote-valido"), version="4.02.00").findings
     )
     assert all_codes <= CODES.keys()
 
@@ -280,7 +274,7 @@ def test_rule_catalog_covers_fixtures_and_reports_validate(xsd_cases):
 def test_xpaths_resolve_with_prefixed_and_default_namespaces():
     prefixed = examples.load("lote-com-erros")
     default = prefixed.replace(b"xmlns:ans=", b"xmlns=").replace(b"ans:", b"")
-    reports = [voa_tiss.validate(document) for document in (prefixed, default)]
+    reports = [tiss.validate(document) for document in (prefixed, default)]
     sets = []
     for document, report in zip((prefixed, default), reports, strict=True):
         tree = etree.fromstring(document, parser())
@@ -346,8 +340,8 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
             del target[key]
         else:
             target[key] = value
-        assert voa_tiss.validate_package(package)
-        findings = voa_tiss.check(valid_lote, operadora=package).findings
+        assert tiss.validate_package(package)
+        findings = tiss.check(valid_lote, operadora=package).findings
         assert [finding.message for finding in findings if finding.code == "regra.padrao"] == [
             "Pacote de regras inválido."
         ]
@@ -357,14 +351,12 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
     lote = deepcopy(valid_lote)
     if case == "combinacao_proibida.invalido":
         lote["operadora"]["registro_ans"] = "419761"
-    findings = [
-        finding for finding in voa_tiss.check(lote, operadora=package).findings if finding.rule
-    ]
+    findings = [finding for finding in tiss.check(lote, operadora=package).findings if finding.rule]
     assert bool(findings) is fails
     if case == "exige_autorizacao.invalido":
         assert findings[0].glosa == "1818"
         audit_findings = [
-            finding for finding in voa_tiss.audit(lote, operadora=package).findings if finding.rule
+            finding for finding in tiss.audit(lote, operadora=package).findings if finding.rule
         ]
         assert audit_findings[0].rule["id"] == case
         assert audit_findings[0].glosa == "1818"
@@ -377,10 +369,10 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     without_comment = prefix + namespace + suffix
     comment = b'"><value>Jo\xe3o</value><!-- not a value --><ans:hash>old</ans:hash></root>'
     expected = hashlib.md5("João".encode("iso-8859-1")).hexdigest()
-    assert voa_tiss.hash_epilogo(without_comment) == expected
-    assert voa_tiss.hash_epilogo(prefix + namespace + comment) == expected
+    assert tiss.hash_epilogo(without_comment) == expected
+    assert tiss.hash_epilogo(prefix + namespace + comment) == expected
 
-    base = voa_tiss.parse_lote(examples.load("lote-valido"))
+    base = tiss.parse_lote(examples.load("lote-valido"))
     base["transacao"]["data_registro_transacao"] = "2026-10-21"
     for guide in base["guias"]:
         guide["procedimentos_executados"][0]["data_execucao"] = "2026-10-21"
@@ -395,18 +387,18 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     code_lote["prestador"] = {"codigo_prestador_na_operadora": "CLINICA-A"}
     code_lote["guias"][0]["cabecalho_guia"]["numero_guia_prestador"] = "GUIA-1"
     code_lote["guias"][1]["cabecalho_guia"]["numero_guia_prestador"] = "GUIA-2"
-    rule_findings = voa_tiss.check(code_lote, operadora=rules).findings
+    rule_findings = tiss.check(code_lote, operadora=rules).findings
     rule_finding = next(finding for finding in rule_findings if finding.rule)
 
     cnpj_lote = deepcopy(base)
     cnpj_lote["prestador"] = {"cnpj": "11222333000181"}
-    xml_root = etree.fromstring(voa_tiss.build_lote(cnpj_lote), parser())
+    xml_root = etree.fromstring(tiss.build_lote(cnpj_lote), parser())
     hash_element = xml_root.xpath(".//ans:epilogo/ans:hash", namespaces=ANS)[0]
     hash_element.text = "0" * 32
     hash_xml = etree.tostring(xml_root, encoding="ISO-8859-1", xml_declaration=True)
     hash_finding = next(
         finding
-        for finding in voa_tiss.validate(hash_xml, operadora=rules).findings
+        for finding in tiss.validate(hash_xml, operadora=rules).findings
         if finding.code == "lote.hash_divergente"
     )
     assert hash_finding.glosa is not None
@@ -415,7 +407,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     secret = "s" * 16
     cpf_lote = deepcopy(base)
     cpf_lote["prestador"] = {"cpf": "123.456.789-09"}
-    result = voa_tiss.rejection_map(
+    result = tiss.rejection_map(
         [code_lote, hash_xml, cpf_lote],
         operadora=rules,
         segredo_pseudonimo=secret,
@@ -449,12 +441,12 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
 
     cpf_unformatted = deepcopy(cpf_lote)
     cpf_unformatted["prestador"]["cpf"] = cpf
-    equivalent = voa_tiss.rejection_map([cpf_unformatted], segredo_pseudonimo=secret)
-    changed_secret = voa_tiss.rejection_map([cpf_unformatted], segredo_pseudonimo="t" * 16)
+    equivalent = tiss.rejection_map([cpf_unformatted], segredo_pseudonimo=secret)
+    changed_secret = tiss.rejection_map([cpf_unformatted], segredo_pseudonimo="t" * 16)
     assert equivalent["prestadores"][0]["prestador"] == cpf_id
     assert changed_secret["prestadores"][0]["prestador"] != cpf_id
     with pytest.raises(ValueError, match="Informe segredo_pseudonimo"):
-        voa_tiss.rejection_map([cpf_unformatted])
+        tiss.rejection_map([cpf_unformatted])
 
     encoded = json.dumps(result, ensure_ascii=False)
     html = render_rejection_map_html(result)
@@ -462,14 +454,14 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     assert "hmac:" in encoded
     assert "<script" not in html.lower()
     assert 'href="http' not in html.lower() and 'src="http' not in html.lower()
-    jsonschema.Draft202012Validator(voa_tiss.json_schema("rejection_map")).validate(result)
+    jsonschema.Draft202012Validator(tiss.json_schema("rejection_map")).validate(result)
 
     folder = tmp_path / "lotes"
     folder.mkdir()
     (folder / "a.json").write_text(json.dumps(code_lote), encoding="utf-8")
     (folder / "b.xml").write_bytes(hash_xml)
     (folder / "c.json").write_text(json.dumps(cpf_lote), encoding="utf-8")
-    monkeypatch.setenv("VOA_TISS_SEGREDO_PSEUDONIMO", secret)
+    monkeypatch.setenv("TISS_SEGREDO_PSEUDONIMO", secret)
     assert cli_main(["mapa", str(folder)]) == 0
     stdout = capsys.readouterr()
     cli_result = json.loads(stdout.out)
@@ -485,10 +477,10 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     assert cpf not in saved_html
     assert "<script" not in saved_html.lower()
 
-    monkeypatch.delenv("VOA_TISS_MAPA_URL", raising=False)
-    monkeypatch.delenv("VOA_TISS_KEY", raising=False)
+    monkeypatch.delenv("TISS_MAPA_URL", raising=False)
+    monkeypatch.delenv("TISS_KEY", raising=False)
     assert cli_main(["mapa", str(folder), "--enviar"]) == 2
-    assert "Defina VOA_TISS_KEY" in capsys.readouterr().err
+    assert "Defina TISS_KEY" in capsys.readouterr().err
     sent: dict[str, object] = {}
 
     def urlopen(req, timeout):
@@ -497,8 +489,8 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
         return io.BytesIO()
 
     monkeypatch.setattr(request, "urlopen", urlopen)
-    monkeypatch.setenv("VOA_TISS_MAPA_URL", "https://mapa.example.invalid/")
-    monkeypatch.setenv("VOA_TISS_KEY", "k" * 16)
+    monkeypatch.setenv("TISS_MAPA_URL", "https://mapa.example.invalid/")
+    monkeypatch.setenv("TISS_KEY", "k" * 16)
     assert cli_main(["mapa", str(folder), "--json", str(json_path), "--enviar"]) == 0
     request_sent = sent["request"]
     assert request_sent.data == json_path.read_bytes().rstrip(b"\n")
@@ -506,8 +498,8 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     assert request_sent.get_header("Content-type") == "application/json"
     assert sent["timeout"] == 10
 
-    monkeypatch.delenv("VOA_TISS_SEGREDO_PSEUDONIMO")
-    monkeypatch.delenv("VOA_TISS_MAPA_URL")
+    monkeypatch.delenv("TISS_SEGREDO_PSEUDONIMO")
+    monkeypatch.delenv("TISS_MAPA_URL")
     requests = []
 
     def hosted_urlopen(req, timeout):
@@ -523,9 +515,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
         "https://tiss-api.voa.health/v1/rejection-map/submit",
     ]
     sent_map = json.loads(requests[-1].data)
-    expected_map = voa_tiss.rejection_map(
-        [code_lote, hash_xml, cpf_lote], segredo_pseudonimo="a" * 64
-    )
+    expected_map = tiss.rejection_map([code_lote, hash_xml, cpf_lote], segredo_pseudonimo="a" * 64)
     assert sent_map == expected_map
     assert cpf not in requests[-1].data.decode()
 
@@ -536,7 +526,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     assert cli_main(["mapa", str(folder), "--enviar"]) == 2
     assert "Coleta indisponível" in capsys.readouterr().err
 
-    authorization_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+    authorization_lote = tiss.parse_lote(examples.load("lote-valido"))
     authorization_lote["prestador"] = {"codigo_prestador_na_operadora": "CLINICA-AUTORIZACAO"}
     authorization_lote["guias"] = [authorization_lote["guias"][0]]
     authorization_guide = authorization_lote["guias"][0]
@@ -544,13 +534,13 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
         "10101012"
     )
     authorization_guide.pop("dados_autorizacao", None)
-    authorization_findings = voa_tiss.check(authorization_lote, operadora="000000").findings
+    authorization_findings = tiss.check(authorization_lote, operadora="000000").findings
     authorization_finding = next(
         finding
         for finding in authorization_findings
         if finding.rule and finding.rule["id"] == "exige-autorizacao-consulta"
     )
-    authorization_map = voa_tiss.rejection_map([authorization_lote], operadora="000000")
+    authorization_map = tiss.rejection_map([authorization_lote], operadora="000000")
     authorization_line = next(
         item
         for item in authorization_map["linhas"]

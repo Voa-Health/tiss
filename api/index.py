@@ -6,12 +6,12 @@ from importlib import import_module
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-rede = Path(__file__).resolve().parents[1] / "src/voa_tiss/rede/_data/rede.sqlite"
+rede = Path(__file__).resolve().parents[1] / "src/tiss/rede/_data/rede.sqlite"
 if rede.is_file():
-    os.environ.setdefault("VOA_TISS_REDE", str(rede))
+    os.environ.setdefault("TISS_REDE", str(rede))
 else:
     os.environ.setdefault("XDG_CACHE_HOME", "/tmp")
 
-app = import_module("voa_tiss.server").app
+app = import_module("tiss.server").app
 
 __all__ = ["app"]

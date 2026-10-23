@@ -15,24 +15,24 @@ import jsonschema
 import pytest
 from conftest import ROOT
 
-import voa_tiss
+import tiss
 from bench._tarefas import TASK_DIR, gerar
 from bench._verificar import verificar
 from scripts import manutencao
-from voa_tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
-from voa_tiss._sadt import load_bundle, render_html
-from voa_tiss._schema import (
+from tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
+from tiss._sadt import load_bundle, render_html
+from tiss._schema import (
     PINNED_PROVENANCE,
     SchemaBundleError,
     schema_dir,
     verify_schema_bundle,
 )
-from voa_tiss.codes import CODES
+from tiss.codes import CODES
 
 
 def test_public_api_and_example_contract():
     _check_browser_map_contract()
-    assert set(voa_tiss.__all__) == {
+    assert set(tiss.__all__) == {
         "AuditContext",
         "AutorizacaoError",
         "BundleError",
@@ -70,8 +70,8 @@ def test_public_api_and_example_contract():
         "validate",
         "validate_package",
     }
-    assert set(voa_tiss.json_schema("finding")["properties"]["code"]["enum"]) == set(CODES)
-    assert voa_tiss.examples.names() == [
+    assert set(tiss.json_schema("finding")["properties"]["code"]["enum"]) == set(CODES)
+    assert tiss.examples.names() == [
         "lote-valido",
         "lote-com-erros",
         "demonstrativo",
@@ -79,24 +79,24 @@ def test_public_api_and_example_contract():
         "autorizacao-resposta",
     ]
     with pytest.raises(ValueError):
-        voa_tiss.examples.load("../unknown")
+        tiss.examples.load("../unknown")
     request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
-    authorization_xml = voa_tiss.build_autorizacao(request)
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.build_autorizacao({**request, "solicitacao": None, "autorizacao": {}})
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.build_autorizacao(
+    authorization_xml = tiss.build_autorizacao(request)
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.build_autorizacao({**request, "solicitacao": None, "autorizacao": {}})
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.build_autorizacao(
             {key: value for key, value in request.items() if key != "solicitacao"}
         )
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.build_autorizacao(
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.build_autorizacao(
             {
                 **request,
                 "solicitacao": {**request["solicitacao"], "campo_desconhecido": "x"},
             }
         )
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.parse_autorizacao(
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.parse_autorizacao(
             authorization_xml.replace(b"SOLICITACAO_PROCEDIMENTOS", b"TIPO_INVALIDO")
         )
 
@@ -110,9 +110,9 @@ def _check_browser_map_contract():
         return
     vectors = []
     for cpf, secret in [("000.000.000-00", "a" * 64), ("00000000001", "chave-sintética")]:
-        lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        lote = tiss.parse_lote(examples.load("lote-valido"))
         lote["prestador"] = {"cpf": cpf}
-        value = voa_tiss.rejection_map([lote], segredo_pseudonimo=secret)
+        value = tiss.rejection_map([lote], segredo_pseudonimo=secret)
         vectors.append([cpf, secret, value["prestadores"][0]["prestador"]])
     script = r"""
 import assert from "node:assert/strict";
@@ -200,7 +200,7 @@ assert.equal(rotaPermitida(base+"extra/", "GET"), false);
 def test_generated_artifacts_and_golden_report_are_current():
     assert manutencao._write_artifacts(check=True)
     expected = (ROOT / "tests/golden/lote-com-erros.report.json").read_text().strip()
-    assert voa_tiss.validate(voa_tiss.examples.load("lote-com-erros")).to_json() == expected
+    assert tiss.validate(tiss.examples.load("lote-com-erros")).to_json() == expected
 
 
 @pytest.mark.parametrize("change", ["missing", "tampered", "extra", "provenance", "symlink"])
@@ -247,16 +247,16 @@ def test_xsd_bundle_rejects_unclosed_imports(tmp_path, monkeypatch, location):
 
 def test_report_schema_and_determinism():
     reports = [
-        voa_tiss.validate(examples.load("lote-valido")),
-        voa_tiss.validate(examples.load("lote-com-erros")),
-        voa_tiss.validate((ROOT / "tests/fixtures/xml/malformed.xml").read_bytes()),
+        tiss.validate(examples.load("lote-valido")),
+        tiss.validate(examples.load("lote-com-erros")),
+        tiss.validate((ROOT / "tests/fixtures/xml/malformed.xml").read_bytes()),
     ]
-    validator = jsonschema.Draft202012Validator(voa_tiss.json_schema("report"))
+    validator = jsonschema.Draft202012Validator(tiss.json_schema("report"))
     for report in reports:
         validator.validate(report.to_dict())
         assert json.loads(report.to_json()) == report.to_dict()
     code = (
-        "from voa_tiss import examples,validate;"
+        "from tiss import examples,validate;"
         "print(validate(examples.load('lote-com-erros')).to_json())"
     )
     outputs = []
@@ -272,14 +272,14 @@ def test_public_apis_are_offline(monkeypatch):
 
     monkeypatch.setattr(socket, "socket", blocked)
     monkeypatch.setattr(socket, "create_connection", blocked)
-    assert voa_tiss.validate(examples.load("lote-valido")).valid
-    assert voa_tiss.parse_demonstrativo(examples.load("demonstrativo"))
-    from voa_tiss.tuss import lookup, search
+    assert tiss.validate(examples.load("lote-valido")).valid
+    assert tiss.parse_demonstrativo(examples.load("demonstrativo"))
+    from tiss.tuss import lookup, search
 
     assert lookup("10101012", tabela="22")
     assert search("consultorio")
-    assert voa_tiss.sadt_catalog()
-    assert isinstance(voa_tiss.sadt_missing({}), list)
+    assert tiss.sadt_catalog()
+    assert isinstance(tiss.sadt_missing({}), list)
 
 
 def test_sadt_catalog_completeness_and_optional_dependencies(monkeypatch, tmp_path):
@@ -293,7 +293,7 @@ def test_sadt_catalog_completeness_and_optional_dependencies(monkeypatch, tmp_pa
     monkeypatch.setattr(builtins, "__import__", without_pdf)
     assert sadt_catalog()["fields"]
     assert isinstance(sadt_missing({}), list)
-    with pytest.raises(MissingExtraError, match="voa-tiss\\[pdf\\]"):
+    with pytest.raises(MissingExtraError, match="tiss\\[pdf\\]"):
         render_sadt({}, tmp_path / "guide.pdf")
 
 
@@ -322,7 +322,7 @@ def test_complete_guide_and_line_totals_and_html():
     }
     assert sadt_missing(complete) == []
 
-    from voa_tiss._line_total import LineTotalError, line_total, line_total_cents
+    from tiss._line_total import LineTotalError, line_total, line_total_cents
 
     assert line_total(unit_price="12.50", quantity=2) == Decimal("25.00")
     assert line_total_cents(unit_price_cents=7, quantity=3, factor="0.5") == Decimal("10.5")

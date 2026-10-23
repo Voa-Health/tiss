@@ -1,5 +1,5 @@
 {
-  "name": "voa-tiss",
+  "name": "tiss",
   "version": "0.3.0",
   "description": "Integra TISS e dados ANS para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo.",
   "author": {
@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "keywords": ["TISS", "TUSS", "SP/SADT", "glosa", "ANS", "saúde"],
   "mcpServers": {
-    "voa-tiss": {
+    "tiss": {
       "type": "http",
       "url": "https://tiss-api.voa.health/mcp"
     }

@@ -14,14 +14,14 @@ from mcp.client.session import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 from mcp.shared.exceptions import McpError
 
-import voa_tiss
-from voa_tiss import dominio, examples, operadoras, parse_lote
-from voa_tiss._schema import parser
-from voa_tiss.codes import CODES
-from voa_tiss.server import _published_rules, _rejection_map, _usage
-from voa_tiss.server._keys import clear_cache
-from voa_tiss.server._ops import OPS
-from voa_tiss.server._service import ServiceError, set_transport
+import tiss
+from tiss import dominio, examples, operadoras, parse_lote
+from tiss._schema import parser
+from tiss.codes import CODES
+from tiss.server import _published_rules, _rejection_map, _usage
+from tiss.server._keys import clear_cache
+from tiss.server._ops import OPS
+from tiss.server._service import ServiceError, set_transport
 
 ROOT = Path(__file__).resolve().parents[1]
 NS = "http://www.ans.gov.br/padroes/tiss/schemas"
@@ -106,8 +106,8 @@ class FakeService:
 @pytest.fixture
 def tiss_service(monkeypatch):
     """Liga o servidor a um backend sintético de chaves e uso."""
-    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
-    monkeypatch.setenv("VOA_TISS_SERVICE_SECRET", "s" * 16)
+    monkeypatch.setenv("TISS_BACKEND_URL", "https://backend.example")
+    monkeypatch.setenv("TISS_SERVICE_SECRET", "s" * 16)
     monkeypatch.setattr(_usage, "RETRY_SECONDS", 0.0)
     service = FakeService()
     for tier in ("login", "verified"):
@@ -118,7 +118,7 @@ def tiss_service(monkeypatch):
     set_transport(service)
     yield service
     for worker in threading.enumerate():
-        if worker.name == "voa-tiss-map":
+        if worker.name == "tiss-map":
             worker.join(5)
     _usage.wait(5)
     set_transport(None)
@@ -152,7 +152,7 @@ def mcp_cases():
             ClientSession(read_stream, write_stream) as session,
         ):
             initialized = await session.initialize()
-            assert initialized.serverInfo.name == "voa-tiss"
+            assert initialized.serverInfo.name == "tiss"
             tools = await session.list_tools()
             definitions = {tool.name: tool for tool in tools.tools}
             assert set(definitions) == {op.tool_name for op in OPS}
@@ -167,7 +167,7 @@ def mcp_cases():
             code_resource = await session.read_resource("tiss://codigos")
             assert json.loads(code_resource.contents[0].text) == CODES
             sadt_resource = await session.read_resource("tiss://sadt/catalogo")
-            assert json.loads(sadt_resource.contents[0].text) == voa_tiss.sadt_catalog()
+            assert json.loads(sadt_resource.contents[0].text) == tiss.sadt_catalog()
             domain_resource = await session.read_resource("tiss://dominio/tabelas")
             assert json.loads(domain_resource.contents[0].text) == {
                 "tabelas": dominio.tables(),
@@ -176,9 +176,9 @@ def mcp_cases():
             healthplan_resource = await session.read_resource("tiss://operadoras")
             assert json.loads(healthplan_resource.contents[0].text) == operadoras.info()
             rules_resource = await session.read_resource("tiss://regras/schema")
-            assert json.loads(rules_resource.contents[0].text) == voa_tiss.json_schema("rules")
+            assert json.loads(rules_resource.contents[0].text) == tiss.json_schema("rules")
             lote_schema_resource = await session.read_resource("tiss://schemas/lote")
-            assert json.loads(lote_schema_resource.contents[0].text) == voa_tiss.json_schema("lote")
+            assert json.loads(lote_schema_resource.contents[0].text) == tiss.json_schema("lote")
             tuss_resource = await session.read_resource("tiss://tuss/22/1")
             page = json.loads(tuss_resource.contents[0].text)
             assert page["tabela"] == "22"
@@ -190,7 +190,7 @@ def mcp_cases():
             assert json.loads(healthplan_profile.contents[0].text) == operadoras.perfil("005711")
             simulated_rules = await session.read_resource("tiss://regras/000000")
             assert json.loads(simulated_rules.contents[0].text) == json.loads(
-                (ROOT / "src/voa_tiss/rules/000000.json").read_text()
+                (ROOT / "src/tiss/rules/000000.json").read_text()
             )
             templates = await session.list_resource_templates()
             assert [item.uriTemplate for item in templates.resourceTemplates] == [

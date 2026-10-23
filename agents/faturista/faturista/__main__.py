@@ -46,7 +46,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="faturista")
     parser.add_argument("arquivo", nargs="?", type=Path, default=EXEMPLO)
     parser.add_argument("--modelo", default=os.environ.get("FATURISTA_MODELO", MODELO_PADRAO))
-    parser.add_argument("--mcp", default=os.environ.get("VOA_TISS_MCP", "local"))
+    parser.add_argument("--mcp", default=os.environ.get("TISS_MCP", "local"))
     parser.add_argument("--cenario", default="carteirinha_vencida")
     parser.add_argument("--saida", type=Path, default=Path("resultado.json"))
     args = parser.parse_args()

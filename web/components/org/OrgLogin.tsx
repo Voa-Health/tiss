@@ -34,12 +34,12 @@ export function OrgLogin({ aviso }: { aviso?: string }) {
     >
       <Card style={{ width: "100%", maxWidth: 440 }}>
         <Flex vertical gap={token.margin}>
-          <Link href="/" aria-label="voa-tiss, página inicial" style={{ display: "inline-flex" }}>
+          <Link href="/" aria-label="tiss, página inicial" style={{ display: "inline-flex" }}>
             <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
           </Link>
           <Flex vertical gap={token.marginXXS}>
             <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading3 }}>
-              Organização voa-tiss
+              Organização tiss
             </Typography.Title>
             <Typography.Text type="secondary">
               Entre com a conta Voa para gerenciar chaves, uso e membros da sua organização.

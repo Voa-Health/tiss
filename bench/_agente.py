@@ -155,7 +155,7 @@ def ferramenta_python(codigo: str) -> str:
     interpreter = os.path.join(base_prefix, "bin", "python3")
     if not os.path.isfile(interpreter):
         raise _SandboxSetupError("Interpretador base do sandbox Python não encontrado.")
-    marker = f"__VOA_TISS_SANDBOX_READY_{time.monotonic_ns()}__"
+    marker = f"__TISS_SANDBOX_READY_{time.monotonic_ns()}__"
     env = {
         "PATH": "/usr/bin:/bin",
         "BASE_PREFIX": base_prefix,
@@ -163,7 +163,7 @@ def ferramenta_python(codigo: str) -> str:
         "READY_MARKER": marker,
     }
     try:
-        directory = tempfile.TemporaryDirectory(prefix="voa-tiss-python-", dir="/dev/shm")
+        directory = tempfile.TemporaryDirectory(prefix="tiss-python-", dir="/dev/shm")
     except OSError as error:
         raise _SandboxSetupError("Não foi possível preparar o sandbox Python.") from error
     with directory:
@@ -204,7 +204,7 @@ def ferramenta_python(codigo: str) -> str:
 async def _mcp_tools() -> list[Any]:
     if _MCP_STATE.get("tools") is not None:
         return _MCP_STATE["tools"]
-    from voa_tiss.server._mcp import create_mcp
+    from tiss.server._mcp import create_mcp
 
     _MCP_STATE["server"] = create_mcp()[1]
     async with create_connected_server_and_client_session(_MCP_STATE["server"]) as client:

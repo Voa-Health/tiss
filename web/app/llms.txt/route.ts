@@ -32,7 +32,7 @@ export function GET() {
     )
     .join("\n\n");
   const body = [
-    "# voa-tiss",
+    "# tiss",
     "",
     "> Documentação técnica para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo que usam TISS e dados abertos da ANS sobre operadoras, glosas e rede hospitalar.",
     "",

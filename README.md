@@ -14,8 +14,8 @@
 
 <div align="center">
   <a href="https://github.com/Voa-Health/tiss/actions/workflows/ci.yml"><img src="https://github.com/Voa-Health/tiss/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <a href="https://pypi.org/project/voa-tiss/"><img src="https://img.shields.io/pypi/v/voa-tiss?label=PyPI" alt="Versão no PyPI"></a>
-  <a href="https://pypi.org/project/voa-tiss/"><img src="https://img.shields.io/pypi/pyversions/voa-tiss" alt="Versões do Python"></a>
+  <a href="https://pypi.org/project/tiss/"><img src="https://img.shields.io/pypi/v/tiss?label=PyPI" alt="Versão no PyPI"></a>
+  <a href="https://pypi.org/project/tiss/"><img src="https://img.shields.io/pypi/pyversions/tiss" alt="Versões do Python"></a>
   <a href="https://github.com/Voa-Health/tiss/blob/main/LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue" alt="Licença Apache-2.0"></a>
   <a href="https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss"><img src="https://img.shields.io/badge/MCP-health.voa%2Ftiss-7c3aed" alt="MCP Registry"></a>
 </div>
@@ -48,11 +48,11 @@ remoto para o seu agente de IA.
 ## Início rápido
 
 ```sh
-pip install voa-tiss
+pip install tiss
 ```
 
 ```python
-from voa_tiss import examples, validate
+from tiss import examples, validate
 
 report = validate(examples.load("lote-com-erros"))
 [(finding.code, finding.severity) for finding in report.findings]
@@ -66,7 +66,7 @@ Prefere testar no navegador? Abra o
 
 ## Para quem é
 
-| Você é | O voa-tiss ajuda a |
+| Você é | O tiss ajuda a |
 | --- | --- |
 | **Prestador** (hospital, clínica, laboratório) | pegar o erro antes da operadora e entender por que uma guia foi glosada |
 | **Profissional de saúde** | conferir guias e códigos TUSS sem decorar o manual |
@@ -121,10 +121,10 @@ que foi cobrado. Para testar sem operadora real, use a
 
 O MCP remoto fica em `https://tiss-api.voa.health/mcp`. Agentes encontram as
 instruções de uso no [AGENTS.md](https://github.com/Voa-Health/tiss/blob/main/AGENTS.md) e na
-[skill voa-tiss](https://github.com/Voa-Health/tiss/blob/main/skills/voa-tiss/SKILL.md).
+[skill tiss](https://github.com/Voa-Health/tiss/blob/main/skills/tiss/SKILL.md).
 
 ```sh
-claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp
+claude mcp add --transport http tiss https://tiss-api.voa.health/mcp
 ```
 
 ### Skill, plugins, Codex e Cursor
@@ -134,14 +134,14 @@ claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp
 
 ```sh
 npx skills add Voa-Health/tiss
-claude plugin marketplace add Voa-Health/tiss && claude plugin install voa-tiss@voa-tiss
+claude plugin marketplace add Voa-Health/tiss && claude plugin install tiss@tiss
 codex plugin marketplace add Voa-Health/tiss
 ```
 
 No Codex, adicione a `~/.codex/config.toml`:
 
 ```toml
-[mcp_servers.voa-tiss]
+[mcp_servers.tiss]
 url = "https://tiss-api.voa.health/mcp"
 ```
 
@@ -150,7 +150,7 @@ No Cursor, adicione ao `mcp.json`:
 ```json
 {
   "mcpServers": {
-    "voa-tiss": {
+    "tiss": {
       "url": "https://tiss-api.voa.health/mcp"
     }
   }
@@ -182,8 +182,8 @@ No Cursor, adicione ao `mcp.json`:
 Instale o extra do servidor e inicie a API local:
 
 ```sh
-pip install "voa-tiss[server]"
-python -m voa_tiss.server --host 127.0.0.1 --port 8000
+pip install "tiss[server]"
+python -m tiss.server --host 127.0.0.1 --port 8000
 ```
 
 Valide XML como JSON ou como corpo XML:
@@ -207,7 +207,7 @@ em `Authorization: Bearer`. Não há limite diário.
 
 ```sh
 curl https://tiss-api.voa.health/v1/validate \
-  -H "Authorization: Bearer $VOA_TISS_API_KEY" \
+  -H "Authorization: Bearer $TISS_API_KEY" \
   -H 'Content-Type: application/xml' \
   --data-binary @lote.xml
 ```
@@ -216,14 +216,14 @@ Chave inválida ou revogada retorna `401`, e a revogação vale em até 60 segun
 Chave sem o escopo da operação (`tiss:validate`, `tiss:build`, `tiss:sandbox`,
 `tiss:accounts`, `tiss:authorization` ou `tiss:rules`) retorna `403`. Cada
 chamada com chave entra no uso da organização, por operação e por chave.
-Auto-hospedado, sem `VOA_TISS_BACKEND_URL` e `VOA_TISS_SERVICE_SECRET`, o
+Auto-hospedado, sem `TISS_BACKEND_URL` e `TISS_SERVICE_SECRET`, o
 servidor não exige chave.
 
 O serviço não armazena nem registra payloads e não os usa para treinar modelos.
 Quando ativada por `POSTHOG_KEY`, a telemetria agregada contém operação,
 códigos de achados, registro ANS, versão TISS e data, sem e-mail. Envie
 `X-Voa-Telemetry: off` para desativá-la. A biblioteca local permanece offline e
-nunca envia telemetria. `VOA_TISS_API_KEY` é a variável que clientes HTTP locais
+nunca envia telemetria. `TISS_API_KEY` é a variável que clientes HTTP locais
 podem ler para enviar uma chave de acesso.
 
 O mapa de rejeição hospedado é uma coleta separada, opt-in e desligada por padrão.
@@ -233,10 +233,10 @@ o CNPJ permanece em claro, e o código do prestador na operadora tem preferênci
 A retenção é de 24 meses, e a organização pode desligar a coleta e apagar tudo no `/org`.
 A telemetria anônima permanece independente e não muda com esse aceite.
 
-Na CLI, `mapa --enviar` usa `VOA_TISS_KEY` e envia ao servidor público.
-`VOA_TISS_MAPA_URL` substitui a URL de envio (padrão:
+Na CLI, `mapa --enviar` usa `TISS_KEY` e envia ao servidor público.
+`TISS_MAPA_URL` substitui a URL de envio (padrão:
 `https://tiss-api.voa.health/v1/rejection-map/submit`). Sem
-`VOA_TISS_SEGREDO_PSEUDONIMO`, a CLI busca o segredo antes de agregar, via
+`TISS_SEGREDO_PSEUDONIMO`, a CLI busca o segredo antes de agregar, via
 `GET /v1/rejection-map/config`, no mesmo servidor e com Bearer sk_tiss_.
 O envio usa `POST /v1/rejection-map/submit`, com o mapa agregado como corpo JSON.
 
@@ -249,7 +249,7 @@ O envio usa `POST /v1/rejection-map/submit`, com o mapa agregado como corpo JSON
 <details>
 <summary>Ver detalhes</summary>
 
-Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
+Para renderizar a guia SP/SADT em PDF, instale `pip install "tiss[pdf]"`.
 
 | Símbolo | Uso |
 | --- | --- |
@@ -276,8 +276,8 @@ Para renderizar a guia SP/SADT em PDF, instale `pip install "voa-tiss[pdf]"`.
 | `json_schema` | Retorna o esquema JSON de um tipo público. |
 | `examples` | Disponibiliza exemplos sintéticos do pacote. |
 
-`voa_tiss.rede` baixa e verifica os dados na primeira consulta. Defina
-`VOA_TISS_REDE` com o caminho de um SQLite local para usar uma cópia própria.
+`tiss.rede` baixa e verifica os dados na primeira consulta. Defina
+`TISS_REDE` com o caminho de um SQLite local para usar uma cópia própria.
 
 </details>
 

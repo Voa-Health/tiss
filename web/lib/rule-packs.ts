@@ -17,10 +17,10 @@ type PackFile = Omit<RulePack, "operadora" | "razaoSocial">;
 type HealthplanIndex = { records: Record<string, { razao_social?: string }> };
 
 export function readRulePacks(): RulePack[] {
-  const directory = repositoryPath("src", "voa_tiss", "rules");
+  const directory = repositoryPath("src", "tiss", "rules");
   if (!fs.existsSync(directory)) return [];
   const healthplans = JSON.parse(
-    fs.readFileSync(repositoryPath("src", "voa_tiss", "operadoras", "_data", "healthplans.json"), "utf8"),
+    fs.readFileSync(repositoryPath("src", "tiss", "operadoras", "_data", "healthplans.json"), "utf8"),
   ) as HealthplanIndex;
   return fs
     .readdirSync(directory)

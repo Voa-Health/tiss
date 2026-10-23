@@ -177,7 +177,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
     <Flex vertical align="center" style={{ minHeight: "100vh", padding: token.paddingLG, background: token.colorBgLayout }}>
       <Flex vertical gap={token.marginLG} style={{ width: "100%", maxWidth: 720 }}>
         <Flex align="center" justify="space-between" gap={token.margin}>
-          <Link href="/" aria-label="voa-tiss, página inicial" style={{ display: "inline-flex" }}>
+          <Link href="/" aria-label="tiss, página inicial" style={{ display: "inline-flex" }}>
             <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
           </Link>
           <Flex gap={token.marginSM}>
@@ -187,7 +187,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
         </Flex>
         <Flex vertical gap={token.marginXXS}>
           <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading2 }}>
-            Sua organização no voa-tiss
+            Sua organização no tiss
           </Typography.Title>
           <Typography.Text type="secondary">
             Diga quem a organização é para receber o produto certo: prestadores validam e recorrem,

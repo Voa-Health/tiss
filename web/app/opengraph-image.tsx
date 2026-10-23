@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { light } from "@/tema/light";
 
-export const alt = "voa-tiss — validação de lotes TISS";
+export const alt = "tiss — validação de lotes TISS";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -28,7 +28,7 @@ export default function OpenGraphImage() {
         fontFamily: "sans-serif",
       }}
     >
-      <div style={{ color, fontSize: mediumFont }}>voa-tiss</div>
+      <div style={{ color, fontSize: mediumFont }}>tiss</div>
       <div style={{ fontSize: largeFont, fontWeight: 600, marginTop: sectionGap }}>
         Valide lotes TISS
       </div>

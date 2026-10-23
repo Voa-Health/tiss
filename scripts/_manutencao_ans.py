@@ -19,9 +19,9 @@ else:
     from _manutencao_common import read_csv, write_json
 
 ROOT = Path(__file__).resolve().parents[1]
-DOMAIN_OUT = ROOT / "src/voa_tiss/_data/domain.json"
-HEALTHPLANS_OUT = ROOT / "src/voa_tiss/_data/healthplans.json"
-GLOSA_OUT = ROOT / "src/voa_tiss/_data/glosas.json"
+DOMAIN_OUT = ROOT / "src/tiss/_data/domain.json"
+HEALTHPLANS_OUT = ROOT / "src/tiss/_data/healthplans.json"
+GLOSA_OUT = ROOT / "src/tiss/_data/glosas.json"
 GLOSA_DOMAIN = DOMAIN_OUT
 
 PDA_URL = (
@@ -395,7 +395,7 @@ def bake_glosas(archive: Path) -> dict[str, Any]:
                 "grupo": row["grupo"],
                 "orientacao": {
                     "texto": ORIENTACOES[row["grupo"]],
-                    "fonte": "voa-tiss",
+                    "fonte": "tiss",
                 },
                 "fonte": {
                     "titulo": SOURCE_TITLE,
