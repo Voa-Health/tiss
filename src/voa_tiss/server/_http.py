@@ -24,6 +24,7 @@ from ._keys import KEYS_URL, LIMITS, authenticate, bearer_key
 from ._mcp import create_mcp
 from ._ops import OPS, call
 from ._quota import seconds_until_reset
+from ._rejection_map_http import register_rejection_map
 from ._waitlist import register_waitlist
 
 _logger = logging.getLogger("voa_tiss.server")
@@ -267,6 +268,7 @@ def create_app() -> FastAPI:
     app.middleware("http")(_request_context)
     _register_ops(app)
     register_waitlist(app)
+    register_rejection_map(app)
     app.add_api_route("/v1/limits", _limits, methods=["GET"], name="limits")
     app.router.routes.append(Route("/mcp", _MCPApp(mcp_manager), methods=["GET", "POST", "DELETE"]))
     return app

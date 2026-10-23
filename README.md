@@ -226,6 +226,20 @@ códigos de achados, registro ANS, versão TISS e data, sem e-mail. Envie
 nunca envia telemetria. `VOA_TISS_API_KEY` é a variável que clientes HTTP locais
 podem ler para enviar uma chave de acesso.
 
+O mapa de rejeição hospedado é uma coleta separada, opt-in e desligada por padrão.
+Quando habilitado no `/org`, envia somente agregados por prestador, código, regra e mês.
+O CPF é pseudonimizado com HMAC e segredo próprio da organização antes de sair do cliente;
+o CNPJ permanece em claro, e o código do prestador na operadora tem preferência.
+A retenção é de 24 meses, e a organização pode desligar a coleta e apagar tudo no `/org`.
+A telemetria anônima permanece independente e não muda com esse aceite.
+
+Na CLI, `mapa --enviar` usa `VOA_TISS_KEY` e envia ao servidor público.
+`VOA_TISS_MAPA_URL` substitui a URL de envio (padrão:
+`https://tiss-api.voa.health/v1/rejection-map/submit`). Sem
+`VOA_TISS_SEGREDO_PSEUDONIMO`, a CLI busca o segredo antes de agregar, via
+`GET /v1/rejection-map/config`, no mesmo servidor e com Bearer sk_tiss_.
+O envio usa `POST /v1/rejection-map/submit`, com o mapa agregado como corpo JSON.
+
 </details>
 
 ## Referência
