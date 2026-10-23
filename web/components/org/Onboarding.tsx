@@ -297,6 +297,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 <Col xs={24} sm={10}>
                   <Form.Item name="cnes" label="CNES (opcional)">
                     <AutoComplete
+                      popupMatchSelectWidth={false}
                       options={situacao?.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
                     >
                       <Input allowClear inputMode="numeric" placeholder="0000000" />

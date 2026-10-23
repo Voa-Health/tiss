@@ -92,5 +92,5 @@ export function nomeSugerido(atual: string | undefined, resposta: RespostaDaBusc
 }
 
 export function rotuloDaUnidade(unidade: Unidade): string {
-  return [unidade.nome || "Unidade sem nome", unidade.municipio, `CNES ${unidade.cnes}`].filter(Boolean).join(" · ");
+  return [`CNES ${unidade.cnes}`, unidade.nome || "Unidade sem nome", unidade.municipio].filter(Boolean).join(" · ");
 }

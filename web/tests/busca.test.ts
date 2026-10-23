@@ -40,8 +40,8 @@ describe("estados da busca", () => {
     });
     assert.equal(resposta.unidades.length, 2);
     assert.match(situacaoDaBusca(resposta, "cnpj").mensagem, /2 unidades.*Escolha a sua/);
-    assert.equal(rotuloDaUnidade(resposta.unidades[0]), "Unidade Centro · Curitiba · CNES 1234567");
-    assert.equal(rotuloDaUnidade(resposta.unidades[1]), "Unidade sem nome · Londrina · CNES 7654321");
+    assert.equal(rotuloDaUnidade(resposta.unidades[0]), "CNES 1234567 · Unidade Centro · Curitiba");
+    assert.equal(rotuloDaUnidade(resposta.unidades[1]), "CNES 7654321 · Unidade sem nome · Londrina");
   });
 
   it("CNPJ fora do CNES segue sem aviso", () => {
