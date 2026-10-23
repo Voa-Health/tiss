@@ -13,6 +13,7 @@ import { OverviewSection } from "./OverviewSection";
 import { secaoValida, type PacoteDeRegras } from "./secoes";
 import { TissSection } from "./TissSection";
 import { UsageSection } from "./UsageSection";
+import { BillingSection } from "./BillingSection";
 
 type Props = {
   configurado: boolean;
@@ -61,6 +62,7 @@ function OrgConectada({ secao: pedida, painel, nova, pacotes }: Omit<Props, "con
     visao: <OverviewSection org={org} />,
     chaves: <KeysSection podeGerenciar={org.is_admin} />,
     uso: <UsageSection podeVer={org.is_admin || org.my_areas.includes("finance")} rotuloFinanceiro={financeiro} />,
+    cobranca: <BillingSection podeVer={org.is_admin || org.my_areas.includes("finance")} rotuloFinanceiro={financeiro} />,
     membros: <MembersSection podeGerenciar={org.is_admin} areasDaOrg={org.available_areas} />,
     tiss: <TissSection org={org} pacotes={pacotes} />,
   };

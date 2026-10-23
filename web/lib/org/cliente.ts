@@ -7,6 +7,7 @@ export class FalhaDoPedido extends Error {
     readonly status: number,
     message: string,
     readonly campos: Record<string, string> = {},
+    readonly code?: string,
   ) {
     super(message);
   }
@@ -31,7 +32,8 @@ function falha(status: number, corpo: unknown): FalhaDoPedido {
     if ("detail" in corpo) detalhe = primeiraMensagem(corpo.detail);
   }
   const mensagem = detalhe || Object.values(campos)[0] || "Não foi possível concluir. Tente de novo.";
-  return new FalhaDoPedido(status, mensagem, campos);
+  const code = typeof corpo === "object" && corpo !== null && "code" in corpo && typeof corpo.code === "string" ? corpo.code : undefined;
+  return new FalhaDoPedido(status, mensagem, campos, code);
 }
 
 /** Chama o BFF do painel; o navegador nunca vê o token Voa. */

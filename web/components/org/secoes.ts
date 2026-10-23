@@ -2,6 +2,7 @@ export const secoesDaOrg = [
   { key: "visao", label: "Visão geral", descricao: "Dados da organização, termos e atalhos do seu tipo." },
   { key: "chaves", label: "Chaves", descricao: "Chaves de acesso à API e ao MCP hospedados." },
   { key: "uso", label: "Uso", descricao: "Chamadas dos últimos 30 dias e custo estimado." },
+  { key: "cobranca", label: "Cobrança", descricao: "Cartão, faturas e custo estimado do mês." },
   { key: "membros", label: "Membros", descricao: "Quem faz parte da organização e de que Áreas cuida." },
   { key: "tiss", label: "Configurações TISS", descricao: "Registro ANS, padrão e limite de guias por lote." },
 ] as const;
@@ -13,6 +14,7 @@ export function secaoValida(valor?: string): SecaoDaOrg {
 }
 
 export function hrefDaOrg(secao: SecaoDaOrg, painel = false): string {
+  if (secao === "cobranca") return `/org/cobranca${painel ? "?painel=assistente" : ""}`;
   const params = new URLSearchParams({ secao });
   if (painel) params.set("painel", "assistente");
   return `/org?${params.toString()}`;
