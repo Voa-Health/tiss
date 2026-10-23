@@ -33,6 +33,8 @@ export type EstadoDaOrg = {
   subtype_display: string;
   cnpj: string;
   registro_ans: string;
+  cnes: string;
+  identity_source: "cnes" | "ans" | null;
   insurance_plan_id: string | null;
   tier: "login" | "verified";
   terms: {
@@ -129,6 +131,7 @@ export type Convite = {
 
 export type ConfiguracoesTiss = {
   registro_ans: string;
+  cnes: string;
   padrao: string;
   max_guias_por_lote: number | null;
 };

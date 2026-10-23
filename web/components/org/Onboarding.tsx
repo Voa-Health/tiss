@@ -14,7 +14,17 @@ import {
 import { Alert, Button, Card, Checkbox, Col, Flex, Form, Input, Row, Select, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
+import {
+  caminhoDaBusca,
+  chaveDaBusca,
+  lerResposta,
+  nomeSugerido,
+  rotuloDaUnidade,
+  situacaoDaBusca,
+  type ChaveDaBusca,
+  type Situacao,
+} from "@/lib/org/busca";
 import { abrirDeNovo, FalhaDoPedido, pedir } from "@/lib/org/cliente";
 import type { CatalogoDeOrgs, EstadoDaOrg, Subtipo } from "@/lib/org/tipos";
 import { sair } from "./OrgCasca";
@@ -26,10 +36,28 @@ type Campos = {
   subtype: string;
   cnpj: string;
   registro_ans?: string;
+  cnes?: string;
   aceite: boolean;
 };
 
 const NOVA = "nova";
+
+const EM_USO = /pertence a outra organização/i;
+
+const textoDaChave = (chave: ChaveDaBusca | null) => (chave ? `${chave.campo}:${chave.valor}` : "");
+
+function AvisoDaBusca({ situacao, nomeAtual, aoUsarNome }: { situacao: Situacao; nomeAtual?: string; aoUsarNome?: (nome: string) => void }) {
+  const podeTrocarNome = aoUsarNome && situacao.nomeOficial && situacao.nomeOficial !== nomeAtual?.trim();
+  return (
+    <Alert
+      type={situacao.alerta}
+      showIcon
+      title={situacao.mensagem}
+      action={podeTrocarNome ? <Button size="small" onClick={() => aoUsarNome(situacao.nomeOficial)}>Usar nome oficial</Button> : undefined}
+      style={{ marginBottom: "var(--ant-margin)" }}
+    />
+  );
+}
 
 const ICONE_DO_SUBTIPO: Record<string, ReactNode> = {
   hospital: <MedicineBoxOutlined />,
@@ -119,11 +147,38 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
   const [form] = Form.useForm<Campos>();
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [emUso, setEmUso] = useState<{ chave: string; mensagem: string } | null>(null);
+  const [busca, setBusca] = useState<{ chave: string; situacao: Situacao } | null>(null);
+  const ultimaBusca = useRef("");
   const prontas = catalogo.organizations.filter((org) => org.tiss_org && org.terms.accepted);
   const aceitaveis = catalogo.organizations.filter((org) => org.is_admin && !(org.tiss_org && org.terms.accepted));
   const destino = Form.useWatch("destino", form) ?? NOVA;
   const subtipo = Form.useWatch("subtype", form);
   const tipo = catalogo.subtypes.find((item) => item.code === subtipo)?.type;
+  const chaveAtual = textoDaChave(chaveDaBusca(tipo, Form.useWatch("cnpj", form), Form.useWatch("registro_ans", form)));
+  const situacao = busca && busca.chave === chaveAtual ? busca.situacao : null;
+
+  async function buscar() {
+    const tipoAtual = catalogo.subtypes.find((item) => item.code === form.getFieldValue("subtype"))?.type;
+    const chave = chaveDaBusca(tipoAtual, form.getFieldValue("cnpj"), form.getFieldValue("registro_ans"));
+    const texto = textoDaChave(chave);
+    if (!chave || texto === ultimaBusca.current) return;
+    ultimaBusca.current = texto;
+    form.setFieldValue("cnes", undefined);
+    let resposta;
+    try {
+      resposta = lerResposta(await pedir(caminhoDaBusca(chave)));
+    } catch (motivo) {
+      if (motivo instanceof FalhaDoPedido && motivo.status === 400) return;
+      resposta = lerResposta(null);
+    }
+    if (ultimaBusca.current !== texto) return;
+    setBusca({ chave: texto, situacao: situacaoDaBusca(resposta, chave.campo) });
+    if ((form.getFieldValue("destino") ?? NOVA) === NOVA) {
+      const nome = nomeSugerido(form.getFieldValue("name"), resposta);
+      if (nome) form.setFieldValue("name", nome);
+    }
+  }
 
   function preencher(id: string) {
     const org = aceitaveis.find((item) => item.id === id);
@@ -133,6 +188,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
       registro_ans: org.registro_ans || undefined,
       subtype: org.subtype || undefined,
     });
+    void buscar();
   }
 
   async function abrir(org: EstadoDaOrg) {
@@ -148,6 +204,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
     const nova = (valores.destino ?? NOVA) === NOVA;
     setEnviando(true);
     setErro("");
+    setEmUso(null);
     try {
       await pedir("tiss/organizations/", {
         method: "POST",
@@ -156,16 +213,19 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
           subtype: valores.subtype,
           cnpj: valores.cnpj,
           ...(tipo === "pay" ? { registro_ans: valores.registro_ans } : {}),
+          ...(situacao?.status === "ambigua" && valores.cnes ? { cnes: valores.cnes } : {}),
           accept_terms_version: catalogo.terms_version,
         },
       });
       abrirDeNovo();
     } catch (motivo) {
       if (motivo instanceof FalhaDoPedido) {
-        const nomes = new Set(["name", "subtype", "cnpj", "registro_ans"]);
+        const nomes = new Set(["name", "subtype", "cnpj", "registro_ans", "cnes"]);
         const campos = Object.entries(motivo.campos).filter(([campo]) => nomes.has(campo));
         form.setFields(campos.map(([name, mensagem]) => ({ name: name as keyof Campos, errors: [mensagem] })));
-        if (campos.length === 0) setErro(motivo.message);
+        const ocupado = [...campos.map(([, mensagem]) => mensagem), motivo.message].find((mensagem) => EM_USO.test(mensagem));
+        if (ocupado) setEmUso({ chave: chaveAtual, mensagem: ocupado });
+        else if (campos.length === 0) setErro(motivo.message);
       } else {
         setErro("Não foi possível criar a organização.");
       }
@@ -210,6 +270,15 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
         )}
         <Card title="Criar organização">
           {erro && <Alert type="error" showIcon title={erro} style={{ marginBottom: token.margin }} />}
+          {emUso && emUso.chave === chaveAtual && (
+            <Alert
+              type="warning"
+              showIcon
+              title={emUso.mensagem}
+              description="A empresa já tem uma organização no tiss. Peça a quem administra que convide você em Membros: o convite chega por e-mail e você entra com esta mesma conta, sem criar outra organização."
+              style={{ marginBottom: token.margin }}
+            />
+          )}
           <Form<Campos>
             form={form}
             layout="vertical"
@@ -238,7 +307,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
             <Row gutter={token.margin}>
               <Col xs={24} sm={tipo === "pay" ? 14 : 24}>
                 <Form.Item name="cnpj" label="CNPJ" rules={[{ required: true, whitespace: true, message: "Informe o CNPJ." }]}>
-                  <Input inputMode="numeric" placeholder="00.000.000/0000-00" />
+                  <Input inputMode="numeric" placeholder="00.000.000/0000-00" onBlur={() => void buscar()} />
                 </Form.Item>
               </Col>
               {tipo === "pay" && (
@@ -248,11 +317,28 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                     label="Registro ANS"
                     rules={[{ required: true, whitespace: true, message: "Informe o registro ANS." }]}
                   >
-                    <Input inputMode="numeric" placeholder="000000" />
+                    <Input inputMode="numeric" placeholder="000000" onBlur={() => void buscar()} />
                   </Form.Item>
                 </Col>
               )}
             </Row>
+            {situacao && (
+              <AvisoDaBusca
+                situacao={situacao}
+                nomeAtual={form.getFieldValue("name")}
+                aoUsarNome={destino === NOVA ? (nome) => form.setFieldValue("name", nome) : undefined}
+              />
+            )}
+            {situacao?.status === "ambigua" && situacao.unidades.length > 0 && (
+              <Form.Item name="cnes" label="Sua unidade" extra="Escolha o estabelecimento desta organização no CNES.">
+                <Select
+                  allowClear
+                  showSearch={{ optionFilterProp: "label" }}
+                  placeholder="Escolha a unidade"
+                  options={situacao.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
+                />
+              </Form.Item>
+            )}
             <Form.Item
               name="aceite"
               valuePropName="checked"

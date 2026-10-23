@@ -6,7 +6,7 @@ export const secoesDaOrg = [
   { key: "uso", label: "Uso", descricao: "Chamadas dos últimos 30 dias e custo estimado." },
   { key: "cobranca", label: "Cobrança", descricao: "Cartão, faturas e custo estimado do mês." },
   { key: "membros", label: "Membros", descricao: "Quem faz parte da organização e de que Áreas cuida." },
-  { key: "tiss", label: "Configurações TISS", descricao: "Registro ANS, padrão e limite de guias por lote." },
+  { key: "tiss", label: "Configurações TISS", descricao: "Registro ANS, CNES, padrão e limite de guias por lote." },
   { key: "regras", label: "Regras", descricao: "Pacote, validação, diferenças e versões publicadas." },
   { key: "auditoria", label: "Auditoria", descricao: "Pendências que aguardam decisão da Área Auditoria." },
   { key: "contas", label: "Contas", descricao: "Contas analisadas e decisões registradas." },

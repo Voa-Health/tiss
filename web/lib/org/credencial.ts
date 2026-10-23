@@ -41,6 +41,29 @@ export function apagarPar(resposta: NextResponse): void {
   resposta.cookies.delete(COOKIE_DA_ORG);
 }
 
+/** O cadastro não guarda o nome; ele vai ao perfil na confirmação do e-mail. */
+export const COOKIE_DO_NOME = "tiss_nome";
+
+export function gravarNome(resposta: NextResponse, nome: string): void {
+  resposta.cookies.set(COOKIE_DO_NOME, Buffer.from(nome).toString("base64url"), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: VALIDADE_S,
+  });
+}
+
+export function lerNome(pedido: NextRequest): string {
+  const valor = pedido.cookies.get(COOKIE_DO_NOME)?.value;
+  if (!valor) return "";
+  try {
+    return Buffer.from(valor, "base64url").toString("utf8").trim().slice(0, 255);
+  } catch {
+    return "";
+  }
+}
+
 /** Pedidos que mudam estado só valem vindos desta mesma origem. */
 export function mesmaOrigem(pedido: NextRequest): boolean {
   const origem = pedido.headers.get("origin");
