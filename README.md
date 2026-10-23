@@ -40,6 +40,8 @@ remoto para o seu agente de IA.
   <sub>O <a href="https://github.com/Voa-Health/tiss/blob/main/agents/faturista/README.md">agente faturista</a> usando só o MCP público: corrige dois erros do lote, envia à operadora simulada, lê as glosas e rascunha um recurso por guia, sem inventar evidência.</sub>
 </div>
 
+<!-- mcp-name: health.voa/tiss -->
+
 > [!TIP]
 > Usa Claude Code, Codex ou Cursor? Conecte o MCP e peça em português, por
 > exemplo "valide este lote e corrija o que der". Veja
@@ -140,38 +142,21 @@ que foi cobrado. Para testar sem operadora real, use a
 
 ## Conectar agentes
 
-O MCP remoto fica em `https://tiss-api.voa.health/mcp`. Agentes encontram as
-instruções de uso no [AGENTS.md](https://github.com/Voa-Health/tiss/blob/main/AGENTS.md) e na
-[skill tiss](https://github.com/Voa-Health/tiss/blob/main/skills/tiss/SKILL.md).
-
-```sh
-claude mcp add --transport http tiss https://tiss-api.voa.health/mcp
-```
-
-### MCP local
-
-Claude Code:
+O MCP local roda offline e mantém as guias na máquina:
 
 ```sh
 claude mcp add tiss -- uvx --from "tiss[mcp]" tiss mcp
 ```
 
-Codex (`~/.codex/config.toml`):
+Para usar o serviço remoto:
 
-```toml
-[mcp_servers.tiss]
-command = "uvx"
-args = ["--from", "tiss[mcp]", "tiss", "mcp"]
+```sh
+claude mcp add --transport http tiss https://tiss-api.voa.health/mcp
 ```
 
-Cursor (`.cursor/mcp.json`):
-
-```json
-{"mcpServers": {"tiss": {"command": "uvx", "args": ["--from", "tiss[mcp]", "tiss", "mcp"]}}}
-```
-
-O servidor local funciona sem chave e sem telemetria; os dados permanecem na
-máquina, exceto consultas de rede/D-TISS.
+Agentes encontram instruções em
+[AGENTS.md](https://github.com/Voa-Health/tiss/blob/main/AGENTS.md) e na
+[skill tiss](https://github.com/Voa-Health/tiss/blob/main/skills/tiss/SKILL.md).
 
 ### Skill, plugins, Codex e Cursor
 
@@ -184,14 +169,35 @@ claude plugin marketplace add Voa-Health/tiss && claude plugin install tiss@tiss
 codex plugin marketplace add Voa-Health/tiss
 ```
 
-No Codex, adicione a `~/.codex/config.toml`:
+No Codex, adicione a `~/.codex/config.toml` para o MCP local:
+
+```toml
+[mcp_servers.tiss]
+command = "uvx"
+args = ["--from", "tiss[mcp]", "tiss", "mcp"]
+```
+
+Para usar o serviço remoto:
 
 ```toml
 [mcp_servers.tiss]
 url = "https://tiss-api.voa.health/mcp"
 ```
 
-No Cursor, adicione ao `mcp.json`:
+No Cursor, adicione ao `mcp.json` para o MCP local:
+
+```json
+{
+  "mcpServers": {
+    "tiss": {
+      "command": "uvx",
+      "args": ["--from", "tiss[mcp]", "tiss", "mcp"]
+    }
+  }
+}
+```
+
+Para usar o serviço remoto:
 
 ```json
 {
@@ -204,6 +210,42 @@ No Cursor, adicione ao `mcp.json`:
 ```
 
 </details>
+
+### Privacidade
+
+CLI, MCP local, Action e hook rodam na sua máquina ou runner, sem chave, registro
+de uso ou telemetria. As chamadas de rede do pacote são feitas apenas por
+ferramentas `rede`/D-TISS, que baixam dados públicos, e `sandbox_*`, que usam a
+operadora simulada.
+
+## CI e pre-commit
+
+Use a Action para validar lotes no GitHub Actions:
+
+```yaml
+- uses: Voa-Health/tiss@v0
+  with:
+    paths: lotes/
+```
+
+O input opcional `operadora` aplica as regras locais dessa operadora. Para
+instalar o hook, adicione ao `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/Voa-Health/tiss
+    rev: v0.4.0
+    hooks:
+      - id: tiss-validate
+```
+
+### Sem assets opcionais
+
+A Action e o hook instalam apenas `tiss` (com `lxml`) e validam com os XSD 4.02.00
+e 4.03.00 incluídos no pacote. Não instalam `pdf` nem baixam dados de `rede`/D-TISS;
+fora o download do pacote, nada vai à rede. `operadora` aplica apenas regras
+incluídas no pacote. O hook seleciona arquivos `.xml`; limite-o com `files:` se
+o repositório tiver outros XML.
 
 ## Tutoriais
 

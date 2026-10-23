@@ -2,6 +2,9 @@
 
 ## 0.4.0
 
+- Action GitHub `Voa-Health/tiss@v0` para validar XML TISS.
+- Hook pre-commit `tiss-validate` para validar XML TISS.
+- MCP local no registro oficial, com pacote PyPI e transporte stdio em `server.json`.
 - A CLI `tiss` oferece `validate`, `fix`, `hash`, `glosa`, `tuss`, `operadora`,
   `mapa`, `mcp` e `serve`; os códigos de saída distinguem sucesso, achados e uso
   inválido, e `validate --format github` gera comandos do GitHub Actions.
