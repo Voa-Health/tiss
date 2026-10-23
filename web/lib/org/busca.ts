@@ -56,33 +56,31 @@ export function situacaoDaBusca(resposta: RespostaDaBusca, campo: ChaveDaBusca["
       return {
         ...base,
         alerta: "success",
-        mensagem: resposta.nome_oficial
-          ? `Encontramos ${resposta.nome_oficial} no ${registro}. A organização entra como verificada.`
-          : `Encontramos este ${chave} no ${registro}. A organização entra como verificada.`,
+        mensagem: resposta.nome_oficial ? `${resposta.nome_oficial}, verificada pelo ${registro}.` : `Verificada pelo ${registro}.`,
       };
     case "ambigua":
       return {
         ...base,
         alerta: "info",
-        mensagem: `Este ${chave} tem ${resposta.unidades.length} unidades no ${registro}. Escolha a sua para verificar a organização; se pular, ela entra como não verificada e você escolhe depois em Configurações.`,
+        mensagem: `${resposta.unidades.length} unidades no ${registro} para este CNPJ. Escolha a sua no campo CNES.`,
       };
     case "ausente":
       return {
         ...base,
-        alerta: "warning",
-        mensagem: `Não achamos este ${chave} no ${registro}. Confira os números; se estiverem certos, siga: a organização entra como não verificada e funciona normalmente.`,
+        alerta: "info",
+        mensagem: campo === "registro_ans" ? `${chave} não encontrado na ANS. Confira o número.` : "",
       };
     case "fora-do-registro":
       return {
         ...base,
         alerta: "info",
-        mensagem: `Este ${chave} não é do tipo que o ${registro} cadastra. A organização entra como não verificada e funciona normalmente.`,
+        mensagem: "",
       };
     default:
       return {
         ...base,
         alerta: "info",
-        mensagem: `Não conseguimos consultar o ${registro} agora. Siga com o cadastro; verificamos a organização depois.`,
+        mensagem: `${registro} indisponível agora; verificamos depois.`,
       };
   }
 }
@@ -94,5 +92,5 @@ export function nomeSugerido(atual: string | undefined, resposta: RespostaDaBusc
 }
 
 export function rotuloDaUnidade(unidade: Unidade): string {
-  return [unidade.nome || "Unidade sem nome", unidade.municipio, `CNES ${unidade.cnes}`].filter(Boolean).join(" · ");
+  return [`CNES ${unidade.cnes}`, unidade.nome || "Unidade sem nome", unidade.municipio].filter(Boolean).join(" · ");
 }

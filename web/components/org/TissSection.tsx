@@ -99,11 +99,10 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
         )}
         {!operadora && (
           <>
-            {unidades.situacao && <Alert type={unidades.situacao.alerta} showIcon title={unidades.situacao.mensagem} style={{ marginBottom: token.margin }} />}
+            {unidades.situacao?.mensagem && <Alert type={unidades.situacao.alerta} showIcon title={unidades.situacao.mensagem} style={{ marginBottom: token.margin }} />}
             <Form.Item
               name="cnes"
               label="CNES"
-              extra="O estabelecimento desta organização no CNES. Com ele, a organização é verificada."
             >
               {unidades.situacao?.unidades.length ? (
                 <Select

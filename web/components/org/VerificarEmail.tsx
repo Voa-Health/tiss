@@ -40,7 +40,7 @@ export function VerificarEmail({ chave }: { chave: string }) {
           ) : (
             <Flex vertical align="center" gap={token.margin} style={{ padding: token.paddingLG }}>
               <Spin size="large" />
-              <Typography.Text>Confirmando o e-mail e abrindo sua conta…</Typography.Text>
+              <Typography.Text>Confirmando…</Typography.Text>
             </Flex>
           )}
         </Flex>

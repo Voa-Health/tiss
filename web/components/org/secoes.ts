@@ -1,16 +1,16 @@
 import type { EstadoDaOrg } from "@/lib/org/tipos";
 
 export const secoesDaOrg = [
-  { key: "visao", label: "Visão geral", descricao: "Dados da organização, termos e atalhos do seu tipo." },
-  { key: "chaves", label: "Chaves", descricao: "Chaves de acesso à API e ao MCP hospedados." },
-  { key: "uso", label: "Uso", descricao: "Chamadas dos últimos 30 dias e custo estimado." },
-  { key: "cobranca", label: "Cobrança", descricao: "Cartão, faturas e custo estimado do mês." },
-  { key: "membros", label: "Membros", descricao: "Quem faz parte da organização e de que Áreas cuida." },
-  { key: "tiss", label: "Configurações TISS", descricao: "Registro ANS, CNES, padrão e limite de guias por lote." },
-  { key: "regras", label: "Regras", descricao: "Pacote, validação, diferenças e versões publicadas." },
-  { key: "auditoria", label: "Auditoria", descricao: "Pendências que aguardam decisão da Área Auditoria." },
-  { key: "contas", label: "Contas", descricao: "Contas analisadas e decisões registradas." },
-  { key: "mapa", label: "Mapa de rejeição", descricao: "Achados por prestador e mês, com coleta opcional." },
+  { key: "visao", label: "Visão geral" },
+  { key: "chaves", label: "Chaves" },
+  { key: "uso", label: "Uso" },
+  { key: "cobranca", label: "Cobrança" },
+  { key: "membros", label: "Membros" },
+  { key: "tiss", label: "Configurações TISS" },
+  { key: "regras", label: "Regras" },
+  { key: "auditoria", label: "Auditoria" },
+  { key: "contas", label: "Contas" },
+  { key: "mapa", label: "Mapa de rejeição" },
 ] as const;
 
 export type SecaoDaOrg = (typeof secoesDaOrg)[number]["key"];

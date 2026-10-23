@@ -60,7 +60,7 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
             {
               key: "tipo",
               label: "Tipo",
-              children: `${ROTULO_DO_TIPO[org.type] ?? org.type_display}${org.subtype_display ? ` · ${org.subtype_display}` : ""}`,
+              children: [ROTULO_DO_TIPO[org.type] ?? org.type_display, org.subtype_display].filter((rotulo, i, lista) => rotulo && lista.indexOf(rotulo) === i).join(" · "),
             },
             {
               key: "cnpj",

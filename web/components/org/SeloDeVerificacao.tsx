@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircleFilled, ExclamationCircleOutlined } from "@ant-design/icons";
+import { CheckCircleFilled } from "@ant-design/icons";
 import { Tag, Tooltip } from "antd";
 import type { EstadoDaOrg } from "@/lib/org/tipos";
 
@@ -11,12 +11,10 @@ export function SeloDeVerificacao({ org }: { org: Pick<EstadoDaOrg, "tier" | "id
     const fonte = org.identity_source ? FONTE[org.identity_source] : "";
     return <Tag color="success" icon={<CheckCircleFilled />}>{fonte ? `Verificada ${fonte}` : "Verificada"}</Tag>;
   }
-  const como = org.type === "pay"
-    ? "Confira o Registro ANS em Configurações TISS."
-    : "Confira o CNPJ e escolha a unidade do CNES em Configurações TISS.";
+  const como = org.type === "pay" ? "Confira o Registro ANS" : "Informe o CNES";
   return (
-    <Tooltip title={`Ainda não batemos esta organização com o registro oficial. Tudo funciona igual; ${como}`}>
-      <Tag icon={<ExclamationCircleOutlined />}>Não verificada</Tag>
+    <Tooltip title={`${como} em Configurações TISS para verificar.`}>
+      <Tag>Não verificada</Tag>
     </Tooltip>
   );
 }

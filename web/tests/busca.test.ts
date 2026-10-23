@@ -40,24 +40,29 @@ describe("estados da busca", () => {
     });
     assert.equal(resposta.unidades.length, 2);
     assert.match(situacaoDaBusca(resposta, "cnpj").mensagem, /2 unidades.*Escolha a sua/);
-    assert.equal(rotuloDaUnidade(resposta.unidades[0]), "Unidade Centro · Curitiba · CNES 1234567");
-    assert.equal(rotuloDaUnidade(resposta.unidades[1]), "Unidade sem nome · Londrina · CNES 7654321");
+    assert.equal(rotuloDaUnidade(resposta.unidades[0]), "CNES 1234567 · Unidade Centro · Curitiba");
+    assert.equal(rotuloDaUnidade(resposta.unidades[1]), "CNES 7654321 · Unidade sem nome · Londrina");
   });
 
-  it("ausente e fora-do-registro seguem como não verificada", () => {
+  it("CNPJ fora do CNES segue sem aviso", () => {
     for (const status of ["ausente", "fora-do-registro"]) {
       const situacao = situacaoDaBusca(lerResposta({ status, nome_oficial: "" }), "cnpj");
       assert.equal(situacao.status, status);
-      assert.match(situacao.mensagem, /não verificada/);
+      assert.equal(situacao.mensagem, "");
       assert.deepEqual(situacao.unidades, []);
     }
+  });
+
+  it("Registro ANS ausente pede para conferir o número", () => {
+    const situacao = situacaoDaBusca(lerResposta({ status: "ausente", nome_oficial: "" }), "registro_ans");
+    assert.match(situacao.mensagem, /não encontrado na ANS/);
   });
 
   it("indisponivel e resposta fora do contrato não travam o cadastro", () => {
     for (const corpo of [{ status: "indisponivel", nome_oficial: "" }, { status: "outro" }, null, "x"]) {
       const situacao = situacaoDaBusca(lerResposta(corpo), "registro_ans");
       assert.equal(situacao.status, "indisponivel");
-      assert.match(situacao.mensagem, /verificamos a organização depois/);
+      assert.match(situacao.mensagem, /verificamos depois/);
     }
   });
 

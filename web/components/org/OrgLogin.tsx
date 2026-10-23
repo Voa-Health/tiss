@@ -42,13 +42,12 @@ function FormularioDeCadastro({ aoCriar }: { aoCriar: (email: string) => void })
       <Form.Item name="nome" label="Seu nome" rules={[{ required: true, whitespace: true, message: "Informe seu nome." }]}>
         <Input autoComplete="name" />
       </Form.Item>
-      <Form.Item name="email" label="E-mail de trabalho" rules={[{ required: true, type: "email", message: "Informe um e-mail válido." }]}>
+      <Form.Item name="email" label="E-mail" rules={[{ required: true, type: "email", message: "Informe um e-mail válido." }]}>
         <Input type="email" autoComplete="email" />
       </Form.Item>
       <Form.Item
         name="senha"
         label="Senha"
-        extra="Pelo menos 8 caracteres, sem ser só números."
         rules={[{ required: true, min: 8, message: "A senha precisa de pelo menos 8 caracteres." }]}
       >
         <Input.Password autoComplete="new-password" />
@@ -62,7 +61,7 @@ function FormularioDeCadastro({ aoCriar }: { aoCriar: (email: string) => void })
           Li e aceito os <a href="/termos" target="_blank" rel="noreferrer">termos de uso</a>
         </Checkbox>
       </Form.Item>
-      <Button type="primary" htmlType="submit" block loading={enviando}>Criar conta</Button>
+      <Button type="primary" htmlType="submit" block loading={enviando}>Cadastrar</Button>
     </Form>
   );
 }
@@ -90,14 +89,9 @@ export function OrgLogin({ aviso }: { aviso?: string }) {
   if (criada) {
     conteudo = (
       <Flex vertical gap={token.margin}>
-        <Alert
-          type="success"
-          showIcon
-          title="Confira seu e-mail"
-          description={`Mandamos um link para ${criada}. Ao abrir, a conta é confirmada e você segue direto para cadastrar a organização.`}
-        />
+        <Alert type="success" showIcon title={`Enviamos o link para ${criada}.`} />
         <ReenviarEmail email={criada} />
-        <Button type="link" onClick={() => { setCriada(""); setModo("entrar"); }}>Já confirmei, quero entrar</Button>
+        <Button type="link" onClick={() => { setCriada(""); setModo("entrar"); }}>Já confirmei</Button>
       </Flex>
     );
   } else if (modo === "criar") {
@@ -135,28 +129,18 @@ export function OrgLogin({ aviso }: { aviso?: string }) {
           <Link href="/" aria-label="tiss, página inicial" style={{ display: "inline-flex" }}>
             <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
           </Link>
-          <Flex vertical gap={token.marginXXS}>
-            <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading3 }}>
-              Organização tiss
-            </Typography.Title>
-            <Typography.Text type="secondary">
-              {modo === "criar"
-                ? "Crie uma conta Voa para cadastrar sua organização. Não precisa de plano."
-                : "Entre com a conta Voa para gerenciar chaves, uso e membros da sua organização."}
-            </Typography.Text>
-          </Flex>
+          <Typography.Title level={1} style={{ margin: 0, fontSize: token.fontSizeHeading3 }}>
+            {criada ? "Confira seu e-mail" : modo === "criar" ? "Cadastre-se" : "Entrar"}
+          </Typography.Title>
           {!criada && (
             <Segmented<Modo>
               block
               value={modo}
               onChange={setModo}
-              options={[{ label: "Entrar", value: "entrar" }, { label: "Criar conta", value: "criar" }]}
+              options={[{ label: "Entrar", value: "entrar" }, { label: "Cadastre-se", value: "criar" }]}
             />
           )}
           {conteudo}
-          <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-            A senha vai direto para a Voa; este site não a guarda.
-          </Typography.Text>
         </Flex>
       </Card>
     </Flex>
