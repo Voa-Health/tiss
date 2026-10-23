@@ -92,7 +92,7 @@ export const cliFeature: AudienceItem = {
   linkLabel: "Ver tutorial",
   demo: terminalDemo(
     "cli",
-    "Terminal: tiss validate aprova o lote sem erros, tiss hash confere o epílogo, tiss tuss consulta um procedimento e tiss glosa explica um código.",
+    "Terminal: tiss validate aprova o lote e confere o hash, o código do procedimento sai do lote para tiss tuss e o código da glosa sai do demonstrativo para tiss glosa.",
   ),
 };
 
