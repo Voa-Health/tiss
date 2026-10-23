@@ -62,7 +62,7 @@ export function situacaoDaBusca(resposta: RespostaDaBusca, campo: ChaveDaBusca["
       return {
         ...base,
         alerta: "info",
-        mensagem: `${resposta.unidades.length} unidades no ${registro}. Escolha a sua para verificar.`,
+        mensagem: `${resposta.unidades.length} unidades no ${registro} para este CNPJ. Escolha a sua no campo CNES.`,
       };
     case "ausente":
       return {

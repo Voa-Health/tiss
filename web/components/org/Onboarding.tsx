@@ -11,7 +11,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Card, Checkbox, Col, Flex, Form, Input, Row, Select, theme, Typography } from "antd";
+import { Alert, AutoComplete, Button, Card, Checkbox, Col, Flex, Form, Input, Row, Select, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { type ReactNode, useRef, useState } from "react";
@@ -164,7 +164,6 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
     const texto = textoDaChave(chave);
     if (!chave || texto === ultimaBusca.current) return;
     ultimaBusca.current = texto;
-    form.setFieldValue("cnes", undefined);
     let resposta;
     try {
       resposta = lerResposta(await pedir(caminhoDaBusca(chave)));
@@ -213,7 +212,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
           subtype: valores.subtype,
           cnpj: valores.cnpj,
           ...(tipo === "pay" ? { registro_ans: valores.registro_ans } : {}),
-          ...(situacao?.status === "ambigua" && valores.cnes ? { cnes: valores.cnes } : {}),
+          ...(tipo !== "pay" && valores.cnes?.trim() ? { cnes: valores.cnes.trim() } : {}),
           accept_terms_version: catalogo.terms_version,
         },
       });
@@ -294,7 +293,18 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
               <PapelDaOrg subtipos={catalogo.subtypes} />
             </Form.Item>
             <Row gutter={token.margin}>
-              <Col xs={24} sm={tipo === "pay" ? 14 : 24}>
+              {tipo !== "pay" && (
+                <Col xs={24} sm={10}>
+                  <Form.Item name="cnes" label="CNES (opcional)">
+                    <AutoComplete
+                      options={situacao?.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
+                    >
+                      <Input allowClear inputMode="numeric" placeholder="0000000" />
+                    </AutoComplete>
+                  </Form.Item>
+                </Col>
+              )}
+              <Col xs={24} sm={14}>
                 <Form.Item name="cnpj" label="CNPJ" rules={[{ required: true, whitespace: true, message: "Informe o CNPJ." }]}>
                   <Input inputMode="numeric" placeholder="00.000.000/0000-00" onBlur={() => void buscar()} />
                 </Form.Item>
@@ -317,16 +327,6 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 nomeAtual={form.getFieldValue("name")}
                 aoUsarNome={destino === NOVA ? (nome) => form.setFieldValue("name", nome) : undefined}
               />
-            )}
-            {situacao?.status === "ambigua" && situacao.unidades.length > 0 && (
-              <Form.Item name="cnes" label="Unidade no CNES">
-                <Select
-                  allowClear
-                  showSearch={{ optionFilterProp: "label" }}
-                  placeholder="Escolha a unidade"
-                  options={situacao.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
-                />
-              </Form.Item>
             )}
             {destino === NOVA && (
               <Form.Item name="name" label="Nome" rules={[{ required: true, whitespace: true, message: "Informe o nome." }]}>
