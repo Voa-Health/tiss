@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from voa_tiss import dominio, operadoras
+from voa_tiss import dominio, operadoras, referencia
 from voa_tiss._glosa import glosa
 
 from ._ops_schemas import Op, _array, _object, _string
@@ -44,6 +44,41 @@ _GLOSA_OUTPUT = _object(
     ["codigo", "descricao", "grupo", "fonte", "orientacao"],
     additional=True,
 )
+_REFERENCIA_VALUE = _object({}, additional=True)
+_REFERENCIA_OUTPUT = _object(
+    {
+        "referencia": {"oneOf": [_REFERENCIA_VALUE, {"type": "null"}]},
+        "semestre": _string(),
+        "fonte": _string(),
+        "atualizado_em": _string(),
+        "aviso": {"type": ["string", "null"]},
+        "minimo_n": {"type": "integer"},
+    },
+    ["referencia", "semestre", "fonte", "atualizado_em", "aviso", "minimo_n"],
+)
+
+
+def _referencia(value: dict[str, Any]) -> dict[str, Any]:
+    result = referencia.valor(
+        value["codigo"],
+        uf=value["uf"],
+        tabela=value.get("tabela", "22"),
+        modalidade=value.get("modalidade"),
+        porte=value.get("porte"),
+        semestre=value.get("semestre"),
+    )
+    resolved = result["semestre"] if result else value.get("semestre")
+    if resolved is None:
+        available = referencia.semestres()
+        resolved = available[-1] if available else ""
+    return {
+        "referencia": result,
+        "semestre": resolved,
+        "fonte": referencia.fonte(),
+        "atualizado_em": referencia.atualizado_em(),
+        "aviso": referencia.aviso(resolved),
+        "minimo_n": 30,
+    }
 
 
 def _explain_glosa(value: dict[str, Any]) -> dict[str, Any]:
@@ -135,6 +170,31 @@ CONSULTA_OPS = (
         1000,
         method="GET",
         path="/v1/operadoras",
+    ),
+    Op(
+        "referencia",
+        _referencia,
+        _object(
+            {
+                "codigo": {"type": "string", "pattern": "^[0-9]{1,10}$"},
+                "uf": {"type": "string", "pattern": "^[A-Za-z]{2}$"},
+                "tabela": {"type": "string", "pattern": "^[0-9]{2}$"},
+                "modalidade": _string(),
+                "porte": _string(),
+                "semestre": {"type": "string", "pattern": "^[0-9]{4}-[12]$"},
+            },
+            ["codigo", "uf"],
+        ),
+        _REFERENCIA_OUTPUT,
+        (
+            "Consulta valores unitários de referência D-TISS da ANS por procedimento TUSS. "
+            "Quando usar: para comparar valores informados por UF, modalidade, porte e semestre. "
+            "Quando não usar: para glosa ou preço contratado de uma operadora; use as ferramentas "
+            "de operadoras."
+        ),
+        1000,
+        method="GET",
+        path="/v1/referencia",
     ),
 )
 

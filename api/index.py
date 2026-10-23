@@ -7,8 +7,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 rede = Path(__file__).resolve().parents[1] / "src/voa_tiss/rede/_data/rede.sqlite"
+referencia = Path(__file__).resolve().parents[1] / "src/voa_tiss/referencia/_data/referencia.sqlite"
 if rede.is_file():
     os.environ.setdefault("VOA_TISS_REDE", str(rede))
+else:
+    os.environ.setdefault("XDG_CACHE_HOME", "/tmp")
+if referencia.is_file():
+    os.environ.setdefault("VOA_TISS_REFERENCIA", str(referencia))
 else:
     os.environ.setdefault("XDG_CACHE_HOME", "/tmp")
 

@@ -70,6 +70,43 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
 - Tamanho distribuído: `indicadores.json` 490,139 bytes.
 - A geração local usa `uv run python scripts/manutencao.py ans-glosa`.
 
+## Valores unitários D-TISS por TUSS
+
+- Fonte: ANS, dados abertos do Padrão TISS:
+  https://dadosabertos.ans.gov.br/FTP/PDA/TISS/
+- Recorte: semestre `2025-2`, de julho a dezembro de 2025, 27 UFs e as categorias
+  ambulatorial e hospitalar. Foram lidos 648 arquivos ZIP CONS e DET; os arquivos REM
+  não foram usados.
+- Data de referência dos arquivos: 2026-05-23.
+- Licença e atribuição: CC BY 4.0, atribuição à ANS.
+- SHA-256 combinado dos 648 arquivos ZIP: `46bb6dc9f2f13bfbc2005bd29141f723ee19eec1229c179ee1009acc67305541`.
+- Contagens: 397.561.447 eventos, 889.926.454 itens lidos, 788.878.578 itens usados,
+  466.933 células publicadas, 1.196.043 células suprimidas e 44.071 blocos de pagamento
+  direto publicados.
+- Carga: 1 h 26 min 04 s, com oito trabalhadores; pico de memória residente de 9.502.872
+  KiB (aproximadamente 9,06 GiB). Foram baixados 11.359.335.950 bytes.
+- Arquivo SQLite: `dist/referencia/referencia-dtiss.sqlite`, 40.095.744 bytes;
+  SHA-256 `34bf6d5a72e65157f5782814b9075094bacdfdf6915af35dc588b2c022a59411`.
+- Arquivo distribuível: `dist/referencia/referencia-dtiss.sqlite.gz`, 8.579.298 bytes;
+  SHA-256 `723917c24cedfd7eb370d3ea2f76a5d9abc401cb89391decfd661d55d510ff14`.
+- URL prevista no manifesto: https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz.
+  O arquivo foi mantido localmente e não foi enviado ao S3.
+- Cada valor unitário é o valor total informado dividido pela quantidade, arredondado
+  para centavos por `ROUND_HALF_UP`. As células usam código TUSS, tabela, UF, modalidade,
+  porte e semestre; a UF vem de `UF_PRESTADOR` no CONS, com fallback para a UF do arquivo
+  quando ausente. Cada item também contribui para as marginais de modalidade ou porte,
+  sem agregação nacional. `pacote_pct` usa todos os itens antes da exclusão de atípicos.
+- A mediana, p25 e p75 usam quantis tipo 7 sobre a distribuição ponderada após as
+  exclusões. Só são publicadas células com pelo menos 30 itens. O limite para exclusão
+  de valores atípicos é Q3 + 3×IQR, calculado sobre a célula completa; `n` é anterior à
+  exclusão e a fração excluída é informada.
+- Os valores pagos consideram somente pagamentos positivos feitos diretamente ao
+  fornecedor, não o total pago pela operadora; têm contagem mínima e exclusão de atípicos
+  próprias.
+- Aviso para 2025: “A ANS informa valores atípicos em VL_ITEM_EVENTO_INFORMADO em 2025;
+  os itens acima de Q3 + 3×IQR de cada célula foram excluídos e a fração excluída é
+  publicada.”
+
 ## Hash do epílogo
 
 O hash do epílogo é o MD5 do conteúdo da mensagem, sem o epílogo, codificado em

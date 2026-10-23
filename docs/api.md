@@ -24,6 +24,7 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
 | `glosa_explain` | `GET /v1/glosas/{codigo}` | `glosa_explain` | Explica um código da Tabela 38 da ANS. Quando usar: ao interpretar uma glosa recebida. Quando não usar: para validar ou corrigir o lote. | 1000 |
 | `dominio` | `GET /v1/dominio` | `tiss_dominio` | Consulta tabelas e códigos de domínio TISS. Quando usar: para localizar um código ou termo de domínio. Quando não usar: para buscar procedimentos TUSS; use tuss_search. | 1000 |
 | `operadora_lookup` | `GET /v1/operadoras` | `operadora_lookup` | Busca operadoras ativas pelo nome, registro, CNPJ ou localidade. Quando usar: para localizar uma operadora na base pública. Quando não usar: para consultar vínculos hospitalares; use tiss_rede. | 1000 |
+| `referencia` | `GET /v1/referencia` | `tiss_referencia` | Consulta valores unitários de referência D-TISS da ANS por procedimento TUSS. Quando usar: para comparar valores informados por UF, modalidade, porte e semestre. Quando não usar: para glosa ou preço contratado de uma operadora; use as ferramentas de operadoras. | 1000 |
 | `autorizacao_build` | `POST /v1/autorizacoes/build` | `tiss_autorizacao_build` | Gera XML TISS 4.03.00 para solicitação ou resposta de autorização SP/SADT. | 1500 |
 | `autorizacao_parse` | `POST /v1/autorizacoes/parse` | `tiss_autorizacao_parse` | Interpreta solicitações e respostas de autorização SP/SADT. | 1500 |
 | `autorizacao_check` | `POST /v1/autorizacoes/check` | `tiss_autorizacao_check` | Valida uma solicitação SP/SADT e retorna uma decisão explicável. | 2000 |
@@ -41,7 +42,7 @@ no uso da organização, por operação e por chave.
 
 | Escopo | Operações |
 | --- | --- |
-| `qualquer chave` | `tuss_lookup`, `tuss_search`, `rede`, `operadora_rede`, `operadora_perfil`, `glosa_explain`, `dominio`, `operadora_lookup`, `buscar_docs` |
+| `qualquer chave` | `tuss_lookup`, `tuss_search`, `rede`, `operadora_rede`, `operadora_perfil`, `glosa_explain`, `dominio`, `operadora_lookup`, `referencia`, `buscar_docs` |
 | `tiss:accounts` | `parse_demonstrativo`, `plan_reconciliation` |
 | `tiss:authorization` | `autorizacao_build`, `autorizacao_parse`, `autorizacao_check` |
 | `tiss:build` | `build`, `apply_fixes` |
