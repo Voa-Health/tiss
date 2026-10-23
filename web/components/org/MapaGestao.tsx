@@ -48,8 +48,9 @@ export function MapaGestao({ ligada, recarregar }: { ligada: boolean; recarregar
         <Typography.Text strong>Cadastro de nomes</Typography.Text>
         <Typography.Paragraph style={{ margin: 0 }}>
           CSV com cabeçalho <Typography.Text code>prestador,nome</Typography.Text> ou JSON
-          com uma lista de objetos com esses campos. Use codigo:…, CNPJ com ou sem máscara,
-          ou CPF. O CPF é pseudonimizado neste navegador antes do envio. Até 5000 nomes.
+          com uma lista de objetos com esses campos. Cadastre nomes para código na operadora
+          (codigo:…) e CPF; opcionalmente, informe CNPJ com ou sem máscara para sobrescrever
+          o nome oficial do CNES. O CPF é pseudonimizado neste navegador antes do envio. Até 5000 nomes.
         </Typography.Paragraph>
         <Upload accept=".csv,.json" showUploadList={false} disabled={!ligada || ocupado}
           beforeUpload={(arquivo) => { void importar(arquivo); return false; }}>

@@ -1,4 +1,4 @@
-export type PrestadorDoMapa = { id: string; nome: string | null; nome_origem: "cadastro" | "contas" | null };
+export type PrestadorDoMapa = { id: string; nome: string | null; nome_origem: "cadastro" | "cnes" | "contas" | null };
 export type LinhaDoMapa = {
   prestador: PrestadorDoMapa; mes: string | null; codigo: string;
   glosa: string | null; rule_id: string | null; guias: number; valor_afetado: string;

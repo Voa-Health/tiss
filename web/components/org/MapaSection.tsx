@@ -61,7 +61,7 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
   const colunas: TableColumnsType<LinhaDaMatriz> = [
     { title: "Prestador", key: "prestador", fixed: "left", width: 260, render: (_, linha) => <Flex vertical>
       <Typography.Text strong>{rotuloDoPrestador(linha.prestador)}</Typography.Text>
-      {linha.prestador.nome_origem && <Typography.Text type="secondary" style={{ fontSize: 12 }}>Nome: {linha.prestador.nome_origem}</Typography.Text>}
+      {linha.prestador.nome_origem && <Typography.Text type="secondary" style={{ fontSize: 12 }}>Nome: {linha.prestador.nome_origem === "cnes" ? "CNES" : linha.prestador.nome_origem}</Typography.Text>}
     </Flex> },
     ...matriz.meses.map((mes) => ({ title: mes, key: mes, width: 190, render: (_: unknown, linha: LinhaDaMatriz) => <Celula valor={linha.meses[mes]} /> })),
     { title: "Total", key: "total", width: 190, render: (_, linha) => <Celula valor={linha.total} /> },
