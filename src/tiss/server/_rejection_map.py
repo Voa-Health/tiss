@@ -13,7 +13,7 @@ import jsonschema
 import tiss
 
 from ._context import CallContext
-from ._keys import CACHE_SECONDS, KEY_PREFIX
+from ._keys import CACHE_SECONDS, KEY_PREFIXES
 from ._ops_schemas import Op
 from ._published_rules import with_published_rules
 from ._service import configured, post
@@ -27,7 +27,7 @@ _VALIDATOR = jsonschema.Draft202012Validator(tiss.json_schema("rejection_map"))
 
 def secret(key: str) -> str | None:
     """Consulte o opt-in por chave, com cache de 60 segundos."""
-    if not configured() or not key.startswith(KEY_PREFIX):
+    if not configured() or not key.startswith(KEY_PREFIXES):
         return None
     digest = hashlib.sha256(key.encode()).hexdigest()
     now = _now()
@@ -88,7 +88,7 @@ def collect(operation: str, entrada: dict[str, Any], ctx: CallContext) -> None:
     """Agende coleta limitada em memória, sem aguardar rede ou agregação."""
     if operation not in {"validate", "audit"} or ctx.access is None:
         return
-    if not ctx.key.startswith(KEY_PREFIX) or not configured() or not _slots.acquire(False):
+    if not ctx.key.startswith(KEY_PREFIXES) or not configured() or not _slots.acquire(False):
         return
     try:
         threading.Thread(

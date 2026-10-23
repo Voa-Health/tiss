@@ -54,7 +54,8 @@ _REMOTE_INSTRUCTIONS = (
     "Payloads não são armazenados nem registrados, e não são usados para treinar modelos. "
     "A telemetria agregada contém operação, códigos, registro ANS, versão TISS e data; "
     "X-Voa-Telemetry: off desativa a coleta. "
-    "Sem chave, só as tools tiss_sandbox_*. As demais exigem a chave sk_tiss_ da organização em "
+    "Sem chave, só as tools tiss_sandbox_*. As demais exigem a chave sk_voa_ da organização, "
+    "que vale para os produtos da Voa, em "
     "Authorization: Bearer, criada em https://tiss-api.voa.health/org. "
     "Não há limite diário."
 )
