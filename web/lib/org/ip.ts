@@ -7,7 +7,7 @@ export function ipDoCliente(cabecalhos: Headers): string | null {
   return isIP(ip) ? ip : null;
 }
 
-/** A Vercel do backend também reescreve `x-forwarded-for`; o segredo prova que o IP veio do site. */
+/** O backend só confia neste IP com o segredo de serviço do site. */
 export function cabecalhosDoCliente(cabecalhos: Headers): Record<string, string> {
   const ip = ipDoCliente(cabecalhos);
   const segredo = process.env.TISS_SERVICE_SECRET?.trim();
