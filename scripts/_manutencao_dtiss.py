@@ -22,6 +22,8 @@ from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
+from voa_tiss.referencia import _UFS
+
 if __package__:
     from ._manutencao_common import write_json
     from ._manutencao_dtiss_estatisticas import distribuicao, publicar
@@ -35,35 +37,7 @@ MANIFEST_PATH = ROOT / "src/voa_tiss/referencia/_data/manifesto.json"
 OUT = ROOT / "dist/referencia"
 ASSET = "referencia-dtiss.sqlite"
 ASSET_URL = "https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/{data}/{nome}"
-UFS = (
-    "AC",
-    "AL",
-    "AM",
-    "AP",
-    "BA",
-    "CE",
-    "DF",
-    "ES",
-    "GO",
-    "MA",
-    "MG",
-    "MS",
-    "MT",
-    "PA",
-    "PB",
-    "PE",
-    "PI",
-    "P" + "R",
-    "RJ",
-    "RN",
-    "RO",
-    "RR",
-    "RS",
-    "SC",
-    "SE",
-    "SP",
-    "TO",
-)
+EXCLUDED_TABLES = frozenset({"00", "90", "98"})
 _SCHEMA = """
 CREATE TABLE meta (chave TEXT PRIMARY KEY, valor TEXT NOT NULL) WITHOUT ROWID;
 CREATE TABLE celula (
@@ -253,19 +227,19 @@ def _arquivo_dados(
                 codigo = row[columns["CD_PROCEDIMENTO"]].strip()
                 tabela = row[columns["CD_TABELA_REFERENCIA"]].strip()
                 if (
-                    tabela == "00"
+                    tabela in EXCLUDED_TABLES
                     or row[columns["IND_TABELA_PROPRIA"]].strip() == "1"
                     or not (codigo.isascii() and codigo.isdigit())
                 ):
                     continue
+                pacote = row[columns["IND_PACOTE"]].strip() == "1"
                 valor = _cents(
                     row[columns["VL_ITEM_EVENTO_INFORMADO"]],
                     row[columns["QT_ITEM_EVENTO_INFORMADO"]],
                 )
-                if valor is None:
-                    continue
                 quantidade = _decimal(row[columns["QT_ITEM_EVENTO_INFORMADO"]])
-                if quantidade is None or quantidade <= 0:
+                precificado = valor is not None and quantidade is not None and quantidade > 0
+                if not pacote and not precificado:
                     continue
                 modalidade, porte, uf_prestador = event
                 modalidade = modalidade.strip()
@@ -278,19 +252,27 @@ def _arquivo_dados(
                         (codigo, tabela, uf_prestador, "", ""),
                     )
                 )
-                pacote = row[columns["IND_PACOTE"]].strip() == "1"
-                pago_total = _decimal(row[columns["VL_ITEM_PAGO_FORNECEDOR"]])
-                pago = _cents(
-                    row[columns["VL_ITEM_PAGO_FORNECEDOR"]],
-                    row[columns["QT_ITEM_EVENTO_INFORMADO"]],
+                pago_total = (
+                    _decimal(row[columns["VL_ITEM_PAGO_FORNECEDOR"]]) if precificado else None
+                )
+                pago = (
+                    _cents(
+                        row[columns["VL_ITEM_PAGO_FORNECEDOR"]],
+                        row[columns["QT_ITEM_EVENTO_INFORMADO"]],
+                    )
+                    if precificado
+                    else None
                 )
                 for key in cells_for_item:
                     cell = distribuicao(cells, key)
-                    cell[0] += 1
+                    cell[0] += int(precificado)
                     cell[1] += int(pacote)
-                    cell[2][valor] += 1
+                    if precificado:
+                        if not pacote:
+                            cell[2] += 1
+                        cell[3][valor] += 1
                     if pago_total is not None and pago_total > 0 and pago is not None:
-                        cell[3][pago] += 1
+                        cell[4][pago] += 1
                 usados += 1
     return cells, eventos, lidos, usados
 
@@ -341,12 +323,13 @@ def _processar_uf(job: tuple[str, list[str], str | None, int]) -> dict[str, Any]
                     )
                     for key, value in cell_data.items():
                         target = acumulados[semestre].setdefault(
-                            (*key, semestre), [0, 0, Counter(), Counter()]
+                            (*key, semestre), [0, 0, 0, Counter(), Counter()]
                         )
                         target[0] += value[0]
                         target[1] += value[1]
-                        target[2].update(value[2])
+                        target[2] += value[2]
                         target[3].update(value[3])
+                        target[4].update(value[4])
                     counts[semestre][0] += eventos
                     counts[semestre][1] += lidos
                     counts[semestre][2] += usados
@@ -470,8 +453,8 @@ def bake_dtiss(  # noqa: PLR0913
     for semestre in semestres:
         _validar_semestre(semestre)
     semestres = sorted(set(semestres))
-    selecionadas = sorted(set(ufs or UFS))
-    invalidas = sorted(set(selecionadas) - set(UFS))
+    selecionadas = sorted(set(ufs or _UFS))
+    invalidas = sorted(set(selecionadas) - set(_UFS))
     if invalidas:
         raise ValueError(f"UF inválida: {', '.join(invalidas)}")
     if particoes < 1:

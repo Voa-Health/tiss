@@ -8,7 +8,7 @@ from typing import Any
 
 
 def distribuicao(cells: dict[tuple[str, ...], list[Any]], key: tuple[str, ...]) -> list[Any]:
-    return cells.setdefault(key, [0, 0, Counter(), Counter()])
+    return cells.setdefault(key, [0, 0, 0, Counter(), Counter()])
 
 
 def quantile(values: Counter[int], q: Decimal) -> Decimal:
@@ -59,7 +59,7 @@ def publicar(
 ) -> tuple[list[dict[str, Any]], int, int]:
     results = []
     suppressed = paid_published = 0
-    for key, (n, pacotes, informed, paid) in sorted(cells.items()):
+    for key, (n, pacotes, precificados_nao_pacote, informed, paid) in sorted(cells.items()):
         if n < 30:
             suppressed += 1
             continue
@@ -76,7 +76,7 @@ def publicar(
                 "porte": key[4],
                 "semestre": semestre,
                 "n": n,
-                "pacote_pct": percent(pacotes, n),
+                "pacote_pct": percent(pacotes, precificados_nao_pacote + pacotes),
                 "inf_mediana": info["mediana"],
                 "inf_p25": info["p25"],
                 "inf_p75": info["p75"],

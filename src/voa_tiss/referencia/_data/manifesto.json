@@ -1,12 +1,12 @@
 {
   "atualizado_em": "2026-05-23",
   "contagens": {
-    "blocos_pago_publicados": 44071,
-    "celulas_publicadas": 466933,
-    "celulas_suprimidas": 1196043,
+    "blocos_pago_publicados": 44067,
+    "celulas_publicadas": 360760,
+    "celulas_suprimidas": 864127,
     "eventos": 397561447,
     "itens_lidos": 889926454,
-    "itens_usados": 788878578
+    "itens_usados": 823498908
   },
   "fonte_sha256": "46bb6dc9f2f13bfbc2005bd29141f723ee19eec1229c179ee1009acc67305541",
   "fontes": {
@@ -662,9 +662,9 @@
   "semestres": [
     "2025-2"
   ],
-  "sha256": "723917c24cedfd7eb370d3ea2f76a5d9abc401cb89391decfd661d55d510ff14",
-  "sqlite_sha256": "34bf6d5a72e65157f5782814b9075094bacdfdf6915af35dc588b2c022a59411",
-  "sqlite_tamanho": 40095744,
-  "tamanho": 8579298,
+  "sha256": "7770324310f98c66c2f4a6047a87a0b2af3b343b636c960b0ff87cee949469c8",
+  "sqlite_sha256": "8428574b028b0bd5bfea4d4e0b239b71b0fd72bd7e81a527ddacfc840d5d1818",
+  "sqlite_tamanho": 32579584,
+  "tamanho": 7474196,
   "url": "https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz"
 }

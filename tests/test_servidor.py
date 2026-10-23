@@ -120,6 +120,8 @@ def _rows(semester: str) -> tuple[list[tuple[str, ...]], list[tuple[str, ...]]]:
                     "1" if current < 2 else "0",
                 )
             )
+        for _ in range(3):
+            add(("123", "Consulta", "Médio", "", "", "", "1"))
         add(("123", "Exame", "Médio", "10,00", "1", "5,00", "0"))
         for _ in range(30):
             add(("124", "Consulta", "Pequeno", "20,00", "2", "", "0"))
@@ -127,6 +129,10 @@ def _rows(semester: str) -> tuple[list[tuple[str, ...]], list[tuple[str, ...]]]:
             add(("999", "Consulta", "Pequeno", "7,00", "1", "", "0"))
         add(("777", "Consulta", "Médio", "2,00", "1", "", "0"))
         det[-1] = (*det[-1][:2], "00", *det[-1][3:])
+        add(("782", "Consulta", "Médio", "2,00", "1", "", "0"))
+        det[-1] = (*det[-1][:2], "90", *det[-1][3:])
+        add(("783", "Consulta", "Médio", "2,00", "1", "", "0"))
+        det[-1] = (*det[-1][:2], "98", *det[-1][3:])
         add(("778", "Consulta", "Médio", "2,00", "1", "", "0"))
         det[-1] = (*det[-1][:7], "1")
         add(("779", "Consulta", "Médio", "", "1", "", "0"))
@@ -213,9 +219,9 @@ def _referencia_pipeline_e_interfaces(
     assert manifest["semestres"] == ["2024-1", "2025-2"]
     assert len(manifest["fontes"]) == 48
     assert manifest["contagens"] == {
-        "eventos": 127,
-        "itens_lidos": 127,
-        "itens_usados": 121,
+        "eventos": 132,
+        "itens_lidos": 132,
+        "itens_usados": 124,
         "celulas_publicadas": 12,
         "celulas_suprimidas": 6,
         "blocos_pago_publicados": 2,
@@ -266,7 +272,7 @@ def _referencia_pipeline_e_interfaces(
         "p75": 10.0,
         "excluidos_pct": 3.23,
     }
-    assert expected["pacote_pct"] == 6.45
+    assert expected["pacote_pct"] == 14.71
     assert expected["valor_unitario_pago_fornecedor"] is None
     marginal = referencia.valor("123", uf="SP", porte="Médio")
     assert marginal is not None
@@ -274,6 +280,7 @@ def _referencia_pipeline_e_interfaces(
     assert marginal["valor_unitario_pago_fornecedor"]["n"] == 30
     assert marginal["valor_unitario_pago_fornecedor"]["mediana"] == 5.0
     assert marginal["valor_unitario_pago_fornecedor"]["excluidos_pct"] == 3.33
+    assert marginal["pacote_pct"] == 14.29
     assert referencia.valor("124", uf="SP")["valor_unitario_informado"]["mediana"] == 10.0
     assert referencia.valor("999", uf="SP") is None
     with sqlite3.connect(banco) as connection:
@@ -282,6 +289,8 @@ def _referencia_pipeline_e_interfaces(
         )
     assert referencia.valor("780", uf="SP") is None
     assert referencia.valor("781", uf="SP") is None
+    assert referencia.valor("782", uf="SP") is None
+    assert referencia.valor("783", uf="SP") is None
     previous = referencia.valor("456", uf="SP", semestre="2024-1")
     assert previous is not None and previous["aviso"] is None
     with pytest.raises(ValueError, match="Valores válidos"):

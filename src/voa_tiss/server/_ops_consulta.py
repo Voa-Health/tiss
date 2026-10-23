@@ -44,10 +44,9 @@ _GLOSA_OUTPUT = _object(
     ["codigo", "descricao", "grupo", "fonte", "orientacao"],
     additional=True,
 )
-_REFERENCIA_VALUE = _object({}, additional=True)
 _REFERENCIA_OUTPUT = _object(
     {
-        "referencia": {"oneOf": [_REFERENCIA_VALUE, {"type": "null"}]},
+        "referencia": {"type": ["object", "null"], "additionalProperties": True},
         "semestre": _string(),
         "fonte": _string(),
         "atualizado_em": _string(),

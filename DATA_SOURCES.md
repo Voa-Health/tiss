@@ -79,27 +79,37 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
   não foram usados.
 - Data de referência dos arquivos: 2026-05-23.
 - Licença e atribuição: CC BY 4.0, atribuição à ANS.
+- Conforme o [dicionário de variáveis da ANS](https://dadosabertos.ans.gov.br/FTP/PDA/TISS/DICIONARIO/Dicionario_de_variaveis_a_partir_de_2023.ods),
+  foram excluídas as tabelas 00, 90 e 98 e as linhas com `IND_TABELA_PROPRIA = "1"`.
+  Os códigos das tabelas 90 e 98 representam pacotes criados pelas operadoras; as linhas
+  componentes usam códigos TUSS, mas não informam quantidade nem valor.
 - SHA-256 combinado dos 648 arquivos ZIP: `46bb6dc9f2f13bfbc2005bd29141f723ee19eec1229c179ee1009acc67305541`.
-- Contagens: 397.561.447 eventos, 889.926.454 itens lidos, 788.878.578 itens usados,
-  466.933 células publicadas, 1.196.043 células suprimidas e 44.071 blocos de pagamento
+- Contagens: 397.561.447 eventos, 889.926.454 itens lidos, 823.498.908 itens usados,
+  360.760 células publicadas, 864.127 células suprimidas e 44.067 blocos de pagamento
   direto publicados.
-- Carga: 1 h 26 min 04 s, com oito trabalhadores; pico de memória residente de 9.502.872
-  KiB (aproximadamente 9,06 GiB). Foram baixados 11.359.335.950 bytes.
-- Arquivo SQLite: `dist/referencia/referencia-dtiss.sqlite`, 40.095.744 bytes;
-  SHA-256 `34bf6d5a72e65157f5782814b9075094bacdfdf6915af35dc588b2c022a59411`.
-- Arquivo distribuível: `dist/referencia/referencia-dtiss.sqlite.gz`, 8.579.298 bytes;
-  SHA-256 `723917c24cedfd7eb370d3ea2f76a5d9abc401cb89391decfd661d55d510ff14`.
-- URL prevista no manifesto: https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz.
-  O arquivo foi mantido localmente e não foi enviado ao S3.
+- Carga: 1 h 25 min 50 s, com oito trabalhadores; pico de memória residente de 9.177.872
+  KiB (aproximadamente 8,75 GiB). Foram baixados 11.359.335.950 bytes.
+- Arquivo SQLite `referencia-dtiss.sqlite`: 32.579.584 bytes;
+  SHA-256 `8428574b028b0bd5bfea4d4e0b239b71b0fd72bd7e81a527ddacfc840d5d1818`.
+- Arquivo distribuível `referencia-dtiss.sqlite.gz`: 7.474.196 bytes;
+  SHA-256 `7770324310f98c66c2f4a6047a87a0b2af3b343b636c960b0ff87cee949469c8`.
+- URL do manifesto: https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/2026-05-23/referencia-dtiss.sqlite.gz.
 - Cada valor unitário é o valor total informado dividido pela quantidade, arredondado
   para centavos por `ROUND_HALF_UP`. As células usam código TUSS, tabela, UF, modalidade,
   porte e semestre; a UF vem de `UF_PRESTADOR` no CONS, com fallback para a UF do arquivo
   quando ausente. Cada item também contribui para as marginais de modalidade ou porte,
-  sem agregação nacional. `pacote_pct` usa todos os itens antes da exclusão de atípicos.
+  sem agregação nacional. `pacote_pct = 100 × linhas aceitas com IND_PACOTE = "1" /
+  (itens precificados não pacote + linhas aceitas com IND_PACOTE = "1")`. Linhas de
+  pacote com preço contam também em `n`; componentes sem quantidade ou valor só contam
+  para `pacote_pct`, não para `n` nem para as distribuições. Os filtros de tabela, código
+  e `IND_TABELA_PROPRIA` também se aplicam às linhas de pacote. A supressão continua
+  baseada em `n >= 30`.
 - A mediana, p25 e p75 usam quantis tipo 7 sobre a distribuição ponderada após as
   exclusões. Só são publicadas células com pelo menos 30 itens. O limite para exclusão
   de valores atípicos é Q3 + 3×IQR, calculado sobre a célula completa; `n` é anterior à
   exclusão e a fração excluída é informada.
+- Quando p25 = p75 (IQR = 0), o limite é Q3; qualquer valor acima dele é excluído. Isso
+  ocorre em UFs com amostras pequenas; por exemplo, 25% dos itens do código 40301630 em AC.
 - Os valores pagos consideram somente pagamentos positivos feitos diretamente ao
   fornecedor, não o total pago pela operadora; têm contagem mínima e exclusão de atípicos
   próprias.
