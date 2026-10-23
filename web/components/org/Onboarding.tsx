@@ -1,11 +1,22 @@
 "use client";
 
-import { Alert, Button, Card, Checkbox, Flex, Form, Input, Radio, Select, theme, Typography } from "antd";
+import {
+  AppstoreOutlined,
+  CodeOutlined,
+  ExperimentOutlined,
+  GlobalOutlined,
+  MedicineBoxOutlined,
+  SafetyCertificateOutlined,
+  ShopOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { Alert, Button, Card, Checkbox, Col, Flex, Form, Input, Row, Select, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { abrirDeNovo, FalhaDoPedido, pedir } from "@/lib/org/cliente";
-import type { CatalogoDeOrgs, EstadoDaOrg } from "@/lib/org/tipos";
+import type { CatalogoDeOrgs, EstadoDaOrg, Subtipo } from "@/lib/org/tipos";
 import { sair } from "./OrgCasca";
 import { ROTULO_DO_TIPO } from "./secoes";
 
@@ -19,6 +30,88 @@ type Campos = {
 };
 
 const NOVA = "nova";
+
+const ICONE_DO_SUBTIPO: Record<string, ReactNode> = {
+  hospital: <MedicineBoxOutlined />,
+  clinica: <ShopOutlined />,
+  laboratorio: <ExperimentOutlined />,
+  profissional: <UserOutlined />,
+  operadora: <SafetyCertificateOutlined />,
+  autogestao: <TeamOutlined />,
+  healthtech_consultoria: <CodeOutlined />,
+  sus_governo: <GlobalOutlined />,
+};
+
+const GRUPOS = [
+  { rotulo: "Prestador", tipos: ["prov"] },
+  { rotulo: "Operadora", tipos: ["pay"] },
+  { rotulo: "Outros", tipos: ["bus", "govt"] },
+];
+
+function PapelDaOrg({
+  subtipos,
+  value,
+  onChange,
+}: {
+  subtipos: Subtipo[];
+  value?: string;
+  onChange?: (valor: string) => void;
+}) {
+  const { token } = theme.useToken();
+  const conhecidos = new Set(GRUPOS.flatMap((grupo) => grupo.tipos));
+  const grupos = [
+    ...GRUPOS.map((grupo) => ({ ...grupo, itens: subtipos.filter((item) => grupo.tipos.includes(item.type)) })),
+    { rotulo: "Outros tipos", tipos: [], itens: subtipos.filter((item) => !conhecidos.has(item.type)) },
+  ].filter((grupo) => grupo.itens.length > 0);
+
+  return (
+    <Flex vertical gap={token.margin} role="radiogroup" aria-label="Quem é a organização">
+      {grupos.map((grupo) => (
+        <Flex key={grupo.rotulo} vertical gap={token.marginXS}>
+          <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+            {grupo.rotulo}
+          </Typography.Text>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: token.marginXS }}>
+            {grupo.itens.map((item) => {
+              const marcado = value === item.code;
+              return (
+                <button
+                  key={item.code}
+                  type="button"
+                  role="radio"
+                  aria-checked={marcado}
+                  onClick={() => onChange?.(item.code)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: token.marginXS,
+                    minWidth: 0,
+                    minHeight: 48,
+                    padding: `${token.paddingXS}px ${token.paddingSM}px`,
+                    border: `1px solid ${marcado ? token.colorPrimary : token.colorBorder}`,
+                    borderRadius: token.borderRadiusLG,
+                    background: marcado ? token.colorPrimaryBg : token.colorBgContainer,
+                    boxShadow: marcado ? `0 0 0 1px ${token.colorPrimary}` : "none",
+                    color: marcado ? token.colorPrimaryText : token.colorText,
+                    cursor: "pointer",
+                    font: "inherit",
+                    textAlign: "left",
+                    transition: `border-color ${token.motionDurationMid}, background ${token.motionDurationMid}`,
+                  }}
+                >
+                  <span style={{ fontSize: token.fontSizeLG, color: marcado ? token.colorPrimary : token.colorTextSecondary }}>
+                    {ICONE_DO_SUBTIPO[item.code] ?? <AppstoreOutlined />}
+                  </span>
+                  <span style={{ minWidth: 0, lineHeight: token.lineHeightSM }}>{item.display.replaceAll("/", "/\u200b")}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Flex>
+      ))}
+    </Flex>
+  );
+}
 
 export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs; podeVoltar: boolean }) {
   const { token } = theme.useToken();
@@ -133,40 +226,32 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                 />
               </Form.Item>
             )}
+            <Form.Item name="subtype" label="Quem é a organização" rules={[{ required: true, message: "Escolha o tipo." }]}>
+              <PapelDaOrg subtipos={catalogo.subtypes} />
+            </Form.Item>
             {destino === NOVA && (
               <Form.Item name="name" label="Nome" rules={[{ required: true, whitespace: true, message: "Informe o nome." }]}>
-                <Input autoComplete="organization" />
+                <Input autoComplete="organization" placeholder="Como a organização é conhecida" />
               </Form.Item>
             )}
-            <Form.Item name="subtype" label="Quem é a organização" rules={[{ required: true, message: "Escolha o tipo." }]}>
-              <Radio.Group style={{ width: "100%" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: token.marginSM }}>
-                  {catalogo.subtypes.map((item) => (
-                    <Radio key={item.code} value={item.code}>
-                      <Flex vertical>
-                        <Typography.Text>{item.display}</Typography.Text>
-                        <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-                          {ROTULO_DO_TIPO[item.type] ?? item.type}
-                        </Typography.Text>
-                      </Flex>
-                    </Radio>
-                  ))}
-                </div>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item name="cnpj" label="CNPJ" rules={[{ required: true, whitespace: true, message: "Informe o CNPJ." }]}>
-              <Input inputMode="numeric" placeholder="00.000.000/0000-00" />
-            </Form.Item>
-            {tipo === "pay" && (
-              <Form.Item
-                name="registro_ans"
-                label="Registro ANS"
-                extra="Obrigatório para operadoras e autogestões."
-                rules={[{ required: true, whitespace: true, message: "Informe o registro ANS." }]}
-              >
-                <Input inputMode="numeric" placeholder="000000" />
-              </Form.Item>
-            )}
+            <Row gutter={token.margin}>
+              <Col xs={24} sm={tipo === "pay" ? 14 : 24}>
+                <Form.Item name="cnpj" label="CNPJ" rules={[{ required: true, whitespace: true, message: "Informe o CNPJ." }]}>
+                  <Input inputMode="numeric" placeholder="00.000.000/0000-00" />
+                </Form.Item>
+              </Col>
+              {tipo === "pay" && (
+                <Col xs={24} sm={10}>
+                  <Form.Item
+                    name="registro_ans"
+                    label="Registro ANS"
+                    rules={[{ required: true, whitespace: true, message: "Informe o registro ANS." }]}
+                  >
+                    <Input inputMode="numeric" placeholder="000000" />
+                  </Form.Item>
+                </Col>
+              )}
+            </Row>
             <Form.Item
               name="aceite"
               valuePropName="checked"
