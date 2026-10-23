@@ -11,7 +11,7 @@ import { abrirDeNovo, FalhaDoPedido, pedir } from "@/lib/org/cliente";
 import type { EstadoDaOrg } from "@/lib/org/tipos";
 import { site } from "@/lib/site";
 import { PainelDoAssistente } from "./PainelDoAssistente";
-import { hrefDaOrg, ROTULO_DO_TIPO, secoesDaOrg, type SecaoDaOrg } from "./secoes";
+import { hrefDaOrg, ROTULO_DO_TIPO, secoesDaOrg, secoesVisiveisDaOrg, type SecaoDaOrg } from "./secoes";
 
 const LARGURA = 1440;
 const LARGURA_DO_PAINEL = 416;
@@ -77,7 +77,8 @@ export function OrgCasca({
   const router = useRouter();
   const operadora = org.type === "pay";
   const painel = operadora && painelAberto;
-  const atual = secoesDaOrg.find((item) => item.key === secao) ?? secoesDaOrg[0];
+  const secoes = secoesVisiveisDaOrg(org);
+  const atual = secoes.find((item) => item.key === secao) ?? secoesDaOrg[0];
   const alternarPainel = (aberto: boolean) => router.replace(hrefDaOrg(secao, aberto), { scroll: false });
   const borda = `${token.lineWidth}px ${token.lineType} ${token.colorBorderSecondary}`;
 
@@ -129,7 +130,7 @@ export function OrgCasca({
           gap={token.marginLG}
           style={{ maxWidth: LARGURA, margin: "0 auto", padding: `0 ${token.paddingLG}px`, overflowX: "auto", scrollbarWidth: "none" }}
         >
-          {secoesDaOrg.map((item) => {
+          {secoes.map((item) => {
             const ativa = item.key === secao;
             return (
               <Link
@@ -189,7 +190,7 @@ export function OrgCasca({
               borderInlineStart: borda,
             }}
           >
-            <PainelDoAssistente aoFechar={() => alternarPainel(false)} />
+            <PainelDoAssistente aoFechar={() => alternarPainel(false)} podeDecidir={org.my_areas.includes("auditoria")} />
           </aside>
         )}
       </div>
@@ -203,7 +204,7 @@ export function OrgCasca({
           styles={{ body: { padding: 0 } }}
         >
           <div id="painel-do-assistente">
-            <PainelDoAssistente aoFechar={() => alternarPainel(false)} />
+            <PainelDoAssistente aoFechar={() => alternarPainel(false)} podeDecidir={org.my_areas.includes("auditoria")} />
           </div>
         </Drawer>
       )}

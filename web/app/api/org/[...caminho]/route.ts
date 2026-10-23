@@ -43,4 +43,4 @@ async function repassar(pedido: NextRequest, { params }: Contexto) {
   return resposta;
 }
 
-export { repassar as GET, repassar as POST, repassar as PATCH, repassar as DELETE };
+export { repassar as GET, repassar as POST, repassar as PUT, repassar as PATCH, repassar as DELETE };

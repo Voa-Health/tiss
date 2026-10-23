@@ -11,6 +11,9 @@ import { OrgCasca } from "./OrgCasca";
 import { OrgLogin } from "./OrgLogin";
 import { OverviewSection } from "./OverviewSection";
 import { secaoValida, type PacoteDeRegras } from "./secoes";
+import { RulesSection } from "./RulesSection";
+import { AuditoriaSection } from "./AuditoriaSection";
+import { ContasSection } from "./ContasSection";
 import { TissSection } from "./TissSection";
 import { UsageSection } from "./UsageSection";
 import { BillingSection } from "./BillingSection";
@@ -55,7 +58,7 @@ function OrgConectada({ secao: pedida, painel, nova, pacotes }: Omit<Props, "con
   const pronta = Boolean(org?.tiss_org && org.terms.accepted);
   if (!org || !pronta || nova) return <Onboarding catalogo={catalogo.dados} podeVoltar={pronta} />;
 
-  const secao = secaoValida(pedida);
+  const secao = secaoValida(pedida, org);
   const outras = catalogo.dados.organizations.filter((item) => item.id !== org.id && item.tiss_org && item.terms.accepted);
   const financeiro = org.available_areas.find((area) => area.value === "finance")?.label ?? "Financeiro";
   const secoes: Record<typeof secao, ReactNode> = {
@@ -65,6 +68,9 @@ function OrgConectada({ secao: pedida, painel, nova, pacotes }: Omit<Props, "con
     cobranca: <BillingSection podeVer={org.is_admin || org.my_areas.includes("finance")} rotuloFinanceiro={financeiro} />,
     membros: <MembersSection podeGerenciar={org.is_admin} areasDaOrg={org.available_areas} />,
     tiss: <TissSection org={org} pacotes={pacotes} />,
+    regras: <RulesSection org={org} />,
+    auditoria: <AuditoriaSection org={org} />,
+    contas: <ContasSection org={org} />,
   };
 
   return (

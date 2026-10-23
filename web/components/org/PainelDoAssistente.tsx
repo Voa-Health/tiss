@@ -1,9 +1,16 @@
 "use client";
 
-import { CloseOutlined, RobotOutlined } from "@ant-design/icons";
-import { Button, Empty, Flex, theme, Typography } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
+import { Button, Flex, theme, Typography } from "antd";
+import { Conversa } from "./Conversa";
 
-export function PainelDoAssistente({ aoFechar }: { aoFechar: () => void }) {
+export function PainelDoAssistente({
+  aoFechar,
+  podeDecidir,
+}: {
+  aoFechar: () => void;
+  podeDecidir: boolean;
+}) {
   const { token } = theme.useToken();
   return (
     <Flex vertical gap={token.margin} style={{ height: "100%", padding: token.paddingLG }}>
@@ -13,9 +20,7 @@ export function PainelDoAssistente({ aoFechar }: { aoFechar: () => void }) {
             Assistente de regras
           </Typography.Title>
           <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-            Descreva as regras de envio ou anexe o manual da operadora. O assistente propõe o
-            pacote com a fonte de cada regra, valida e mostra o diff. Publicar é sempre uma
-            decisão da Administração.
+            O Assistente propõe alterações. A Auditoria decide; apenas a Administração publica.
           </Typography.Text>
         </Flex>
         <Button
@@ -26,11 +31,8 @@ export function PainelDoAssistente({ aoFechar }: { aoFechar: () => void }) {
           data-fechar-assistente
         />
       </Flex>
-      <Flex flex={1} align="center" justify="center" style={{ minHeight: token.sizeXXL * 6 }}>
-        <Empty
-          image={<RobotOutlined style={{ fontSize: token.sizeXXL, color: token.colorTextQuaternary }} />}
-          description="A conversa sobre as regras desta operadora aparece aqui."
-        />
+      <Flex flex={1} vertical style={{ minHeight: 0 }}>
+        <Conversa podeDecidir={podeDecidir} />
       </Flex>
     </Flex>
   );

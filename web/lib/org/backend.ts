@@ -34,7 +34,7 @@ export async function postarSemToken(caminho: string, corpo: unknown): Promise<{
   }
 }
 
-async function renovar(par: ParDeTokens): Promise<ParDeTokens | null> {
+export async function renovar(par: ParDeTokens): Promise<ParDeTokens | null> {
   const { status, corpo } = await postarSemToken("/auth/token/refresh/", { refresh: par.refresh });
   if (status !== 200 || typeof corpo !== "object" || corpo === null) return null;
   const { access, refresh } = corpo as { access?: unknown; refresh?: unknown };
