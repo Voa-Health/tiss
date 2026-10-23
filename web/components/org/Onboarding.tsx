@@ -51,13 +51,14 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
   }
 
   async function enviar(valores: Campos) {
+    const nova = (valores.destino ?? NOVA) === NOVA;
     setEnviando(true);
     setErro("");
     try {
       await pedir("tiss/organizations/", {
         method: "POST",
         body: {
-          ...(valores.destino === NOVA ? { name: valores.name } : { organization_id: valores.destino }),
+          ...(nova ? { name: valores.name } : { organization_id: valores.destino }),
           subtype: valores.subtype,
           cnpj: valores.cnpj,
           ...(tipo === "pay" ? { registro_ans: valores.registro_ans } : {}),
