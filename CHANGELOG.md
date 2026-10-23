@@ -8,9 +8,6 @@
   compatibilidade.
 - `voa-tiss` 0.3.x continua disponível no PyPI, mas não receberá novas versões:
   https://pypi.org/project/voa-tiss/.
-
-## Não lançado
-
 - A API hospedada aceita chaves `sk_tiss_` da organização, com escopo por operação,
   revogação em até 60 segundos e uso registrado por chamada.
 - TISS-Bench: 40 tarefas sintéticas com verificação determinística e resultados
