@@ -307,6 +307,10 @@ def _format_validation(
 def _validate(args: argparse.Namespace) -> int:
     try:
         paths = _expand_paths(args.paths)
+        if not paths:
+            locations = ", ".join(path.as_posix() for path in args.paths)
+            sys.stderr.write(f"Nenhum arquivo .xml ou .json encontrado em: {locations}\n")
+            return _USAGE_ERROR
         reports = {path.as_posix(): _report(path, args.operadora) for path in paths}
     except (OSError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
         sys.stderr.write(f"Não foi possível ler a entrada: {exc}\n")

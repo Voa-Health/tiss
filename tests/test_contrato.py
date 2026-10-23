@@ -21,6 +21,7 @@ from bench._tarefas import TASK_DIR, gerar
 from bench._verificar import verificar
 from scripts import manutencao
 from tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
+from tiss.__main__ import main as cli_main
 from tiss._rules import _package
 from tiss._sadt import load_bundle, render_html
 from tiss._schema import (
@@ -56,7 +57,7 @@ from tiss.codes import CODES
         ("autorizacao.carteirinha-json", "encaminhar_auditor"),
     ],
 )
-def test_example_reports(name, expected):
+def test_example_reports(name, expected, tmp_path, capsys):
     if name.startswith("autorizacao."):
         case = name.split(".", 1)[1]
         request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
@@ -182,6 +183,13 @@ def test_example_reports(name, expected):
     assert expected <= codes
     if name == "lote-valido":
         assert report.valid and report.findings == ()
+        empty_dir = tmp_path / "sem_lotes"
+        empty_dir.mkdir()
+        (empty_dir / "observacoes.txt").write_text("arquivo ignorado")
+        assert cli_main(["validate", str(empty_dir)]) == 2
+        assert capsys.readouterr().err == (
+            f"Nenhum arquivo .xml ou .json encontrado em: {empty_dir.as_posix()}\n"
+        )
     else:
         assert 1 <= sum(code.startswith("xsd.") for code in codes) <= 3
         assert report.findings[0].guia == "ERRO-01"
