@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { trocarOrganizacao } from "@/lib/org/backend";
+import { cabecalhosDoCliente } from "@/lib/org/ip";
 import { apagarPar, gravarPar, mesmaOrigem, parDoPedido } from "@/lib/org/credencial";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,7 @@ export async function POST(pedido: NextRequest) {
   const id = typeof dados?.organization_id === "string" ? dados.organization_id : "";
   if (!id) return NextResponse.json({ detail: "Informe a organização." }, { status: 400 });
 
-  const resultado = await trocarOrganizacao(par, id);
+  const resultado = await trocarOrganizacao(par, id, cabecalhosDoCliente(pedido.headers));
   const resposta = NextResponse.json(resultado.corpo, { status: resultado.status });
   if (resultado.par === null) apagarPar(resposta);
   else if (resultado.par) gravarPar(resposta, resultado.par);

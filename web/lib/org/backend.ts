@@ -1,4 +1,4 @@
-import { urlDoBackend, type ParDeTokens } from "./credencial";
+import { urlDoBackend, type ParDeTokens } from "./credencial.ts";
 
 export type RespostaDoBackend = {
   status: number;
@@ -18,13 +18,18 @@ async function lerCorpo(resposta: Response): Promise<unknown> {
   }
 }
 
-export async function postarSemToken(caminho: string, corpo: unknown): Promise<{ status: number; corpo: unknown }> {
+/** `extras` leva os cabeçalhos do navegador (IP) ao backend. */
+export async function postarSemToken(
+  caminho: string,
+  corpo: unknown,
+  extras: Record<string, string> = {},
+): Promise<{ status: number; corpo: unknown }> {
   const base = urlDoBackend();
   if (!base) return { status: 503, corpo: { detail: "Backend não configurado." } };
   try {
     const resposta = await fetch(`${base}${caminho}`, {
       method: "POST",
-      headers: { "content-type": "application/json", accept: "application/json" },
+      headers: { ...extras, "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify(corpo),
       cache: "no-store",
     });
@@ -34,8 +39,8 @@ export async function postarSemToken(caminho: string, corpo: unknown): Promise<{
   }
 }
 
-export async function renovar(par: ParDeTokens): Promise<ParDeTokens | null> {
-  const { status, corpo } = await postarSemToken("/auth/token/refresh/", { refresh: par.refresh });
+export async function renovar(par: ParDeTokens, extras: Record<string, string> = {}): Promise<ParDeTokens | null> {
+  const { status, corpo } = await postarSemToken("/auth/token/refresh/", { refresh: par.refresh }, extras);
   if (status !== 200 || typeof corpo !== "object" || corpo === null) return null;
   const { access, refresh } = corpo as { access?: unknown; refresh?: unknown };
   if (typeof access !== "string" || !access) return null;
@@ -47,6 +52,7 @@ export async function chamarBackend(
   par: ParDeTokens,
   caminho: string,
   init: { method: string; body?: string },
+  extras: Record<string, string> = {},
 ): Promise<RespostaDoBackend> {
   const base = urlDoBackend();
   if (!base) return { status: 503, corpo: { detail: "Backend não configurado." }, par: undefined };
@@ -54,6 +60,7 @@ export async function chamarBackend(
     fetch(`${base}${caminho}`, {
       method: init.method,
       headers: {
+        ...extras,
         accept: "application/json",
         authorization: `Bearer ${access}`,
         ...(init.body !== undefined ? { "content-type": "application/json" } : {}),
@@ -65,7 +72,7 @@ export async function chamarBackend(
     let resposta = await enviar(par.access);
     let novoPar: ParDeTokens | null | undefined;
     if (resposta.status === 401) {
-      novoPar = await renovar(par);
+      novoPar = await renovar(par, extras);
       if (!novoPar) return { status: 401, corpo: { detail: "Entre novamente." }, par: null };
       resposta = await enviar(novoPar.access);
     }
@@ -79,11 +86,12 @@ export async function chamarBackend(
 export async function trocarOrganizacao(
   par: ParDeTokens,
   organizationId: string,
+  extras: Record<string, string> = {},
 ): Promise<{ status: number; corpo: unknown; par: ParDeTokens | null | undefined }> {
   const resposta = await chamarBackend(par, "/api/auth/switch-organization/", {
     method: "POST",
     body: JSON.stringify({ organization_id: organizationId }),
-  });
+  }, extras);
   if (resposta.status !== 200 || typeof resposta.corpo !== "object" || resposta.corpo === null) return resposta;
   const { access, refresh } = resposta.corpo as { access?: unknown; refresh?: unknown };
   if (typeof access !== "string" || typeof refresh !== "string") {

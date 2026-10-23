@@ -32,7 +32,7 @@ export function GET() {
     )
     .join("\n\n");
   const body = [
-    "# voa-tiss",
+    "# tiss",
     "",
     "> Documentação técnica para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo que usam TISS e dados abertos da ANS sobre operadoras, glosas e rede hospitalar.",
     "",
@@ -49,7 +49,13 @@ export function GET() {
     `- [Referência HTTP](${docsPageUrl("api")})`,
     `- [OpenAPI](${site.url}/openapi.json)`,
     `- [MCP](${site.url}/mcp)`,
+    `- [MCP local](${site.github}#conectar-agentes): ${site.mcpLocalCommand}`,
     operations,
+    "",
+    "## Integrações locais",
+    "- MCP remoto: `claude mcp add --transport http tiss https://tiss-api.voa.health/mcp`",
+    "- GitHub Action: `Voa-Health/tiss@v0` com `paths: lotes/`.",
+    "- pre-commit: `https://github.com/Voa-Health/tiss`, revisão `v0.4.0`, hook `tiss-validate`.",
     "",
     "## Operadoras",
     healthplans,

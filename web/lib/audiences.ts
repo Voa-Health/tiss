@@ -85,6 +85,17 @@ export const healthplanFeatures: AudienceItem[] = [
   },
 ];
 
+export const cliFeature: AudienceItem = {
+  label: "Validar, corrigir e revalidar",
+  description: "Valide o lote com XSD e regras de negócio e aplique correções determinísticas.",
+  href: tutorialUrl("01-validar-um-lote"),
+  linkLabel: "Ver tutorial",
+  demo: terminalDemo(
+    "cli",
+    "Terminal: tiss validate aprova o lote e confere o hash, o código do procedimento sai do lote para tiss tuss e o código da glosa sai do demonstrativo para tiss glosa.",
+  ),
+};
+
 export const audiences: Audience[] = [
   {
     id: "operadora",
@@ -99,12 +110,7 @@ export const audiences: Audience[] = [
     title: "Prestador e profissional de saúde",
     summary: "Pegue o erro antes da operadora e entenda por que uma guia foi glosada.",
     items: [
-      {
-        label: "Validar, corrigir e revalidar",
-        description: "Valide o lote com XSD e regras de negócio e aplique correções determinísticas.",
-        href: tutorialUrl("01-validar-um-lote"),
-        linkLabel: "Ver tutorial",
-      },
+      cliFeature,
       {
         label: "Operadora simulada",
         description: "Envie o lote e receba o demonstrativo antes do envio real.",

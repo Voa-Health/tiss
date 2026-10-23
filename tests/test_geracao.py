@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from voa_tiss import apply_fixes, audit, build_lote, check, parse_lote
+from tiss import apply_fixes, audit, build_lote, check, parse_lote
 
 
 def test_round_trip(valid_lote):

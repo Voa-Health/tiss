@@ -99,7 +99,7 @@ export const moduleContent: Record<ModuleSlug, ModuleContent> = {
       "Histórico de lotes e demonstrativos.",
       "Glosas por operadora e por motivo.",
       "Alertas de lote rejeitado, prazo de recurso e regra nova da operadora.",
-      "A variável VOA_TISS_API_KEY vai conectar a biblioteca ao Cloud quando ele estiver disponível.",
+      "A variável TISS_API_KEY vai conectar a biblioteca ao Cloud quando ele estiver disponível.",
     ],
     volumeLabel: "Volume mensal de guias",
     status,

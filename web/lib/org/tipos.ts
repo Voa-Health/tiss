@@ -1,6 +1,7 @@
 export type AreaDisponivel = { value: string; label: string };
 
 export type Cobranca = {
+  enabled?: boolean;
   payment_method_active: boolean;
   payment_method: { brand: string; last4: string; exp_month: number; exp_year: number } | null;
   subscription_status: string | null;
@@ -32,6 +33,8 @@ export type EstadoDaOrg = {
   subtype_display: string;
   cnpj: string;
   registro_ans: string;
+  cnes: string;
+  identity_source: "cnes" | "ans" | null;
   insurance_plan_id: string | null;
   tier: "login" | "verified";
   terms: {
@@ -43,6 +46,7 @@ export type EstadoDaOrg = {
     accepted_by: string | null;
   };
   tiss_org: boolean;
+  rejection_map?: { eligible: boolean; enabled: boolean };
   is_admin: boolean;
   my_areas: string[];
   available_areas: AreaDisponivel[];
@@ -128,6 +132,7 @@ export type Convite = {
 
 export type ConfiguracoesTiss = {
   registro_ans: string;
+  cnes: string;
   padrao: string;
   max_guias_por_lote: number | null;
 };

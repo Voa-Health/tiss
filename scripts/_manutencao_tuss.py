@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-from voa_tiss._text import fold_ascii
+from tiss._text import fold_ascii
 
 if __package__:
     from ._manutencao_ans import _table_id
@@ -18,7 +18,7 @@ else:
     from _manutencao_common import read_csv, write_json
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT = ROOT / "src" / "voa_tiss" / "tuss" / "_data" / "tuss.json"
+DEFAULT_OUT = ROOT / "src" / "tiss" / "tuss" / "_data" / "tuss.json"
 DATASET_VERSION = 1
 DATASET_SOURCE = "ANS — Terminologia Unificada da Saúde Suplementar (TUSS)"
 DATASET_LICENSE = "CC BY-ND — ANS dados abertos (verbatim redistribution only)"

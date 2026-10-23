@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { chamarBackend, trocarOrganizacao } from "@/lib/org/backend";
+import { cabecalhosDoCliente } from "@/lib/org/ip";
 import { apagarPar, gravarPar, mesmaOrigem, parDoPedido, type ParDeTokens } from "@/lib/org/credencial";
 import { ROTA_DO_ONBOARDING, rotaPermitida } from "@/lib/org/rotas";
 
@@ -24,14 +25,15 @@ async function repassar(pedido: NextRequest, { params }: Contexto) {
 
   const corpo = metodo === "GET" || metodo === "DELETE" ? undefined : await pedido.text();
   const destino = `/api/v1/${caminho}${pedido.nextUrl.search}`;
-  const resultado = await chamarBackend(par, destino, { method: metodo, body: corpo || undefined });
+  const extras = cabecalhosDoCliente(pedido.headers);
+  const resultado = await chamarBackend(par, destino, { method: metodo, body: corpo || undefined }, extras);
   let parFinal: ParDeTokens | null | undefined = resultado.par;
 
   const id = caminho === ROTA_DO_ONBOARDING && metodo === "POST" && resultado.status < 300
     ? orgCriada(resultado.corpo)
     : null;
   if (id) {
-    const troca = await trocarOrganizacao(parFinal ?? par, id);
+    const troca = await trocarOrganizacao(parFinal ?? par, id, extras);
     if (troca.par) parFinal = troca.par;
   }
 

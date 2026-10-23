@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "health.voa/tiss",
-  "title": "voa-tiss",
+  "title": "tiss",
   "description": "Ferramentas para validar documentos TISS e consultar TUSS, operadoras e dados da ANS.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "websiteUrl": "https://tiss-api.voa.health",
   "repository": {
     "url": "https://github.com/Voa-Health/tiss",
@@ -13,6 +13,32 @@
     {
       "type": "streamable-http",
       "url": "https://tiss-api.voa.health/mcp"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "tiss",
+      "version": "0.4.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "--with",
+          "value": "tiss[mcp]==0.4.0",
+          "description": "Instala o extra mcp na mesma versão."
+        }
+      ],
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        }
+      ]
     }
   ]
 }

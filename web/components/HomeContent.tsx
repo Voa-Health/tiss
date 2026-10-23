@@ -9,7 +9,7 @@ import { PageStack } from "@/components/ui/PageStack";
 import { Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
 import { track } from "@/lib/analytics";
-import { audiences, healthplanFeatures, type Audience } from "@/lib/audiences";
+import { audiences, cliFeature, type Audience } from "@/lib/audiences";
 
 function AudienceCard({ audience }: { audience: Audience }) {
   const { token } = theme.useToken();
@@ -68,7 +68,7 @@ export function HomeContent() {
           />
         </Col>
         <Col xs={24} lg={13}>
-          <TerminalGif item={healthplanFeatures[0]} priority />
+          <TerminalGif item={cliFeature} priority />
         </Col>
       </Row>
 
@@ -95,14 +95,30 @@ export function HomeContent() {
         }
       >
         <Row gutter={[token.margin, token.margin]}>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <Card title="Biblioteca Python">
               <CodeBlock code={site.installCommand} />
             </Card>
           </Col>
-          <Col xs={24} md={12}>
-            <Card title="Cliente MCP">
-              <CodeBlock code={site.mcpCommand} />
+          <Col xs={24} md={8}>
+            <Card title="MCP local">
+              <Space direction="vertical" size={token.marginXS} style={{ width: "100%" }}>
+                <CodeBlock code={site.mcpLocalCommand} />
+                <Typography.Text type="secondary">
+                  Roda offline: as guias não saem da máquina.
+                </Typography.Text>
+                <Typography.Text
+                  type="secondary"
+                  style={{ fontSize: token.fontSizeSM, wordBreak: "break-word" }}
+                >
+                  Remoto: https://tiss-api.voa.health/mcp
+                </Typography.Text>
+              </Space>
+            </Card>
+          </Col>
+          <Col xs={24} md={8}>
+            <Card title="GitHub Action">
+              <CodeBlock code={site.actionSnippet} />
             </Card>
           </Col>
         </Row>

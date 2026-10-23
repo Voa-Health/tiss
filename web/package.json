@@ -1,5 +1,5 @@
 {
-  "name": "voa-tiss-web",
+  "name": "tiss-web",
   "private": true,
   "packageManager": "pnpm@10.13.1",
   "engines": {
@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/**/*.test.ts\""
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",

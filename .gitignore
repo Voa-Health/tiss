@@ -39,8 +39,8 @@ pnpm-debug.log*
 .vercel
 
 # Dados baixados sob demanda
-src/voa_tiss/rede/_data/*.sqlite*
-src/voa_tiss/referencia/_data/*.sqlite*
+src/tiss/rede/_data/*.sqlite*
+src/tiss/referencia/_data/*.sqlite*
 
 # Segredos e certificados (inclusive ICP-Brasil A1)
 .env*

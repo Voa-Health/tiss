@@ -1,12 +1,12 @@
 "use client";
 
-import { CheckCircleFilled } from "@ant-design/icons";
 import { Alert, Card, Col, Descriptions, Grid, Row, Tag, theme, Typography } from "antd";
 import Link from "next/link";
 import { dataHora, mascararCnpj } from "@/lib/org/formato";
 import type { Cobranca, EstadoDaOrg } from "@/lib/org/tipos";
 import { useRecurso } from "@/lib/org/cliente";
 import { hrefDaOrg, ROTULO_DO_TIPO } from "./secoes";
+import { SeloDeVerificacao } from "./SeloDeVerificacao";
 
 type Atalho = { titulo: string; descricao: string; href: string };
 
@@ -35,7 +35,7 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
 
   return (
     <>
-      {!cobranca.carregando && !cobranca.erro && cobranca.dados && !cobranca.dados.payment_method_active && (
+      {!cobranca.carregando && !cobranca.erro && cobranca.dados && cobranca.dados.enabled !== false && !cobranca.dados.payment_method_active && (
         <Alert type="info" showIcon title={<>Nenhum cartão cadastrado. <Link href={hrefDaOrg("cobranca")}>Configurar cobrança</Link></>} />
       )}
       <Row gutter={[token.margin, token.margin]}>
@@ -60,7 +60,7 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
             {
               key: "tipo",
               label: "Tipo",
-              children: `${ROTULO_DO_TIPO[org.type] ?? org.type_display}${org.subtype_display ? ` · ${org.subtype_display}` : ""}`,
+              children: [ROTULO_DO_TIPO[org.type] ?? org.type_display, org.subtype_display].filter((rotulo, i, lista) => rotulo && lista.indexOf(rotulo) === i).join(" · "),
             },
             {
               key: "cnpj",
@@ -68,13 +68,13 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
               children: (
                 <>
                   <Typography.Text code>{mascararCnpj(org.cnpj)}</Typography.Text>{" "}
-                  {org.tier === "verified" && (
-                    <Tag color="success" icon={<CheckCircleFilled />}>CNPJ verificado</Tag>
-                  )}
+                  <SeloDeVerificacao org={org} />
                 </>
               ),
             },
-            ...(operadora ? [{ key: "ans", label: "Registro ANS", children: org.registro_ans || "—" }] : []),
+            operadora
+              ? { key: "ans", label: "Registro ANS", children: org.registro_ans || "—" }
+              : { key: "cnes", label: "CNES", children: org.cnes || <Link href={hrefDaOrg("tiss")}>Escolher unidade</Link> },
             { key: "termos", label: "Termos", children: aceite },
             {
               key: "areas",

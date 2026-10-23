@@ -1,4 +1,4 @@
-"""Ferramentas do agente: tools do MCP voa-tiss com artefatos e passos locais."""
+"""Ferramentas do agente: tools do MCP tiss com artefatos e passos locais."""
 
 from __future__ import annotations
 

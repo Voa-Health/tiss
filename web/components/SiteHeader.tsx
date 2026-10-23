@@ -80,7 +80,7 @@ export function SiteHeader() {
         gap={token.margin}
         style={{ maxWidth: siteContentWidth, marginInline: "auto", padding: token.padding }}
       >
-        <Link href="/" aria-label="voa-tiss, página inicial">
+        <Link href="/" aria-label="tiss, página inicial">
           <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
         </Link>
         {screens.md ? (

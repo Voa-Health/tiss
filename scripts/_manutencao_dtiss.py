@@ -22,7 +22,7 @@ from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
-from voa_tiss.referencia import _UFS
+from tiss.referencia import _UFS
 
 if __package__:
     from ._manutencao_common import write_json
@@ -33,7 +33,7 @@ else:
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_URL = "https://dadosabertos.ans.gov.br/FTP/PDA/TISS"
-MANIFEST_PATH = ROOT / "src/voa_tiss/referencia/_data/manifesto.json"
+MANIFEST_PATH = ROOT / "src/tiss/referencia/_data/manifesto.json"
 OUT = ROOT / "dist/referencia"
 ASSET = "referencia-dtiss.sqlite"
 ASSET_URL = "https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/referencia/{data}/{nome}"

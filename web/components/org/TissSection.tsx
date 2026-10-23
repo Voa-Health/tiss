@@ -1,13 +1,15 @@
 "use client";
 
-import { Alert, App, Button, Card, Flex, Form, Input, InputNumber, Result, Skeleton, theme, Typography } from "antd";
+import { Alert, App, Button, Card, Flex, Form, Input, InputNumber, Result, Select, Skeleton, theme, Typography } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
+import { caminhoDaBusca, chaveDaBusca, lerResposta, rotuloDaUnidade, situacaoDaBusca, type Situacao } from "@/lib/org/busca";
+import { abrirDeNovo, FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
 import type { ConfiguracoesTiss, EstadoDaOrg } from "@/lib/org/tipos";
 import { hrefDaOrg, type PacoteDeRegras } from "./secoes";
+import { SeloDeVerificacao } from "./SeloDeVerificacao";
 
-type Campos = { registro_ans?: string; padrao?: string; max_guias_por_lote?: number | null };
+type Campos = { registro_ans?: string; cnes?: string; padrao?: string; max_guias_por_lote?: number | null };
 
 function RegrasDaOperadora({ registro, pacotes }: { registro: string; pacotes: PacoteDeRegras[] }) {
   const pacote = pacotes.find((item) => item.registro === registro.replace(/\D/g, ""));
@@ -36,12 +38,26 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
   const [form] = Form.useForm<Campos>();
   const configuracoes = useRecurso<ConfiguracoesTiss>("tiss/org/settings/");
   const [salvando, setSalvando] = useState(false);
+  const [unidades, setUnidades] = useState<{ buscando: boolean; situacao: Situacao | null }>({ buscando: false, situacao: null });
   const operadora = org.type === "pay";
   const podeEditar = org.is_admin;
 
   useEffect(() => {
     if (configuracoes.dados) form.setFieldsValue(configuracoes.dados);
   }, [configuracoes.dados, form]);
+
+  async function buscarUnidades() {
+    const chave = chaveDaBusca(org.type, org.cnpj, undefined);
+    if (!chave) return;
+    setUnidades({ buscando: true, situacao: null });
+    let resposta;
+    try {
+      resposta = lerResposta(await pedir(caminhoDaBusca(chave)));
+    } catch {
+      resposta = lerResposta(null);
+    }
+    setUnidades({ buscando: false, situacao: situacaoDaBusca(resposta, chave.campo) });
+  }
 
   async function salvar(valores: Campos) {
     const atual = configuracoes.dados;
@@ -53,7 +69,9 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
     try {
       await pedir("tiss/org/settings/", { method: "PATCH", body: mudou });
       message.success("Configurações salvas.");
-      configuracoes.recarregar();
+      // Registro ANS e CNES refazem a verificação; o selo vem do estado da org.
+      if ("registro_ans" in mudou || "cnes" in mudou) abrirDeNovo(`${window.location.pathname}${window.location.search}`);
+      else configuracoes.recarregar();
     } catch (erro) {
       if (erro instanceof FalhaDoPedido && Object.keys(erro.campos).length) {
         form.setFields(Object.entries(erro.campos).map(([name, mensagem]) => ({ name: name as keyof Campos, errors: [mensagem] })));
@@ -79,6 +97,31 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
             <Input inputMode="numeric" />
           </Form.Item>
         )}
+        {!operadora && (
+          <>
+            {unidades.situacao?.mensagem && <Alert type={unidades.situacao.alerta} showIcon title={unidades.situacao.mensagem} style={{ marginBottom: token.margin }} />}
+            <Form.Item
+              name="cnes"
+              label="CNES"
+            >
+              {unidades.situacao?.unidades.length ? (
+                <Select
+                  allowClear
+                  showSearch={{ optionFilterProp: "label" }}
+                  placeholder="Escolha a unidade"
+                  options={unidades.situacao.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
+                />
+              ) : (
+                <Input inputMode="numeric" placeholder="0000000" />
+              )}
+            </Form.Item>
+            {podeEditar && org.cnpj && !unidades.situacao?.unidades.length && (
+              <Button onClick={() => void buscarUnidades()} loading={unidades.buscando} style={{ marginBottom: token.margin }}>
+                Buscar unidades do CNPJ
+              </Button>
+            )}
+          </>
+        )}
         <Form.Item name="padrao" label="Padrão TISS" extra="Versão usada quando o lote não declara a sua.">
           <Input placeholder="4.03.00" />
         </Form.Item>
@@ -93,6 +136,10 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
   return (
     <Flex vertical gap={token.marginLG}>
       <Card title="Validação" styles={{ body: { display: "flex", flexDirection: "column", gap: token.margin } }}>
+        <Flex align="center" gap={token.marginXS}>
+          <Typography.Text>Identidade:</Typography.Text>
+          <SeloDeVerificacao org={org} />
+        </Flex>
         {!podeEditar && <Alert type="info" showIcon title="Só quem tem a Área Administração altera as configurações." />}
         {conteudo}
       </Card>

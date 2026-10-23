@@ -8,7 +8,7 @@
 - Versão: 4.03.00; conjunto de 7 arquivos XSD e um manifesto de proveniência.
 - SHA-256 do arquivo ZIP: `db8640e1c3b87085892f54f838bfcea9934439ff365798c8428559f88c13d62d`.
 - Licença/atribuição: não informado na proveniência do pacote.
-- Os hashes individuais dos XSDs estão registrados em `src/voa_tiss/_data/schemas/4.03.00/provenance.json`.
+- Os hashes individuais dos XSDs estão registrados em `src/tiss/_data/schemas/4.03.00/provenance.json`.
 
 ## Produtos e Prestadores Hospitalares
 
@@ -59,7 +59,7 @@ Quando a fonte não publica uma licença ou metadado específico, o valor é ind
   https://dados.gov.br/dados/conjuntos-dados/painel-de-indicadores-de-glosa
 - Arquivos: os cinco CSVs `pda-057-painel_de_glosas-*.csv` de
   https://dadosabertos.ans.gov.br/FTP/PDA/painel_de_glosas-057/dados/; URL e SHA-256 de cada
-  um ficam em `src/voa_tiss/operadoras/_data/indicadores.json`.
+  um ficam em `src/tiss/operadoras/_data/indicadores.json`.
 - Data de carga (`DT_CARGA`): 2026-07-20; semestres de 2019-01 a 2025-02.
 - Registros: 853 operadoras ativas no CADOP; as que não estão no CADOP ficam de fora.
 - Licença: CC BY, atribuição à ANS.

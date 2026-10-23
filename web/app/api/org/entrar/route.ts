@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { postarSemToken } from "@/lib/org/backend";
 import { gravarPar, mesmaOrigem } from "@/lib/org/credencial";
+import { cabecalhosDoCliente } from "@/lib/org/ip";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export async function POST(pedido: NextRequest) {
   const senha = typeof dados?.senha === "string" ? dados.senha : "";
   if (!email || !senha) return NextResponse.json({ detail: "Informe e-mail e senha." }, { status: 400 });
 
-  const { status, corpo } = await postarSemToken("/auth/login/", { email, password: senha });
+  const { status, corpo } = await postarSemToken("/auth/login/", { email, password: senha }, cabecalhosDoCliente(pedido.headers));
   if (status >= 500) return NextResponse.json(corpo, { status });
   const { access, refresh } = (corpo ?? {}) as { access?: unknown; refresh?: unknown };
   if (status !== 200 || typeof access !== "string" || typeof refresh !== "string") {

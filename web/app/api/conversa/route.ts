@@ -15,13 +15,13 @@ import type { FalaDoHistorico } from "@/lib/chat/protocolo";
 
 export const dynamic = "force-dynamic";
 
-const COOKIE_DA_CONVERSA = "voa_tiss_conversa";
+const COOKIE_DA_CONVERSA = "tiss_conversa";
 const VALIDADE_DA_CONVERSA_S = 7 * 24 * 60 * 60;
 
 function configuracao() {
   const backend = urlDoBackend();
   const realtime = process.env.VOA_REALTIME_URL?.trim().replace(/\/+$/, "");
-  const profile = process.env.VOA_TISS_CHAT_PROFILE?.trim();
+  const profile = process.env.TISS_CHAT_PROFILE?.trim();
   if (!backend || !realtime || !profile) return null;
   return { backend, realtime, profile };
 }

@@ -24,7 +24,7 @@ REDE_URL = (
     "produtos_e_prestadores_hospitalares.zip"
 )
 REDE_PAGE = "https://dados.gov.br/dados/conjuntos-dados/produtos-e-prestadores-hospitalares"
-REDE_MANIFEST = ROOT / "src/voa_tiss/rede/_data/manifesto.json"
+REDE_MANIFEST = ROOT / "src/tiss/rede/_data/manifesto.json"
 REDE_OUT = ROOT / "dist/rede"
 REDE_ASSET = "rede-hospitalar.sqlite"
 ASSET_URL = "https://voa-tiss-dados.s3.sa-east-1.amazonaws.com/publico/rede/{data}/{nome}"

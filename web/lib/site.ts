@@ -2,14 +2,16 @@ const docsUrl = "https://docs.voa.health/integracao/voa-tiss";
 const tutorialsUrl = `${docsUrl}/tutoriais`;
 
 export const site = {
-  name: "voa-tiss",
+  name: "tiss",
   url: "https://tiss-api.voa.health",
   github: "https://github.com/Voa-Health/tiss",
   docsUrl,
   healthplanContactUrl: "https://github.com/Voa-Health/tiss/issues/new?template=regra-de-operadora.yml",
-  pypi: "https://pypi.org/project/voa-tiss/",
-  installCommand: "pip install voa-tiss",
-  mcpCommand: "claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp",
+  pypi: "https://pypi.org/project/tiss/",
+  installCommand: "pip install tiss",
+  mcpCommand: "claude mcp add --transport http tiss https://tiss-api.voa.health/mcp",
+  mcpLocalCommand: 'claude mcp add tiss -- uvx --from "tiss[mcp]" tiss mcp',
+  actionSnippet: "- uses: Voa-Health/tiss@v0\n  with:\n    paths: lotes/",
   navigation: [
     { href: docsUrl, label: "Documentação" },
     { href: tutorialUrl(), label: "Tutoriais" },

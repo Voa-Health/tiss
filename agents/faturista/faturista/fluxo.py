@@ -1,4 +1,4 @@
-"""Execução do agente faturista sobre o MCP do voa-tiss."""
+"""Execução do agente faturista sobre o MCP do tiss."""
 
 from __future__ import annotations
 
@@ -51,10 +51,10 @@ def _porta_livre() -> int:
 
 @contextmanager
 def servidor_local() -> Iterator[str]:
-    """Suba `python -m voa_tiss.server` numa porta livre e devolva a URL do MCP."""
+    """Suba `python -m tiss.server` numa porta livre e devolva a URL do MCP."""
     porta = _porta_livre()
     processo = subprocess.Popen(
-        [sys.executable, "-m", "voa_tiss.server", "--port", str(porta)],
+        [sys.executable, "-m", "tiss.server", "--port", str(porta)],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
@@ -84,7 +84,7 @@ async def executar(
 ) -> dict[str, Any]:
     """Rode o fluxo completo e devolva o resultado estruturado."""
     cabecalhos = {"x-voa-telemetry": "off"}
-    if chave := os.environ.get("VOA_TISS_API_KEY"):
+    if chave := os.environ.get("TISS_API_KEY"):
         cabecalhos["authorization"] = f"Bearer {chave}"
     async with AsyncExitStack() as pilha:
         cliente = await pilha.enter_async_context(httpx.AsyncClient(headers=cabecalhos, timeout=60))

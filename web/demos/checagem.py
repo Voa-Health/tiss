@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from voa_tiss import check, examples, parse_lote
+from tiss import check, examples, parse_lote
 
 lote = parse_lote(examples.load("lote-valido"))
 pacote = json.loads(Path("pacote-operadora.json").read_text())
