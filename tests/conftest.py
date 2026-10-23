@@ -17,7 +17,7 @@ import voa_tiss
 from voa_tiss import dominio, examples, operadoras, parse_lote
 from voa_tiss._schema import parser
 from voa_tiss.codes import CODES
-from voa_tiss.server import _usage
+from voa_tiss.server import _published_rules, _usage
 from voa_tiss.server._keys import clear_cache
 from voa_tiss.server._ops import OPS
 from voa_tiss.server._service import ServiceError, set_transport
@@ -40,9 +40,14 @@ class FakeService:
     batches: list[list[dict[str, Any]]] = field(default_factory=list)
     usage: list[dict[str, Any]] = field(default_factory=list)
     usage_failures: list[int] = field(default_factory=list)
+    rules: dict[str, dict[str, Any]] = field(default_factory=dict)
+    rules_requests: list[str] = field(default_factory=list)
+    rules_failures: list[int] = field(default_factory=list)
     down: bool = False
 
-    def add_key(self, key: str, tier: str = "verified", scopes: Any = None) -> None:
+    def add_key(
+        self, key: str, tier: str = "verified", scopes: Any = None, billing: Any = None
+    ) -> None:
         self.keys[key] = {
             "active": True,
             "revoked": False,
@@ -53,6 +58,8 @@ class FakeService:
             "tier": tier,
             "terms_accepted": True,
         }
+        if billing is not None:
+            self.keys[key]["billing"] = billing
 
     def revoke(self, key: str) -> None:
         self.keys[key] = {
@@ -67,6 +74,14 @@ class FakeService:
             if self.down:
                 raise ServiceError(503)
             return self.keys.get(body["key"], {"active": False})
+        if path == "/tiss/service/rules":
+            self.rules_requests.append(body["key"])
+            if self.rules_failures:
+                raise ServiceError(self.rules_failures.pop(0))
+            org = self.keys[body["key"]]["organization"]["id"]
+            if org not in self.rules:
+                raise ServiceError(404)
+            return {"organization_id": org, "version": 1, "package": self.rules[org]}
         assert path == "/tiss/service/usage"
         self.batches.append(body["events"])
         if self.usage_failures:
@@ -85,11 +100,13 @@ def tiss_service(monkeypatch):
     for tier in ("login", "verified"):
         service.add_key(f"sk_tiss_{tier}", tier)
     clear_cache()
+    _published_rules.clear_cache()
     set_transport(service)
     yield service
     _usage.wait(5)
     set_transport(None)
     clear_cache()
+    _published_rules.clear_cache()
 
 
 @pytest.fixture

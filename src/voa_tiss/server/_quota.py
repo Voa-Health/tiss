@@ -11,12 +11,14 @@ from collections.abc import Callable
 from typing import Any
 
 from ._context import CallContext
-from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, KEYS_URL, TIER_LIMITS
+from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, KEYS_URL, TIER_LIMITS, Access
+from ._ops_schemas import Op
 from ._service import configured
 
 Counter = Callable[[str, int], int]
 _counter: Counter | None = None
 _ANONYMOUS_OPERATIONS = ("sandbox_", "lista_de_espera")
+_CLOUD_GUIA = "tiss_cloud_guia"
 
 
 def _redis(key: str, ttl: int) -> int:
@@ -86,4 +88,22 @@ def admit(
     return None
 
 
-__all__ = ["admit", "seconds_until_reset", "set_counter"]
+def payment_required(op: Op, access: Access | None) -> tuple[int, dict[str, Any]] | None:
+    """Devolva o 402 do backend quando a op é paga e a org não tem meio de pagamento."""
+    billing = access.billing if access is not None else None
+    if (
+        not op.paid
+        or billing is None
+        or not billing.enforced
+        or billing.payment_method_active
+        or (op.usage_kind == _CLOUD_GUIA and billing.cloud_free_remaining > 0)
+    ):
+        return None
+    return 402, {
+        "code": "payment_required",
+        "detail": "Cadastre uma forma de pagamento para usar este módulo.",
+        "billing_url": billing.billing_url,
+    }
+
+
+__all__ = ["admit", "payment_required", "seconds_until_reset", "set_counter"]

@@ -27,11 +27,13 @@ from voa_tiss import dominio, examples, operadoras, sandbox
 from voa_tiss import sandbox as sandbox_module
 from voa_tiss._glosa import glosa
 from voa_tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
-from voa_tiss.server import _docs, _keys, _usage
+from voa_tiss.server import _docs, _keys, _ops, _published_rules, _usage
+from voa_tiss.server._context import CallContext
 from voa_tiss.server._docs import search_docs
 from voa_tiss.server._http import create_app
 from voa_tiss.server._keys import ANONYMOUS_LIMIT, LIMITS
-from voa_tiss.server._ops import OPS, _docs_corpus, token_estimate
+from voa_tiss.server._ops import OPS, _docs_corpus, call, token_estimate
+from voa_tiss.server._ops_schemas import PAID_KINDS, Op, _object
 from voa_tiss.server._prompts import PROMPTS
 from voa_tiss.server._quota import set_counter
 from voa_tiss.server._telemetry import set_sink
@@ -42,6 +44,7 @@ HTTP_OK = 200
 HTTP_ACCEPTED = 202
 HTTP_FOUND = 302
 HTTP_UNAUTHORIZED = 401
+HTTP_PAYMENT_REQUIRED = 402
 HTTP_FORBIDDEN = 403
 HTTP_NOT_FOUND = 404
 HTTP_TOO_MANY = 429
@@ -756,6 +759,123 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
     assert [event for event, _ in events] == ["tiss_operacao"]
     assert marker not in caplog.text
     assert auth_password not in caplog.text
+    _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service)
+
+
+def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
+    set_counter(None)
+    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+    _published_rules.clear_cache()
+    tiss_service.rules_requests.clear()
+    package = json.loads((ROOT / "src/voa_tiss/rules/000000.json").read_text())
+    tiss_service.rules["org-1"] = package
+    xml = examples.load("lote-valido").decode()
+    lote = voa_tiss.parse_lote(xml)
+    published = [
+        ("/v1/validate", {"lote": lote}, voa_tiss.check(lote, operadora=package).to_dict()),
+        ("/v1/validate", {"xml": xml}, voa_tiss.validate(xml, operadora=package).to_dict()),
+        ("/v1/audit", {"lote": lote}, voa_tiss.audit(lote, operadora=package).to_dict()),
+        ("/v1/rejection-map", {"lotes": [lote]}, voa_tiss.rejection_map([lote], operadora=package)),
+        ("/v1/sandbox/lotes", {"xml": xml}, enviar_lote(xml, registro_ans=package)),
+    ]
+    explicit = [
+        ("/v1/validate", {"lote": lote, "operadora": "123456"}, voa_tiss.check(lote).to_dict()),
+        (
+            "/v1/audit",
+            {"lote": lote, "operadora": "123456"},
+            voa_tiss.audit(lote, operadora="123456").to_dict(),
+        ),
+        (
+            "/v1/rejection-map",
+            {"lotes": [lote], "operadora": "123456"},
+            voa_tiss.rejection_map([lote], operadora="123456"),
+        ),
+        ("/v1/sandbox/lotes", {"xml": xml, "registro_ans": "999999"}, enviar_lote(xml)),
+    ]
+    plain = voa_tiss.check(lote).to_dict()
+    assert published[0][2] != plain
+    with TestClient(create_app(), base_url="https://testserver") as client:
+
+        def post(route: str, body: dict[str, Any], headers: Any = None) -> Any:
+            response = client.post(
+                route, json=body, headers=_bearer() if headers is None else headers
+            )
+            assert response.status_code == HTTP_OK, response.text
+            return response.json()
+
+        for route, body, expected in published:
+            assert post(route, body) == expected, route
+        assert tiss_service.rules_requests == ["sk_tiss_verified"]
+        for route, body, expected in explicit:
+            assert post(route, body) == expected, route
+        assert post("/v1/sandbox/lotes", {"xml": xml}, {}) == enviar_lote(xml)
+        assert len(tiss_service.rules_requests) == 1
+
+        expired = time.monotonic() + _keys.CACHE_SECONDS + 1
+        monkeypatch.setattr(_published_rules, "_now", lambda: expired)
+        tiss_service.rules_failures = [HTTP_UNAVAILABLE]
+        caplog.set_level(logging.WARNING, logger="voa_tiss.server")
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert "op=regras status=503" in caplog.text
+        assert "sk_tiss_verified" not in caplog.text
+        assert post("/v1/validate", {"lote": lote}) == published[0][2]
+        assert len(tiss_service.rules_requests) == 3
+        del tiss_service.rules["org-1"]
+        monkeypatch.setattr(_published_rules, "_now", lambda: expired * 2)
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert len(tiss_service.rules_requests) == 4
+        monkeypatch.delenv("VOA_TISS_BACKEND_URL")
+        _published_rules.clear_cache()
+        tiss_service.rules["org-1"] = package
+        assert post("/v1/validate", {"lote": lote}) == plain
+        assert len(tiss_service.rules_requests) == 4
+    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+
+    billing = {
+        "enforced": True,
+        "payment_method_active": False,
+        "billing_url": "https://painel.example/org/cobranca",
+        "cloud_free_remaining": 0,
+    }
+    payment_required = {
+        "code": "payment_required",
+        "detail": "Cadastre uma forma de pagamento para usar este módulo.",
+        "billing_url": billing["billing_url"],
+    }
+    default_url = {**payment_required, "billing_url": _keys.BILLING_URL}
+    assert {
+        "tiss_cloud_guia",
+        "tiss_extractor",
+        "tiss_appeal",
+        "tiss_accounts_review",
+        "tiss_authorization",
+    } == PAID_KINDS
+    cases = [
+        ("tiss_extractor", billing, HTTP_PAYMENT_REQUIRED, payment_required),
+        ("tiss_appeal", {**billing, "billing_url": None}, HTTP_PAYMENT_REQUIRED, default_url),
+        ("tiss_cloud_guia", billing, HTTP_PAYMENT_REQUIRED, payment_required),
+        ("tiss_cloud_guia", {**billing, "cloud_free_remaining": 3}, HTTP_OK, {"ok": True}),
+        ("tiss_extractor", {**billing, "payment_method_active": True}, HTTP_OK, {"ok": True}),
+        ("tiss_extractor", {**billing, "enforced": False}, HTTP_OK, {"ok": True}),
+        ("tiss_extractor", None, HTTP_OK, {"ok": True}),
+        ("tiss_api_call", billing, HTTP_OK, {"ok": True}),
+    ]
+    for index, (kind, case_billing, status, expected) in enumerate(cases):
+        key = f"sk_tiss_caso{index}"
+        tiss_service.add_key(key, billing=case_billing)
+        case_access = _keys.resolve(key)
+        op = Op(
+            "modulo_sintetico",
+            lambda value: {"ok": True},
+            _object({}),
+            _object({}, additional=True),
+            "Módulo sintético.",
+            10,
+            usage_kind=kind,
+        )
+        monkeypatch.setitem(_ops._VALIDATORS, op.name, _ops._VALIDATORS["sadt_catalog"])
+        assert call(op, {}, CallContext(access=case_access)) == (status, expected), index
 
 
 @pytest.mark.parametrize(

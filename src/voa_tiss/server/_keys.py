@@ -16,6 +16,7 @@ ANONYMOUS_LIMIT = 10
 TIER_LIMITS = {"login": 50, "verified": 1_000}
 SITE_URL = "https://tiss-api.voa.health"
 KEYS_URL = f"{SITE_URL}/org"
+BILLING_URL = f"{KEYS_URL}/cobranca"
 ENTERPRISE_URL = "https://voa.health"
 LIMITS = {
     "limite_diario": None,
@@ -35,11 +36,35 @@ _now = time.monotonic
 
 
 @dataclass(frozen=True)
+class Billing:
+    enforced: bool
+    payment_method_active: bool
+    billing_url: str
+    cloud_free_remaining: int
+
+
+@dataclass(frozen=True)
 class Access:
     key_id: str
     org: str
     tier: str
     scopes: frozenset[str]
+    billing: Billing | None = None
+
+
+def _billing(value: Any) -> Billing | None:
+    if not isinstance(value, dict):
+        return None
+    url = value.get("billing_url")
+    remaining = value.get("cloud_free_remaining")
+    return Billing(
+        enforced=value.get("enforced") is True,
+        payment_method_active=value.get("payment_method_active") is True,
+        billing_url=url if isinstance(url, str) and url else BILLING_URL,
+        cloud_free_remaining=(
+            remaining if isinstance(remaining, int) and not isinstance(remaining, bool) else 0
+        ),
+    )
 
 
 def _access(data: Any) -> Access | None:
@@ -62,6 +87,7 @@ def _access(data: Any) -> Access | None:
         org=str(organization["id"]),
         tier=data["tier"],
         scopes=frozenset(str(scope) for scope in scopes),
+        billing=_billing(data.get("billing")),
     )
 
 
@@ -91,13 +117,17 @@ def clear_cache() -> None:
         _cache.clear()
 
 
+def bearer_key(header: str | None) -> str:
+    prefix, _, value = (header or "").partition(" ")
+    return value.strip() if prefix.lower() == "bearer" else ""
+
+
 def authenticate(header: str | None) -> tuple[int, Access | None]:
     """Separe pedido sem chave, chave válida, chave inválida e backend indisponível."""
     if header is None or not configured():
         return _HTTP_OK, None
-    prefix, _, value = header.partition(" ")
     try:
-        access = resolve(value.strip()) if prefix.lower() == "bearer" else None
+        access = resolve(bearer_key(header))
     except ServiceError:
         return _HTTP_UNAVAILABLE, None
     return (_HTTP_OK, access) if access is not None else (_HTTP_UNAUTHORIZED, None)
@@ -105,6 +135,7 @@ def authenticate(header: str | None) -> tuple[int, Access | None]:
 
 __all__ = [
     "ANONYMOUS_LIMIT",
+    "BILLING_URL",
     "CACHE_SECONDS",
     "ENTERPRISE_URL",
     "KEYS_URL",
@@ -113,7 +144,9 @@ __all__ = [
     "SITE_URL",
     "TIER_LIMITS",
     "Access",
+    "Billing",
     "authenticate",
+    "bearer_key",
     "clear_cache",
     "resolve",
 ]

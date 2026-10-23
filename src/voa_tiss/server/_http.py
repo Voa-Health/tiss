@@ -20,7 +20,7 @@ from starlette.types import Receive, Scope, Send
 import voa_tiss
 
 from ._context import CURRENT_CONTEXT, CallContext
-from ._keys import KEYS_URL, LIMITS, authenticate
+from ._keys import KEYS_URL, LIMITS, authenticate, bearer_key
 from ._mcp import create_mcp
 from ._ops import OPS, call
 from ._quota import seconds_until_reset
@@ -109,7 +109,8 @@ def _client_ip(request: Request) -> str:
 
 
 async def _request_context(request: Request, call_next: Any) -> Any:
-    status, access = await asyncio.to_thread(authenticate, request.headers.get("authorization"))
+    header = request.headers.get("authorization")
+    status, access = await asyncio.to_thread(authenticate, header)
     if status == _HTTP_UNAUTHORIZED:
         _logger.info("op=auth status=401 ms=0.0")
         return JSONResponse(_INVALID_KEY, status_code=status)
@@ -123,6 +124,7 @@ async def _request_context(request: Request, call_next: Any) -> Any:
             background_tasks=_background_tasks(request.url.path),
             access=access,
             client_ip=_client_ip(request),
+            key=bearer_key(header) if access is not None else "",
         )
     )
     try:
