@@ -96,7 +96,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
                 size="small"
                 column={1}
                 items={[
-                  { key: "status", label: "Estado", children: pacote.draft.status },
+                  { key: "status", label: "Estado", children: pacote.draft.status === "draft" ? "Rascunho" : pacote.draft.status },
                   { key: "atualizado", label: "Atualizado", children: dataHora(pacote.draft.updated_at) },
                   { key: "regras", label: "Regras", children: regras.length },
                 ]}
