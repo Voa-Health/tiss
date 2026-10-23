@@ -43,6 +43,7 @@ export type EstadoDaOrg = {
     accepted_by: string | null;
   };
   tiss_org: boolean;
+  rejection_map?: { eligible: boolean; enabled: boolean };
   is_admin: boolean;
   my_areas: string[];
   available_areas: AreaDisponivel[];

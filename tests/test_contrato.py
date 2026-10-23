@@ -31,6 +31,7 @@ from voa_tiss.codes import CODES
 
 
 def test_public_api_and_example_contract():
+    _check_browser_map_contract()
     assert set(voa_tiss.__all__) == {
         "AuditContext",
         "AutorizacaoError",
@@ -98,6 +99,102 @@ def test_public_api_and_example_contract():
         voa_tiss.parse_autorizacao(
             authorization_xml.replace(b"SOLICITACAO_PROCEDIMENTOS", b"TIPO_INVALIDO")
         )
+
+
+def _check_browser_map_contract():
+    node = shutil.which("node")
+    if (
+        node is None
+        or int(subprocess.check_output([node, "--version"]).decode()[1:].split(".")[0]) < 22
+    ):
+        return
+    vectors = []
+    for cpf, secret in [("000.000.000-00", "a" * 64), ("00000000001", "chave-sintética")]:
+        lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        lote["prestador"] = {"cpf": cpf}
+        value = voa_tiss.rejection_map([lote], segredo_pseudonimo=secret)
+        vectors.append([cpf, secret, value["prestadores"][0]["prestador"]])
+    script = r"""
+import assert from "node:assert/strict";
+import {
+  identificarPrestador, lerCadastro, prepararCadastro, matrizDoMapa, rotuloDoPrestador,
+} from "./web/lib/org/mapa.ts";
+import { rotaPermitida } from "./web/lib/org/rotas.ts";
+import { secoesVisiveisDaOrg } from "./web/components/org/secoes.ts";
+for (const [cpf, secret, expected] of JSON.parse(process.argv[1])) {
+  assert.equal(await identificarPrestador(cpf, async () => secret), expected);
+}
+const segredo = async () => "a".repeat(64);
+const csv = 'prestador,nome\n000.000.000-00,"Clínica, Sintética"\n' +
+  '00.000.000/0000-00,Hospital\ncodigo: A,Centro';
+const itens = await prepararCadastro(lerCadastro(csv, false), segredo);
+assert.match(itens[0].prestador, /^cpf:hmac:[0-9a-f]{64}$/);
+assert.equal(itens[0].nome, "Clínica, Sintética");
+assert.equal(itens[1].prestador, "cnpj:00000000000000");
+assert.equal(itens[2].prestador, "codigo:A");
+assert.deepEqual(lerCadastro("[]", true), []);
+assert.deepEqual(await prepararCadastro([], segredo), []);
+for (const body of [
+  '[{"prestador":"A","nome":"X","extra":1}]', '[{"prestador":"A","nome":""}]', '{}',
+]) {
+  assert.throws(() => lerCadastro(body, true));
+}
+assert.throws(() => lerCadastro('prestador,nome\n"incompleto', false));
+assert.throws(() => lerCadastro('nome,prestador\nA,X', false));
+await assert.rejects(() => prepararCadastro([{prestador:"cpf:abc",nome:"X"}], segredo));
+await assert.rejects(() => prepararCadastro(
+  [{prestador:"00000000000",nome:"X"}], async () => {throw Error("indisponível")},
+));
+await assert.rejects(() => prepararCadastro(
+  [{prestador:"A",nome:"X"},{prestador:"codigo:A",nome:"Y"}], segredo,
+));
+const prestador = {id:"codigo:A",nome:null,nome_origem:null};
+const linha = {
+  prestador, mes:"2026-10", codigo:"X", glosa:null, rule_id:null, guias:2, valor_afetado:"0.10",
+};
+const matriz = matrizDoMapa([linha,{...linha,valor_afetado:"0.20"},{...linha,mes:null}]);
+assert.deepEqual(matriz.meses, ["2026-10","sem mês"]);
+assert.deepEqual(matriz.linhas[0].total, {guias:6,centavos:40});
+assert.deepEqual(matrizDoMapa([]), {meses:[],linhas:[]});
+assert.equal(rotuloDoPrestador(prestador), "Código A");
+assert.equal(rotuloDoPrestador({...prestador,id:"cnpj:00000000000000"}), "00.000.000/0000-00");
+assert.equal(
+  rotuloDoPrestador({...prestador,id:"cpf:hmac:"+"a".repeat(64)}), "CPF pseudonimizado …aaaa",
+);
+const org = {
+  type:"pay",is_admin:false,my_areas:["auditoria"],rejection_map:{eligible:true,enabled:false},
+};
+const visivel = (value) => secoesVisiveisDaOrg(value).some(s => s.key === "mapa");
+assert.equal(visivel(org), true);
+assert.equal(visivel({...org,my_areas:[]}), false);
+assert.equal(visivel({...org,type:"prov"}), false);
+assert.equal(visivel({...org,rejection_map:{eligible:false}}), false);
+assert.equal(visivel({...org,my_areas:["administration"]}), true);
+const base = "tiss/org/rejection-map/";
+for (const [path, methods] of [
+  [base,["GET","DELETE"]], [base+"enable/",["POST"]], [base+"disable/",["POST"]],
+  [base+"secret/",["GET"]], [base+"providers/",["GET","PUT"]],
+]) {
+  for (const method of ["GET","POST","PUT","DELETE","PATCH"]) {
+    assert.equal(rotaPermitida(path, method), methods.includes(method));
+  }
+}
+assert.equal(rotaPermitida(base+"extra/", "GET"), false);
+"""
+    subprocess.run(
+        [
+            node,
+            "--experimental-strip-types",
+            "--input-type=module",
+            "-e",
+            script,
+            json.dumps(vectors),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_generated_artifacts_and_golden_report_are_current():
