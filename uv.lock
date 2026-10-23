@@ -2853,6 +2853,73 @@ wheels = [
 ]
 
 [[package]]
+name = "tiss"
+source = { editable = "." }
+dependencies = [
+    { name = "lxml" },
+]
+
+[package.optional-dependencies]
+mcp = [
+    { name = "jsonschema" },
+    { name = "mcp" },
+]
+pdf = [
+    { name = "jinja2" },
+    { name = "markupsafe" },
+    { name = "weasyprint" },
+]
+server = [
+    { name = "fastapi" },
+    { name = "jsonschema" },
+    { name = "mcp" },
+    { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "jinja2" },
+    { name = "jsonschema" },
+    { name = "mypy" },
+    { name = "nbmake" },
+    { name = "pypdf" },
+    { name = "pytest" },
+    { name = "pyyaml" },
+    { name = "ruff" },
+    { name = "types-jsonschema" },
+    { name = "vulture" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", marker = "extra == 'server'", specifier = ">=0.115,<1" },
+    { name = "jinja2", marker = "extra == 'pdf'", specifier = ">=3.1" },
+    { name = "jsonschema", marker = "extra == 'mcp'", specifier = ">=4.23" },
+    { name = "jsonschema", marker = "extra == 'server'", specifier = ">=4.23" },
+    { name = "lxml", specifier = ">=5,<7" },
+    { name = "markupsafe", marker = "extra == 'pdf'", specifier = ">=2.1" },
+    { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.30,<2" },
+    { name = "mcp", marker = "extra == 'server'", specifier = ">=1.30,<2" },
+    { name = "uvicorn", marker = "extra == 'server'", specifier = ">=0.34,<1" },
+    { name = "weasyprint", marker = "extra == 'pdf'", specifier = ">=60" },
+]
+provides-extras = ["mcp", "pdf", "server"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "jinja2", specifier = ">=3.1" },
+    { name = "jsonschema", specifier = ">=4.23" },
+    { name = "mypy", specifier = ">=1.13" },
+    { name = "nbmake", specifier = ">=1.5" },
+    { name = "pypdf", specifier = ">=5" },
+    { name = "pytest", specifier = ">=8.3" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "ruff", specifier = ">=0.8" },
+    { name = "types-jsonschema", specifier = ">=4.26.0.20261006" },
+    { name = "vulture", specifier = ">=2.16" },
+]
+
+[[package]]
 name = "tomli"
 version = "2.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3059,67 +3126,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cfc589dfff3cb796bd07a3aeb1a3e415ba09dd89d7bb4/uvicorn-0.54.0.tar.gz", hash = "sha256:a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620", size = 112283, upload-time = "2026-09-25T06:52:37.601Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/0c/b54a4fdd7f90a3af8b02ebc9ce6712c2c208b7926a2f7bad95c33ebbe943/uvicorn-0.54.0-py3-none-any.whl", hash = "sha256:505bdb0f318731d45f1f712071fc781a8981f6847a31c902c9f5e652d4f67faf", size = 87427, upload-time = "2026-09-25T06:52:35.829Z" },
-]
-
-[[package]]
-name = "tiss"
-source = { editable = "." }
-dependencies = [
-    { name = "lxml" },
-]
-
-[package.optional-dependencies]
-pdf = [
-    { name = "jinja2" },
-    { name = "markupsafe" },
-    { name = "weasyprint" },
-]
-server = [
-    { name = "fastapi" },
-    { name = "jsonschema" },
-    { name = "mcp" },
-    { name = "uvicorn" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "jinja2" },
-    { name = "jsonschema" },
-    { name = "mypy" },
-    { name = "nbmake" },
-    { name = "pypdf" },
-    { name = "pytest" },
-    { name = "pyyaml" },
-    { name = "ruff" },
-    { name = "types-jsonschema" },
-    { name = "vulture" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", marker = "extra == 'server'", specifier = ">=0.115,<1" },
-    { name = "jinja2", marker = "extra == 'pdf'", specifier = ">=3.1" },
-    { name = "jsonschema", marker = "extra == 'server'", specifier = ">=4.23" },
-    { name = "lxml", specifier = ">=5,<7" },
-    { name = "markupsafe", marker = "extra == 'pdf'", specifier = ">=2.1" },
-    { name = "mcp", marker = "extra == 'server'", specifier = ">=1.30,<2" },
-    { name = "uvicorn", marker = "extra == 'server'", specifier = ">=0.34,<1" },
-    { name = "weasyprint", marker = "extra == 'pdf'", specifier = ">=60" },
-]
-provides-extras = ["pdf", "server"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "jinja2", specifier = ">=3.1" },
-    { name = "jsonschema", specifier = ">=4.23" },
-    { name = "mypy", specifier = ">=1.13" },
-    { name = "nbmake", specifier = ">=1.5" },
-    { name = "pypdf", specifier = ">=5" },
-    { name = "pytest", specifier = ">=8.3" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "ruff", specifier = ">=0.8" },
-    { name = "types-jsonschema", specifier = ">=4.26.0.20261006" },
-    { name = "vulture", specifier = ">=2.16" },
 ]
 
 [[package]]

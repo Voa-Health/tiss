@@ -13,21 +13,183 @@ from decimal import Decimal
 
 import jsonschema
 import pytest
-from conftest import ROOT
+from conftest import ANS, ROOT
+from lxml import etree
 
 import tiss
 from bench._tarefas import TASK_DIR, gerar
 from bench._verificar import verificar
 from scripts import manutencao
 from tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
+from tiss._rules import _package
 from tiss._sadt import load_bundle, render_html
 from tiss._schema import (
     PINNED_PROVENANCE,
     SchemaBundleError,
+    parser,
     schema_dir,
     verify_schema_bundle,
 )
 from tiss.codes import CODES
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("lote-valido", set()),
+        (
+            "lote-com-erros",
+            {
+                "guia.sequencial",
+                "item.valor_divergente",
+                "item.valor_zerado",
+                "lote.valor_total_geral",
+            },
+        ),
+        ("guia-consulta", set()),
+        ("hash-divergente", set()),
+        ("hash-ausente", set()),
+        ("autorizacao.aprovar-json", "aprovar_por_regra"),
+        ("autorizacao.pendente-json", "pendente"),
+        ("autorizacao.auditoria-xml", "encaminhar_auditor"),
+        ("autorizacao.sem-regra-xml", "encaminhar_auditor"),
+        ("autorizacao.carteirinha-json", "encaminhar_auditor"),
+    ],
+)
+def test_example_reports(name, expected):
+    if name.startswith("autorizacao."):
+        case = name.split(".", 1)[1]
+        request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
+        package = _package("000000")
+        assert package is not None
+        context = {"operadora": package}
+        source = request
+        if case == "aprovar-json":
+            package["regras"][0]["check"]["codigos"] = ["99999999"]
+        elif case == "pendente-json":
+            request["solicitacao"].pop("indicacao_clinica")
+        elif case in {"auditoria-xml", "sem-regra-xml"}:
+            source = tiss.build_autorizacao(request)
+            context = {} if case == "sem-regra-xml" else context
+        elif case == "carteirinha-json":
+            package["regras"][0]["check"]["codigos"] = ["99999999"]
+            context["carteirinhas"] = {"AUT-0001": {"ativa": False}}
+        result = tiss.check_autorizacao(source, contexto=context)
+        assert result.decisao is not None
+        assert result.decisao["tipo"] == expected
+        assert expected in {"aprovar_por_regra", "pendente", "encaminhar_auditor"}
+        assert (
+            "negar"
+            not in tiss.json_schema("report")["properties"]["decisao"]["properties"]["tipo"]["enum"]
+        )
+        assert "negar" not in result.to_json()
+        if case == "aprovar-json":
+            assert result.decisao["rules"]
+            for example in ("autorizacao-solicitacao", "autorizacao-resposta"):
+                xml = examples.load(example)
+                assert tiss.build_autorizacao(tiss.parse_autorizacao(xml)) == xml
+                assert tiss.validate(xml).valid
+                hash_start = xml.index(b"<ans:hash>") + len(b"<ans:hash>")
+                replacement = b"0" if xml[hash_start : hash_start + 1] != b"0" else b"1"
+                changed = xml[:hash_start] + replacement + xml[hash_start + 1 :]
+                assert "lote.hash_divergente" in {
+                    finding.code for finding in tiss.validate(changed).findings
+                }
+        elif case == "pendente-json":
+            assert result.decisao["needs"] == ["/solicitacao/indicacao_clinica"]
+        elif case == "auditoria-xml":
+            assert any(
+                finding.code == "autorizacao.exige_auditoria"
+                and finding.rule
+                and finding.rule["id"] == "exige-autorizacao-consulta"
+                for finding in result.findings
+            )
+        elif case == "sem-regra-xml":
+            assert any(finding.code == "autorizacao.sem_regra" for finding in result.findings)
+            assert result.decisao["rules"] == []
+        elif case == "carteirinha-json":
+            assert any(finding.code == "autorizacao.carteirinha" for finding in result.findings)
+        return
+    if name == "guia-consulta":
+        lote = tiss.parse_lote(examples.load("lote-valido"))
+        lote["numero_lote"] = "TISS-001"
+        lote["guias"] = [
+            {
+                "tipo": "consulta",
+                "cabecalho_consulta": {
+                    "registro_ans": "123456",
+                    "numero_guia_prestador": "CONSULTA-001",
+                },
+                "dados_beneficiario": {
+                    "numero_carteira": "000000000001",
+                    "atendimento_rn": "N",
+                },
+                "contratado_executante": {
+                    "codigo_prestador_na_operadora": "PRESTADOR01",
+                    "cnes": "1234567",
+                },
+                "profissional_executante": {
+                    "nome_profissional": "DRA. MARIA COSTA",
+                    "conselho_profissional": "01",
+                    "numero_conselho_profissional": "12345",
+                    "uf": "35",
+                    "cbos": "225125",
+                },
+                "indicacao_acidente": "0",
+                "dados_atendimento": {
+                    "regime_atendimento": "01",
+                    "data_atendimento": "2026-10-21",
+                    "tipo_consulta": "1",
+                    "procedimento": {
+                        "codigo_tabela": "22",
+                        "codigo_procedimento": "10101012",
+                        "valor_procedimento": 15000,
+                    },
+                },
+            }
+        ]
+        xml = tiss.build_lote(lote)
+        assert tiss.validate(xml).valid
+        parsed = tiss.parse_lote(xml)
+        assert parsed == lote
+        report = tiss.check(parsed)
+        assert report.valid and report.findings == ()
+        return
+    if name.startswith("hash-"):
+        root = etree.fromstring(examples.load("lote-valido"), parser())
+        hash_element = root.xpath(".//ans:epilogo/ans:hash", namespaces=ANS)[0]
+        if name == "hash-divergente":
+            hash_element.text = "0" * 32
+        else:
+            hash_element.getparent().remove(hash_element)
+        document = etree.tostring(root, encoding="ISO-8859-1", xml_declaration=True)
+        report = tiss.validate(document)
+        codes = {finding.code for finding in report.findings}
+        if name == "hash-divergente":
+            assert codes == {"lote.hash_divergente"}
+            assert not report.valid
+            finding = report.findings[0]
+            assert finding.xpath.endswith("/ans:epilogo/ans:hash")
+            assert finding.message == "Hash do epílogo divergente do calculado."
+            assert finding.glosa == "5014"
+            assert finding.fix is None
+        else:
+            assert "lote.hash_divergente" not in codes
+            assert any(code.startswith("xsd.") for code in codes)
+        return
+    report = tiss.validate(examples.load(name))
+    codes = {finding.code for finding in report.findings}
+    assert expected <= codes
+    if name == "lote-valido":
+        assert report.valid and report.findings == ()
+    else:
+        assert 1 <= sum(code.startswith("xsd.") for code in codes) <= 3
+        assert report.findings[0].guia == "ERRO-01"
+        assert {finding.guia for finding in report.findings if finding.guia} == {
+            "ERRO-01",
+            "ERRO-02",
+        }
+        assert any(finding.severity == "warning" for finding in report.findings)
 
 
 def test_public_api_and_example_contract():

@@ -49,6 +49,7 @@ export function GET() {
     `- [Referência HTTP](${docsPageUrl("api")})`,
     `- [OpenAPI](${site.url}/openapi.json)`,
     `- [MCP](${site.url}/mcp)`,
+    `- [MCP local](${site.github}#mcp-local): ${site.mcpLocalCommand}`,
     operations,
     "",
     "## Operadoras",

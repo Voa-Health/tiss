@@ -104,8 +104,9 @@ _SKIP_PREFIXES = ("tests/fixtures/",)
 
 
 def _artifact_contents() -> dict[Path, bytes]:
-    from tiss.server import app as server_app
+    from tiss.server._http import create_app
 
+    server_app = create_app()
     artifacts = {
         ROOT / "schemas" / f"{name}.schema.json": (
             json.dumps(json_schema(name), ensure_ascii=False, indent=2).encode("utf-8") + b"\n"

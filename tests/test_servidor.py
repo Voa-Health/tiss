@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import datetime as dt
+import http.server
 import io
 import json
 import logging
+import os
 import re
 import socket
+import sys
 import threading
 import time
 import urllib.request
@@ -20,6 +23,7 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 from mcp.client.session import ClientSession
+from mcp.client.stdio import StdioServerParameters, stdio_client
 from mcp.client.streamable_http import streamablehttp_client
 
 import tiss
@@ -387,7 +391,70 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
                 response = anonymous.post(operation.route, json=entrada)
             assert response.status_code == HTTP_UNAUTHORIZED, name
     mcp_app = create_app()
-    asyncio.run(mcp_cases(mcp_app, cases, _factory(mcp_app), _bearer()))
+
+    class RequestRecorder(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            self.server.requests.append(self.path)
+            self.send_response(204)
+            self.end_headers()
+
+        def do_POST(self) -> None:
+            self.rfile.read(int(self.headers.get("Content-Length", "0")))
+            self.server.requests.append(self.path)
+            self.send_response(204)
+            self.end_headers()
+
+        def log_message(self, format: str, *args: Any) -> None:
+            del format, args
+
+    recorder = http.server.ThreadingHTTPServer(("127.0.0.1", 0), RequestRecorder)
+    recorder.requests = []
+    recorder_thread = threading.Thread(target=recorder.serve_forever, daemon=True)
+    recorder_thread.start()
+
+    async def run_transports() -> tuple[Any, Any]:
+        async with (
+            mcp_app.router.lifespan_context(mcp_app),
+            streamablehttp_client(
+                "http://test/mcp",
+                headers=_bearer(),
+                httpx_client_factory=_factory(mcp_app),
+            ) as (read_stream, write_stream, _),
+            ClientSession(read_stream, write_stream) as session,
+        ):
+            http_result = await mcp_cases(session, cases)
+
+        backend_url = f"http://127.0.0.1:{recorder.server_port}"
+        environment = {
+            "PATH": os.environ.get("PATH", ""),
+            "PYTHONPATH": str(ROOT / "src"),
+            "HOME": str(Path.home()),
+            "POSTHOG_KEY": "x",
+            "POSTHOG_HOST": backend_url,
+            "TISS_BACKEND_URL": backend_url,
+            "TISS_SERVICE_SECRET": "s" * 16,
+        }
+        parameters = StdioServerParameters(
+            command=sys.executable,
+            args=["-m", "tiss", "mcp"],
+            env=environment,
+            cwd=ROOT,
+        )
+        async with (
+            stdio_client(parameters) as (read_stream, write_stream),
+            ClientSession(read_stream, write_stream) as session,
+        ):
+            stdio_result = await mcp_cases(session, cases)
+        return http_result, stdio_result
+
+    try:
+        http_result, stdio_result = asyncio.run(run_transports())
+    finally:
+        recorder.shutdown()
+        recorder.server_close()
+        recorder_thread.join(5)
+    assert http_result == stdio_result
+    assert recorder.requests == []
 
 
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):

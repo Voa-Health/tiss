@@ -10,6 +10,7 @@ from ._keys import Access
 @dataclass(frozen=True)
 class CallContext:
     telemetry_off: bool = False
+    local: bool = False
     background_tasks: Any | None = None
     access: Access | None = None
     client_ip: str = ""
