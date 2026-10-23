@@ -1,4 +1,4 @@
-const docsUrl = "https://docs.voa.health/integracao/voa-tiss";
+const docsUrl = "https://docs.voa.health/integracao/tiss";
 const tutorialsUrl = `${docsUrl}/tutoriais`;
 
 export const site = {
