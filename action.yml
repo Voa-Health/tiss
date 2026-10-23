@@ -1,0 +1,49 @@
+name: tiss validate
+description: Valida arquivos XML TISS no GitHub Actions.
+branding:
+  icon: check-circle
+  color: blue
+inputs:
+  paths:
+    description: Arquivos ou pastas separados por espaços ou linhas.
+    required: true
+  operadora:
+    description: Registro ANS para aplicar regras locais da operadora.
+    required: false
+    default: ""
+  version:
+    description: Versão do pacote tiss ou local para usar este checkout.
+    required: false
+    default: "0.4.0"
+runs:
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      with:
+        enable-cache: false
+    - shell: bash
+      env:
+        ENTRADA_PATHS: ${{ inputs.paths }}
+        ENTRADA_OPERADORA: ${{ inputs.operadora }}
+        ENTRADA_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        if [[ "$ENTRADA_VERSION" == "local" ]]; then
+          source="$GITHUB_ACTION_PATH"
+        else
+          source="tiss==$ENTRADA_VERSION"
+        fi
+
+        args=(validate --format github)
+        if [[ -n "$ENTRADA_OPERADORA" ]]; then
+          args+=(--operadora "$ENTRADA_OPERADORA")
+        fi
+
+        read -r -d '' -a paths <<< "$ENTRADA_PATHS" || true
+        if ((${#paths[@]} == 0)); then
+          echo "::error::Informe ao menos um arquivo ou pasta em paths."
+          exit 2
+        fi
+
+        uvx --from "$source" tiss "${args[@]}" "${paths[@]}"

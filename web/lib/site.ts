@@ -10,6 +10,8 @@ export const site = {
   pypi: "https://pypi.org/project/tiss/",
   installCommand: "pip install tiss",
   mcpCommand: "claude mcp add --transport http tiss https://tiss-api.voa.health/mcp",
+  mcpLocalCommand: 'claude mcp add tiss -- uvx --from "tiss[mcp]" tiss mcp',
+  actionSnippet: "- uses: Voa-Health/tiss@v0\n  with:\n    paths: lotes/",
   navigation: [
     { href: docsUrl, label: "Documentação" },
     { href: tutorialUrl(), label: "Tutoriais" },

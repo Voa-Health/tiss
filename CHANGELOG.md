@@ -2,6 +2,9 @@
 
 ## 0.4.0
 
+- Action GitHub `Voa-Health/tiss@v0` para validar XML TISS.
+- Hook pre-commit `tiss-validate` para validar XML TISS.
+- MCP local no registro oficial, com pacote PyPI e transporte stdio em `server.json`.
 - A distribuição Python passa a se chamar `tiss`: instale com `pip install tiss`
   e importe com `import tiss`.
 - As variáveis de ambiente passam a usar o prefixo `TISS_*`, sem alias de

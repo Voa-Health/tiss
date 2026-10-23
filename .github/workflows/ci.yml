@@ -136,3 +136,40 @@ jobs:
         working-directory: web
       - run: pnpm build
         working-directory: web
+
+  distribuicao:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./
+        with:
+          version: local
+          paths: tests/fixtures/xml/4.02.00-valido.xml
+      - uses: ./
+        id: invalido
+        continue-on-error: true
+        with:
+          version: local
+          paths: tests/fixtures/xml/4.02.00-invalido.xml
+      - name: Confirmar erro no XML inválido
+        env:
+          RESULTADO: ${{ steps.invalido.outcome }}
+        run: test "$RESULTADO" = failure
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Validar hook pre-commit
+        run: uvx pre-commit try-repo . tiss-validate --files tests/fixtures/xml/4.02.00-valido.xml
+      - name: Validar registro MCP
+        env:
+          MCP_PUBLISHER_VERSION: 1.8.2
+          MCP_PUBLISHER_SHA256: d0554112d8f7affad9a10041776d63129a60b163c05036ae26caf73ecbbd89c8
+        run: |
+          curl --fail --silent --show-error --location \
+            "https://github.com/modelcontextprotocol/registry/releases/download/v${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" \
+            --output mcp-publisher.tar.gz
+          printf '%s  mcp-publisher.tar.gz\n' "$MCP_PUBLISHER_SHA256" | sha256sum --check
+          tar -xzf mcp-publisher.tar.gz mcp-publisher
+          ./mcp-publisher validate server.json

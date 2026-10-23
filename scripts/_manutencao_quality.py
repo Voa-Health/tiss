@@ -14,6 +14,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 LIMITES = {
     "docstring_chars": 88,
@@ -110,6 +112,47 @@ def _check_readme_snippet() -> bool:
         _report_violation("README.md", 1, "exemplo difere da célula do tutorial 01")
         return False
     return True
+
+
+def _check_release_versions() -> bool:
+    init_path = ROOT / "src/tiss/__init__.py"
+    version_match = re.search(
+        r"""^__version__\s*=\s*["']([^"']+)["']""",
+        init_path.read_text(encoding="utf-8"),
+        flags=re.MULTILINE,
+    )
+    if version_match is None:
+        _report_violation(init_path, 1, "versão do pacote ausente")
+        return False
+    package_version = version_match.group(1)
+    server_path = ROOT / "server.json"
+    server = json.loads(server_path.read_text(encoding="utf-8"))
+    clean = True
+    if server.get("version") != package_version:
+        _report_violation(server_path, 1, "versão difere do pacote")
+        clean = False
+    for package in server.get("packages", []):
+        if package.get("version") != package_version:
+            _report_violation(server_path, 1, "versão do pacote MCP difere do pacote")
+            clean = False
+        for argument in package.get("runtimeArguments", []):
+            value = argument.get("value", "")
+            match = re.search(r"tiss\[[^]]+\]==([^\s]+)", value)
+            if match is not None and match.group(1) != package_version:
+                _report_violation(server_path, 1, "versão do extra MCP difere do pacote")
+                clean = False
+    action_path = ROOT / "action.yml"
+    action = yaml.safe_load(action_path.read_text(encoding="utf-8"))
+    action_version = action.get("inputs", {}).get("version", {}).get("default")
+    if action_version != package_version:
+        _report_violation(action_path, 1, "versão padrão difere do pacote")
+        clean = False
+    readme_path = ROOT / "README.md"
+    readme = readme_path.read_text(encoding="utf-8")
+    if f"mcp-name: {server.get('name')}" not in readme:
+        _report_violation(readme_path, 1, "nome MCP ausente ou diferente do registro")
+        clean = False
+    return clean
 
 
 def _python_files() -> list[Path]:
@@ -414,6 +457,7 @@ def verificar(
         _check_markdown_links(),
         _check_style(style_pattern, skip_prefixes),
         _check_readme_snippet(),
+        _check_release_versions(),
         artifact_check(),
     )
     if all(checks):
