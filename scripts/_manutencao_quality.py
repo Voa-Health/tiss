@@ -23,7 +23,7 @@ LIMITES = {
     "comment_lines": 2,
     "module_lines": 600,
     "test_files": 8,
-    "test_functions": 36,
+    "test_functions": 37,
     "notebook_output_chars": 2000,
 }
 _SKIP_PATHS = {

@@ -319,7 +319,7 @@ def _referencia_pipeline_e_interfaces(
 
     app = create_app()
     params = {"codigo": "123", "uf": "SP", "modalidade": "Consulta", "porte": "Médio"}
-    with TestClient(app, headers={"Authorization": "Bearer sk_tiss_verified"}) as client:
+    with TestClient(app, headers={"Authorization": "Bearer sk_voa_verified"}) as client:
         response = client.get("/v1/referencia", params=params)
         assert response.status_code == 200
         assert response.json()["referencia"] == expected
@@ -386,7 +386,7 @@ def server_state(tiss_service):
 
 
 def _bearer(tier: str = "verified") -> dict[str, str]:
-    return {"Authorization": f"Bearer sk_tiss_{tier}"}
+    return {"Authorization": f"Bearer sk_voa_{tier}"}
 
 
 def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
@@ -780,6 +780,38 @@ def test_http_mcp_parity_and_token_budgets(
     assert recorder.requests == []
 
 
+@pytest.mark.parametrize(
+    ("key", "status", "error_code", "expected_secret"),
+    [
+        ("sk_voa_caso", HTTP_OK, None, "a" * 64),
+        ("sk_tiss_caso", HTTP_OK, None, "a" * 64),
+        ("sk_outro_caso", HTTP_UNAUTHORIZED, "chave_invalida", None),
+    ],
+)
+def test_organization_key_prefixes(key, status, error_code, expected_secret, tiss_service):
+    registered_keys = ("sk_voa_caso", "sk_tiss_caso", "sk_outro_caso")
+    for registered_key in registered_keys:
+        tiss_service.add_key(registered_key)
+    tiss_service.map_enabled = True
+    _rejection_map.clear_cache()
+    assert _rejection_map.secret(key) == expected_secret
+
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/v1/validate",
+            json={"xml": examples.load("lote-valido").decode()},
+            headers={"Authorization": f"Bearer {key}"},
+        )
+
+    assert response.status_code == status
+    if error_code is not None:
+        assert response.json()["erro"]["codigo"] == error_code
+    if status == HTTP_UNAUTHORIZED:
+        assert key not in tiss_service.introspections
+    else:
+        assert key in tiss_service.introspections
+
+
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
     """Verifica chaves, escopos, uso, níveis, telemetria e privacidade dos logs."""
     monkeypatch.setenv("POSTHOG_KEY", "test-posthog-key")
@@ -798,7 +830,7 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
     with TestClient(app, base_url="https://testserver", follow_redirects=False) as client:
         sandbox = ("/v1/sandbox/lotes", {"xml": examples.load("lote-valido").decode()})
         validate = ("/v1/validate", {"xml": xml})
-        key = "sk_tiss_verified"
+        key = "sk_voa_verified"
         for _ in range(2):
             response = client.post(validate[0], json=validate[1], headers=_bearer())
             assert response.status_code == HTTP_OK
@@ -814,15 +846,15 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
         monkeypatch.setattr(_keys, "_now", time.monotonic)
         tiss_service.add_key(key)
         _keys.clear_cache()
-        tiss_service.add_key("sk_tiss_sandbox", scopes=["tiss:sandbox"])
-        only_sandbox = {"Authorization": "Bearer sk_tiss_sandbox"}
+        tiss_service.add_key("sk_voa_sandbox", scopes=["tiss:sandbox"])
+        only_sandbox = {"Authorization": "Bearer sk_voa_sandbox"}
         denied = client.post(validate[0], json=validate[1], headers=only_sandbox)
         assert denied.status_code == HTTP_FORBIDDEN
         assert denied.json()["erro"]["codigo"] == "escopo_ausente"
         assert client.post(sandbox[0], json=sandbox[1], headers=only_sandbox).status_code == 200
         assert client.get("/v1/limits", headers=only_sandbox).status_code == HTTP_OK
         tiss_service.down = True
-        unknown = {"Authorization": "Bearer sk_tiss_desconhecida"}
+        unknown = {"Authorization": "Bearer sk_voa_desconhecida"}
         unavailable = client.post(validate[0], json=validate[1], headers=unknown)
         assert unavailable.status_code == HTTP_UNAVAILABLE
         assert unavailable.headers["retry-after"] == "1"
@@ -1180,7 +1212,7 @@ def _check_hosted_maps(monkeypatch, caplog, service):
                 assert len(service.map_requests) == int(enabled)
                 if enabled:
                     assert service.map_requests[0] == {
-                        "key": "sk_tiss_verified",
+                        "key": "sk_voa_verified",
                         "source": "server",
                         "map": expected,
                     }
@@ -1196,7 +1228,7 @@ def _check_hosted_maps(monkeypatch, caplog, service):
 
         _rejection_map.clear_cache()
         service.map_enabled = True
-        assert _rejection_map.secret("sk_tiss_verified") == "a" * 64
+        assert _rejection_map.secret("sk_voa_verified") == "a" * 64
         service.map_failure = 503
         for name in ("validate", "audit"):
             assert (
@@ -1263,10 +1295,10 @@ def _check_map_routes(client, service, value):
     for path in ("config", "submit"):
         method = client.get if path == "config" else client.post
         assert method(f"/v1/rejection-map/{path}").status_code == 401
-    service.add_key("sk_tiss_no_rules", scopes=["tiss:validate"])
+    service.add_key("sk_voa_no_rules", scopes=["tiss:validate"])
     assert (
         client.get(
-            "/v1/rejection-map/config", headers={"Authorization": "Bearer sk_tiss_no_rules"}
+            "/v1/rejection-map/config", headers={"Authorization": "Bearer sk_voa_no_rules"}
         ).status_code
         == 403
     )
@@ -1274,8 +1306,8 @@ def _check_map_routes(client, service, value):
     assert client.post("/v1/rejection-map/submit", json=value, headers=_bearer()).status_code == 503
     service.map_failure = 0
     service.map_enabled = False
-    assert _rejection_map.secret("sk_tiss_verified") == "a" * 64
-    assert _rejection_map.secret("sk_tiss_other") is None
+    assert _rejection_map.secret("sk_voa_verified") == "a" * 64
+    assert _rejection_map.secret("sk_voa_other") is None
     _rejection_map.clear_cache()
     assert client.get("/v1/rejection-map/config", headers=_bearer()).status_code == 403
 
@@ -1345,7 +1377,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
 
         for route, body, expected in published:
             assert post(route, body) == expected, route
-        assert tiss_service.rules_requests == ["sk_tiss_verified"]
+        assert tiss_service.rules_requests == ["sk_voa_verified"]
         for route, body, expected in explicit:
             assert post(route, body) == expected, route
         assert post("/v1/sandbox/lotes", {"xml": xml}, {}) == enviar_lote(xml)
@@ -1357,7 +1389,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         caplog.set_level(logging.WARNING, logger="tiss.server")
         assert post("/v1/validate", {"lote": lote}) == plain
         assert "op=regras status=503" in caplog.text
-        assert "sk_tiss_verified" not in caplog.text
+        assert "sk_voa_verified" not in caplog.text
         assert post("/v1/validate", {"lote": lote}) == published[0][2]
         assert len(tiss_service.rules_requests) == 3
         del tiss_service.rules["org-1"]
@@ -1402,7 +1434,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         ("tiss_api_call", billing, HTTP_OK, {"ok": True}),
     ]
     for index, (kind, case_billing, status, expected) in enumerate(cases):
-        key = f"sk_tiss_caso{index}"
+        key = f"sk_voa_caso{index}"
         tiss_service.add_key(key, billing=case_billing)
         case_access = _keys.resolve(key)
         op = Op(

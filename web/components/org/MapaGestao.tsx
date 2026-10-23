@@ -59,7 +59,7 @@ export function MapaGestao({ ligada, recarregar }: { ligada: boolean; recarregar
         {!ligada && <Typography.Text type="secondary">Ligue a coleta para importar nomes ou consultar o segredo.</Typography.Text>}
         <Typography.Text strong>Uso pela CLI</Typography.Text>
         <Typography.Paragraph code copyable style={{ margin: 0 }}>
-          TISS_KEY=sk_tiss_… python -m tiss mapa &lt;pasta&gt; --enviar
+          TISS_KEY=sk_voa_… python -m tiss mapa &lt;pasta&gt; --enviar
         </Typography.Paragraph>
         <Typography.Text type="secondary">A CLI busca o segredo automaticamente. Guarde-o em local seguro se precisar configurar a pseudonimização manualmente.</Typography.Text>
         <Flex gap="small">

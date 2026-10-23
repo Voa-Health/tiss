@@ -289,9 +289,10 @@ curl https://tiss-api.voa.health/v1/validate \
 Consulte o [OpenAPI](https://tiss-api.voa.health/openapi.json) e o
 [catálogo de operações](https://github.com/Voa-Health/tiss/blob/main/docs/api.md).
 
-Sem chave, só as operações do sandbox respondem. Para as demais, crie uma chave
-`sk_tiss_` no [painel da organização](https://tiss-api.voa.health/org) e envie-a
-em `Authorization: Bearer`. Não há limite diário.
+Sem chave, só as operações do sandbox respondem. Para as demais, crie a chave
+`sk_voa_` da organização, que vale para os produtos da Voa, no
+[painel da organização](https://tiss-api.voa.health/org) e envie-a em
+`Authorization: Bearer`. Não há limite diário.
 
 ```sh
 curl https://tiss-api.voa.health/v1/validate \
@@ -325,7 +326,7 @@ Na CLI, `mapa --enviar` usa `TISS_KEY` e envia ao servidor público.
 `TISS_MAPA_URL` substitui a URL de envio (padrão:
 `https://tiss-api.voa.health/v1/rejection-map/submit`). Sem
 `TISS_SEGREDO_PSEUDONIMO`, a CLI busca o segredo antes de agregar, via
-`GET /v1/rejection-map/config`, no mesmo servidor e com Bearer sk_tiss_.
+`GET /v1/rejection-map/config`, no mesmo servidor e com Bearer sk_voa_.
 O envio usa `POST /v1/rejection-map/submit`, com o mapa agregado como corpo JSON.
 
 </details>

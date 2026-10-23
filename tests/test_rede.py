@@ -137,7 +137,7 @@ def test_rede_rotas_http(
     monkeypatch.setenv("TISS_REDE", str(banco))
     rede._conectar.cache_clear()
     app = create_app()
-    with TestClient(app, headers={"Authorization": "Bearer sk_tiss_verified"}) as cliente:
+    with TestClient(app, headers={"Authorization": "Bearer sk_voa_verified"}) as cliente:
         resposta = cliente.get("/v1/rede", params={"cnes": "0123456", "limite": 1})
         assert resposta.status_code == 200
         assert token_estimate(resposta.json()) <= next(
