@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from voa_tiss import dominio, operadoras
-from voa_tiss._glosa import glosa
+from tiss import dominio, operadoras
+from tiss._glosa import glosa
 
 from ._ops_schemas import Op, _array, _object, _string
 

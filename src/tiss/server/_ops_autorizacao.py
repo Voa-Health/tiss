@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-import voa_tiss
-from voa_tiss import sandbox
+import tiss
+from tiss import sandbox
 
 from ._ops_schemas import Op, _object, _string
 
@@ -12,19 +12,19 @@ _CONTEXT = _object({}, additional=True)
 
 
 def _build(value: dict[str, Any]) -> dict[str, Any]:
-    xml = voa_tiss.build_autorizacao(value["mensagem"])
-    return {"xml": xml.decode("ISO-8859-1"), "hash": voa_tiss.hash_epilogo(xml)}
+    xml = tiss.build_autorizacao(value["mensagem"])
+    return {"xml": xml.decode("ISO-8859-1"), "hash": tiss.hash_epilogo(xml)}
 
 
 def _parse(value: dict[str, Any]) -> dict[str, Any]:
-    return {"mensagem": voa_tiss.parse_autorizacao(value["xml"])}
+    return {"mensagem": tiss.parse_autorizacao(value["xml"])}
 
 
 def _check(value: dict[str, Any]) -> dict[str, Any]:
     if ("solicitacao" in value) == ("xml" in value):
         raise ValueError("Informe exatamente um dos campos 'solicitacao' ou 'xml'.")
     input_value = cast(dict[str, Any] | str, value.get("solicitacao", value.get("xml")))
-    return voa_tiss.check_autorizacao(
+    return tiss.check_autorizacao(
         input_value,
         contexto=value.get("contexto"),
     ).to_dict()

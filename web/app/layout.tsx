@@ -19,14 +19,14 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: "voa-tiss", template: "%s · voa-tiss" },
+  title: { default: "tiss", template: "%s · tiss" },
   description: "Valide lotes TISS, corrija achados e revalide antes do envio à operadora.",
   robots: robotsPolicy(),
   openGraph: {
     type: "website",
     locale: "pt_BR",
     siteName: site.name,
-    title: "voa-tiss",
+    title: "tiss",
     description: "Valide, corrija e revalide lotes TISS.",
   },
 };

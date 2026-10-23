@@ -4,7 +4,7 @@ Agente de referência que fecha o ciclo TISS do prestador sem intervenção huma
 lê os atendimentos, monta e corrige o lote, envia à operadora simulada, lê o
 demonstrativo e rascunha o recurso de cada glosa. É feito em
 [deepagents](https://github.com/langchain-ai/deepagents) e usa só o MCP público do
-voa-tiss.
+tiss.
 
 O mesmo MCP serve operadoras, profissionais, pacientes e gestores; este agente é um
 ponto de partida adaptável (por exemplo, troque o fluxo para auditoria de operadora).
@@ -49,11 +49,11 @@ referências `artefato:N.campo`, que o agente repassa às tools seguintes.
 | `OPENROUTER_API_KEY` | | provedor `openrouter` |
 | `OPENAI_API_KEY` | | provedor `openai`, `openai:<modelo>` |
 | `ANTHROPIC_API_KEY` | | provedor `anthropic`, `anthropic:<modelo>` |
-| `VOA_TISS_MCP` | `local` | `local` sobe `python -m voa_tiss.server`; ou uma URL MCP |
-| `VOA_TISS_API_KEY` | | chave enviada ao MCP remoto |
+| `TISS_MCP` | `local` | `local` sobe `python -m tiss.server`; ou uma URL MCP |
+| `TISS_API_KEY` | | chave enviada ao MCP remoto |
 
 No MCP remoto (`https://tiss-api.voa.health/mcp`), as tools de sandbox dispensam
-chave e as demais exigem `VOA_TISS_API_KEY`. Também é possível passar `--modelo`,
+chave e as demais exigem `TISS_API_KEY`. Também é possível passar `--modelo`,
 `--mcp`, `--cenario` (cenários da operadora simulada, padrão
 `carteirinha_vencida`) e `--saida`.
 

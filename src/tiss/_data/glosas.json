@@ -32,7 +32,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -46,7 +46,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -60,7 +60,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -74,7 +74,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -88,7 +88,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -102,7 +102,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -116,7 +116,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -130,7 +130,7 @@
       },
       "grupo": "10",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e a elegibilidade na carteirinha e no cadastro; anexe os comprovantes ao recurso."
       }
     },
@@ -144,7 +144,7 @@
       },
       "grupo": "11",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira número, valor e vínculo do protocolo com as guias; anexe o demonstrativo ao recurso."
       }
     },
@@ -158,7 +158,7 @@
       },
       "grupo": "11",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira número, valor e vínculo do protocolo com as guias; anexe o demonstrativo ao recurso."
       }
     },
@@ -172,7 +172,7 @@
       },
       "grupo": "11",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira número, valor e vínculo do protocolo com as guias; anexe o demonstrativo ao recurso."
       }
     },
@@ -186,7 +186,7 @@
       },
       "grupo": "12",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira CNES, CPF/CNPJ e cadastro do prestador; anexe o comprovante cadastral ao recurso."
       }
     },
@@ -200,7 +200,7 @@
       },
       "grupo": "12",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira CNES, CPF/CNPJ e cadastro do prestador; anexe o comprovante cadastral ao recurso."
       }
     },
@@ -214,7 +214,7 @@
       },
       "grupo": "12",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira CNES, CPF/CNPJ e cadastro do prestador; anexe o comprovante cadastral ao recurso."
       }
     },
@@ -228,7 +228,7 @@
       },
       "grupo": "12",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira CNES, CPF/CNPJ e cadastro do prestador; anexe o comprovante cadastral ao recurso."
       }
     },
@@ -242,7 +242,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -256,7 +256,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -270,7 +270,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -284,7 +284,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -298,7 +298,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -312,7 +312,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -326,7 +326,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -340,7 +340,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -354,7 +354,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -368,7 +368,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -382,7 +382,7 @@
       },
       "grupo": "13",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira identificação, preenchimento e reapresentação da guia; anexe a guia corrigida e os documentos solicitados."
       }
     },
@@ -396,7 +396,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -410,7 +410,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -424,7 +424,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -438,7 +438,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -452,7 +452,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -466,7 +466,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -480,7 +480,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -494,7 +494,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -508,7 +508,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -522,7 +522,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -536,7 +536,7 @@
       },
       "grupo": "14",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira solicitante, senha, validade e procedimentos autorizados; anexe o comprovante de autorização ao recurso."
       }
     },
@@ -550,7 +550,7 @@
       },
       "grupo": "15",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o indicador de acidente e os campos relacionados na guia; anexe os documentos de suporte ao recurso."
       }
     },
@@ -564,7 +564,7 @@
       },
       "grupo": "15",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o indicador de acidente e os campos relacionados na guia; anexe os documentos de suporte ao recurso."
       }
     },
@@ -578,7 +578,7 @@
       },
       "grupo": "15",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o indicador de acidente e os campos relacionados na guia; anexe os documentos de suporte ao recurso."
       }
     },
@@ -592,7 +592,7 @@
       },
       "grupo": "15",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o indicador de acidente e os campos relacionados na guia; anexe os documentos de suporte ao recurso."
       }
     },
@@ -606,7 +606,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -620,7 +620,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -634,7 +634,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -648,7 +648,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -662,7 +662,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -676,7 +676,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -690,7 +690,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -704,7 +704,7 @@
       },
       "grupo": "16",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os registros do atendimento anterior e a regra administrativa citada; anexe os comprovantes no canal de recurso."
       }
     },
@@ -718,7 +718,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -732,7 +732,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -746,7 +746,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -760,7 +760,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -774,7 +774,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -788,7 +788,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -802,7 +802,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -816,7 +816,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -830,7 +830,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -844,7 +844,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -858,7 +858,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -872,7 +872,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -886,7 +886,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -900,7 +900,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -914,7 +914,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -928,7 +928,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -942,7 +942,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -956,7 +956,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -970,7 +970,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -984,7 +984,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -998,7 +998,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -1012,7 +1012,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -1026,7 +1026,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -1040,7 +1040,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -1054,7 +1054,7 @@
       },
       "grupo": "17",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira quantidade, valor unitário, fator e totais informados; anexe memória de cálculo e documentos da cobrança."
       }
     },
@@ -1068,7 +1068,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1082,7 +1082,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1096,7 +1096,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1110,7 +1110,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1124,7 +1124,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1138,7 +1138,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1152,7 +1152,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1166,7 +1166,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1180,7 +1180,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1194,7 +1194,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1208,7 +1208,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1222,7 +1222,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1236,7 +1236,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1250,7 +1250,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1264,7 +1264,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1278,7 +1278,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1292,7 +1292,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1306,7 +1306,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1320,7 +1320,7 @@
       },
       "grupo": "18",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira código, tabela, quantidade e documentos do procedimento; apresente a justificativa administrativa no recurso."
       }
     },
@@ -1334,7 +1334,7 @@
       },
       "grupo": "19",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira datas, itens cobrados e registros que sustentam a permanência; anexe os documentos requeridos no recurso."
       }
     },
@@ -1348,7 +1348,7 @@
       },
       "grupo": "19",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira datas, itens cobrados e registros que sustentam a permanência; anexe os documentos requeridos no recurso."
       }
     },
@@ -1362,7 +1362,7 @@
       },
       "grupo": "19",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira datas, itens cobrados e registros que sustentam a permanência; anexe os documentos requeridos no recurso."
       }
     },
@@ -1376,7 +1376,7 @@
       },
       "grupo": "19",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira datas, itens cobrados e registros que sustentam a permanência; anexe os documentos requeridos no recurso."
       }
     },
@@ -1390,7 +1390,7 @@
       },
       "grupo": "19",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira datas, itens cobrados e registros que sustentam a permanência; anexe os documentos requeridos no recurso."
       }
     },
@@ -1404,7 +1404,7 @@
       },
       "grupo": "19",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira datas, itens cobrados e registros que sustentam a permanência; anexe os documentos requeridos no recurso."
       }
     },
@@ -1418,7 +1418,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1432,7 +1432,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1446,7 +1446,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1460,7 +1460,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1474,7 +1474,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1488,7 +1488,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1502,7 +1502,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1516,7 +1516,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1530,7 +1530,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1544,7 +1544,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1558,7 +1558,7 @@
       },
       "grupo": "25",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira códigos e quantidades dos itens odontológicos cobrados; anexe os registros correspondentes ao recurso."
       }
     },
@@ -1572,7 +1572,7 @@
       },
       "grupo": "26",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e participação profissional registradas; anexe os comprovantes solicitados pela operadora."
       }
     },
@@ -1586,7 +1586,7 @@
       },
       "grupo": "26",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e participação profissional registradas; anexe os comprovantes solicitados pela operadora."
       }
     },
@@ -1600,7 +1600,7 @@
       },
       "grupo": "26",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e participação profissional registradas; anexe os comprovantes solicitados pela operadora."
       }
     },
@@ -1614,7 +1614,7 @@
       },
       "grupo": "26",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e participação profissional registradas; anexe os comprovantes solicitados pela operadora."
       }
     },
@@ -1628,7 +1628,7 @@
       },
       "grupo": "26",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e participação profissional registradas; anexe os comprovantes solicitados pela operadora."
       }
     },
@@ -1642,7 +1642,7 @@
       },
       "grupo": "26",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a identificação e participação profissional registradas; anexe os comprovantes solicitados pela operadora."
       }
     },
@@ -1656,7 +1656,7 @@
       },
       "grupo": "28",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a composição do pacote e os itens documentados; detalhe a cobrança e anexe os registros ao recurso."
       }
     },
@@ -1670,7 +1670,7 @@
       },
       "grupo": "29",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a decisão anterior e o prazo de reapresentação; encaminhe contestação fundamentada pelo canal de recurso."
       }
     },
@@ -1684,7 +1684,7 @@
       },
       "grupo": "29",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a decisão anterior e o prazo de reapresentação; encaminhe contestação fundamentada pelo canal de recurso."
       }
     },
@@ -1698,7 +1698,7 @@
       },
       "grupo": "29",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a decisão anterior e o prazo de reapresentação; encaminhe contestação fundamentada pelo canal de recurso."
       }
     },
@@ -1712,7 +1712,7 @@
       },
       "grupo": "29",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a decisão anterior e o prazo de reapresentação; encaminhe contestação fundamentada pelo canal de recurso."
       }
     },
@@ -1726,7 +1726,7 @@
       },
       "grupo": "29",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a decisão anterior e o prazo de reapresentação; encaminhe contestação fundamentada pelo canal de recurso."
       }
     },
@@ -1740,7 +1740,7 @@
       },
       "grupo": "29",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira a decisão anterior e o prazo de reapresentação; encaminhe contestação fundamentada pelo canal de recurso."
       }
     },
@@ -1754,7 +1754,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1768,7 +1768,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1782,7 +1782,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1796,7 +1796,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1810,7 +1810,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1824,7 +1824,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1838,7 +1838,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1852,7 +1852,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1866,7 +1866,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1880,7 +1880,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1894,7 +1894,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1908,7 +1908,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1922,7 +1922,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1936,7 +1936,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1950,7 +1950,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1964,7 +1964,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1978,7 +1978,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -1992,7 +1992,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2006,7 +2006,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2020,7 +2020,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2034,7 +2034,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2048,7 +2048,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2062,7 +2062,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2076,7 +2076,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2090,7 +2090,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2104,7 +2104,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2118,7 +2118,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2132,7 +2132,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2146,7 +2146,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2160,7 +2160,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2174,7 +2174,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2188,7 +2188,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2202,7 +2202,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2216,7 +2216,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2230,7 +2230,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2244,7 +2244,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2258,7 +2258,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2272,7 +2272,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2286,7 +2286,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2300,7 +2300,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2314,7 +2314,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2328,7 +2328,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2342,7 +2342,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2356,7 +2356,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2370,7 +2370,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2384,7 +2384,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2398,7 +2398,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2412,7 +2412,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2426,7 +2426,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2440,7 +2440,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2454,7 +2454,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2468,7 +2468,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2482,7 +2482,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2496,7 +2496,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2510,7 +2510,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2524,7 +2524,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2538,7 +2538,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2552,7 +2552,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2566,7 +2566,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2580,7 +2580,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2594,7 +2594,7 @@
       },
       "grupo": "30",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o status da análise e os documentos pendentes; acompanhe a liberação pelo canal indicado pela operadora."
       }
     },
@@ -2608,7 +2608,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2622,7 +2622,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2636,7 +2636,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2650,7 +2650,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2664,7 +2664,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2678,7 +2678,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2692,7 +2692,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2706,7 +2706,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2720,7 +2720,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2734,7 +2734,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2748,7 +2748,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2762,7 +2762,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2776,7 +2776,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2790,7 +2790,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2804,7 +2804,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2818,7 +2818,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2832,7 +2832,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2846,7 +2846,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2860,7 +2860,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2874,7 +2874,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2888,7 +2888,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2902,7 +2902,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2916,7 +2916,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2930,7 +2930,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2944,7 +2944,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2958,7 +2958,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2972,7 +2972,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -2986,7 +2986,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3000,7 +3000,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3014,7 +3014,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3028,7 +3028,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3042,7 +3042,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3056,7 +3056,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3070,7 +3070,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3084,7 +3084,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3098,7 +3098,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3112,7 +3112,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3126,7 +3126,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3140,7 +3140,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3154,7 +3154,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3168,7 +3168,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3182,7 +3182,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3196,7 +3196,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3210,7 +3210,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3224,7 +3224,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3238,7 +3238,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3252,7 +3252,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3266,7 +3266,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3280,7 +3280,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3294,7 +3294,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3308,7 +3308,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3322,7 +3322,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3336,7 +3336,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3350,7 +3350,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3364,7 +3364,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3378,7 +3378,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3392,7 +3392,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3406,7 +3406,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3420,7 +3420,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3434,7 +3434,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3448,7 +3448,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3462,7 +3462,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3476,7 +3476,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3490,7 +3490,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3504,7 +3504,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3518,7 +3518,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3532,7 +3532,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3546,7 +3546,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3560,7 +3560,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3574,7 +3574,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3588,7 +3588,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3602,7 +3602,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3616,7 +3616,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3630,7 +3630,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3644,7 +3644,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3658,7 +3658,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3672,7 +3672,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3686,7 +3686,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3700,7 +3700,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3714,7 +3714,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3728,7 +3728,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3742,7 +3742,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3756,7 +3756,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3770,7 +3770,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3784,7 +3784,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3798,7 +3798,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3812,7 +3812,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3826,7 +3826,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3840,7 +3840,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3854,7 +3854,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3868,7 +3868,7 @@
       },
       "grupo": "31",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o código de origem e o cadastro de acesso do prestador; solicite ajuste cadastral à operadora."
       }
     },
@@ -3882,7 +3882,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3896,7 +3896,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3910,7 +3910,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3924,7 +3924,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3938,7 +3938,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3952,7 +3952,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3966,7 +3966,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3980,7 +3980,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -3994,7 +3994,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4008,7 +4008,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4022,7 +4022,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4036,7 +4036,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4050,7 +4050,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4064,7 +4064,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4078,7 +4078,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4092,7 +4092,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4106,7 +4106,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4120,7 +4120,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4134,7 +4134,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4148,7 +4148,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4162,7 +4162,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4176,7 +4176,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4190,7 +4190,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4204,7 +4204,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4218,7 +4218,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4232,7 +4232,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4246,7 +4246,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4260,7 +4260,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4274,7 +4274,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4288,7 +4288,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4302,7 +4302,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4316,7 +4316,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4330,7 +4330,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4344,7 +4344,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4358,7 +4358,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4372,7 +4372,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4386,7 +4386,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4400,7 +4400,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4414,7 +4414,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4428,7 +4428,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4442,7 +4442,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4456,7 +4456,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4470,7 +4470,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4484,7 +4484,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4498,7 +4498,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4512,7 +4512,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4526,7 +4526,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4540,7 +4540,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4554,7 +4554,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4568,7 +4568,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4582,7 +4582,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4596,7 +4596,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4610,7 +4610,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4624,7 +4624,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4638,7 +4638,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4652,7 +4652,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4666,7 +4666,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4680,7 +4680,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4694,7 +4694,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4708,7 +4708,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4722,7 +4722,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4736,7 +4736,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4750,7 +4750,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4764,7 +4764,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4778,7 +4778,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4792,7 +4792,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4806,7 +4806,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4820,7 +4820,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4834,7 +4834,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4848,7 +4848,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4862,7 +4862,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4876,7 +4876,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4890,7 +4890,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4904,7 +4904,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4918,7 +4918,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4932,7 +4932,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4946,7 +4946,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4960,7 +4960,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4974,7 +4974,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -4988,7 +4988,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5002,7 +5002,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5016,7 +5016,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5030,7 +5030,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5044,7 +5044,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5058,7 +5058,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5072,7 +5072,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5086,7 +5086,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5100,7 +5100,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5114,7 +5114,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5128,7 +5128,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5142,7 +5142,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5156,7 +5156,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5170,7 +5170,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5184,7 +5184,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5198,7 +5198,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5212,7 +5212,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5226,7 +5226,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5240,7 +5240,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5254,7 +5254,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5268,7 +5268,7 @@
       },
       "grupo": "32",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira o registro de permanência associado ao item assistencial; anexe os documentos pertinentes ao recurso."
       }
     },
@@ -5282,7 +5282,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5296,7 +5296,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5310,7 +5310,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5324,7 +5324,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5338,7 +5338,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5352,7 +5352,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5366,7 +5366,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5380,7 +5380,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5394,7 +5394,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5408,7 +5408,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5422,7 +5422,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5436,7 +5436,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5450,7 +5450,7 @@
       },
       "grupo": "33",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira os documentos e registros associados ao procedimento; encaminhe-os pelo canal de recurso da operadora."
       }
     },
@@ -5464,7 +5464,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5478,7 +5478,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5492,7 +5492,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5506,7 +5506,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5520,7 +5520,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5534,7 +5534,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5548,7 +5548,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5562,7 +5562,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5576,7 +5576,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5590,7 +5590,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5604,7 +5604,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5618,7 +5618,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5632,7 +5632,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5646,7 +5646,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5660,7 +5660,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5674,7 +5674,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5688,7 +5688,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5702,7 +5702,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5716,7 +5716,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5730,7 +5730,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5744,7 +5744,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5758,7 +5758,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5772,7 +5772,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5786,7 +5786,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5800,7 +5800,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5814,7 +5814,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5828,7 +5828,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5842,7 +5842,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5856,7 +5856,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5870,7 +5870,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5884,7 +5884,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5898,7 +5898,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5912,7 +5912,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5926,7 +5926,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5940,7 +5940,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5954,7 +5954,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5968,7 +5968,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5982,7 +5982,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -5996,7 +5996,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6010,7 +6010,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6024,7 +6024,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6038,7 +6038,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6052,7 +6052,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6066,7 +6066,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6080,7 +6080,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6094,7 +6094,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6108,7 +6108,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6122,7 +6122,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6136,7 +6136,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6150,7 +6150,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6164,7 +6164,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6178,7 +6178,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6192,7 +6192,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6206,7 +6206,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6220,7 +6220,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6234,7 +6234,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6248,7 +6248,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6262,7 +6262,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6276,7 +6276,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6290,7 +6290,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6304,7 +6304,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6318,7 +6318,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6332,7 +6332,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6346,7 +6346,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6360,7 +6360,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6374,7 +6374,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6388,7 +6388,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6402,7 +6402,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6416,7 +6416,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6430,7 +6430,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6444,7 +6444,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6458,7 +6458,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6472,7 +6472,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6486,7 +6486,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6500,7 +6500,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6514,7 +6514,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6528,7 +6528,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6542,7 +6542,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6556,7 +6556,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6570,7 +6570,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6584,7 +6584,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     },
@@ -6598,7 +6598,7 @@
       },
       "grupo": "50",
       "orientacao": {
-        "fonte": "voa-tiss",
+        "fonte": "tiss",
         "texto": "Confira versão, estrutura e campos da mensagem TISS; corrija o XML e reenvie conforme o canal da operadora."
       }
     }

@@ -13,7 +13,7 @@ _WORDS = re.compile(r"\w+")
 
 def _load_readme() -> str:
     try:
-        return metadata("voa-tiss")["Description"] or ""
+        return metadata("tiss")["Description"] or ""
     except PackageNotFoundError:
         # Vercel runs from source without package metadata.
         readme = Path(__file__).resolve().parents[3] / "README.md"

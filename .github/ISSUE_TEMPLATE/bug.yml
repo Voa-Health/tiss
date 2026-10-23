@@ -22,7 +22,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Versão de voa-tiss
+      label: Versão de tiss
     validations:
       required: true
   - type: input

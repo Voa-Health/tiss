@@ -1,11 +1,11 @@
 {
-  "name": "voa-tiss",
+  "name": "tiss",
   "owner": {
     "name": "Voa Health"
   },
   "plugins": [
     {
-      "name": "voa-tiss",
+      "name": "tiss",
       "source": "./",
       "description": "Ferramentas TISS e ANS para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo.",
       "version": "0.3.0"

@@ -11,10 +11,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from scripts._manutencao_rede import bake_rede
-from voa_tiss import rede
-from voa_tiss.operadoras import lookup
-from voa_tiss.server._http import create_app
-from voa_tiss.server._ops import OPS, token_estimate
+from tiss import rede
+from tiss.operadoras import lookup
+from tiss.server._http import create_app
+from tiss.server._ops import OPS, token_estimate
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,7 +38,7 @@ def test_rede_consultas_e_validacoes(
 ) -> None:
     """Consulta vínculos, atributos agregados e metadados."""
     banco, _, _ = rede_sintetica
-    monkeypatch.setenv("VOA_TISS_REDE", str(banco))
+    monkeypatch.setenv("TISS_REDE", str(banco))
     rede._conectar.cache_clear()
 
     por_cnpj = rede.operadoras_do_estabelecimento(cnpj="12.345.678/0001-95")
@@ -110,7 +110,7 @@ def test_rede_download_cache_offline_e_hash_invalido(
     dados = {**manifesto, "url": comprimido.as_uri()}
     manifesto_path.write_text(json.dumps(dados), encoding="utf-8")
     monkeypatch.setattr(rede, "_MANIFEST_PATH", manifesto_path)
-    monkeypatch.delenv("VOA_TISS_REDE", raising=False)
+    monkeypatch.delenv("TISS_REDE", raising=False)
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
     rede._conectar.cache_clear()
 
@@ -134,7 +134,7 @@ def test_rede_rotas_http(
 ) -> None:
     """Expõe as consultas HTTP com validação de entrada."""
     banco, _, _ = rede_sintetica
-    monkeypatch.setenv("VOA_TISS_REDE", str(banco))
+    monkeypatch.setenv("TISS_REDE", str(banco))
     rede._conectar.cache_clear()
     app = create_app()
     with TestClient(app, headers={"Authorization": "Bearer sk_tiss_verified"}) as cliente:
@@ -165,7 +165,7 @@ def test_rede_rotas_http(
             for parametro in parametros
         )
 
-        monkeypatch.setenv("VOA_TISS_REDE", str(banco / "ausente.sqlite"))
+        monkeypatch.setenv("TISS_REDE", str(banco / "ausente.sqlite"))
         indisponivel = cliente.get("/v1/rede", params={"cnes": "0123456"})
         assert indisponivel.status_code == 503
         assert indisponivel.headers["retry-after"] == "1"

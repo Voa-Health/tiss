@@ -1,4 +1,4 @@
-"""CLI para operações locais do voa-tiss."""
+"""CLI para operações locais do tiss."""
 
 from __future__ import annotations
 
@@ -78,10 +78,10 @@ def main(argv: list[str] | None = None) -> int:
     """Executa a CLI e retorna seu código de saída."""
     args = _arguments(argv)
     if args.enviar:
-        url = os.environ.get("VOA_TISS_MAPA_URL")
-        key = os.environ.get("VOA_TISS_KEY")
+        url = os.environ.get("TISS_MAPA_URL")
+        key = os.environ.get("TISS_KEY")
         if not url or not key:
-            sys.stderr.write("Defina VOA_TISS_MAPA_URL e VOA_TISS_KEY para enviar o mapa.\n")
+            sys.stderr.write("Defina TISS_MAPA_URL e TISS_KEY para enviar o mapa.\n")
             return 2
     else:
         url = key = None
@@ -105,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
             lotes,
             contexto=contexto,
             operadora=rules,
-            segredo_pseudonimo=os.environ.get("VOA_TISS_SEGREDO_PSEUDONIMO"),
+            segredo_pseudonimo=os.environ.get("TISS_SEGREDO_PSEUDONIMO"),
         )
     except ValueError as exc:
         message = str(exc)

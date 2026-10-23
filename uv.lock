@@ -3062,7 +3062,7 @@ wheels = [
 ]
 
 [[package]]
-name = "voa-tiss"
+name = "tiss"
 source = { editable = "." }
 dependencies = [
     { name = "lxml" },

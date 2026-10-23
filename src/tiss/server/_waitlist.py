@@ -12,13 +12,13 @@ import jsonschema
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from voa_tiss import operadoras
+from tiss import operadoras
 
 from ._context import CURRENT_CONTEXT, CallContext
 from ._quota import admit, seconds_until_reset
 from ._telemetry import waitlist_join
 
-_logger = logging.getLogger("voa_tiss.server")
+_logger = logging.getLogger("tiss.server")
 _SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,

@@ -64,7 +64,7 @@ def _text_files(skip_prefixes: tuple[str, ...]) -> list[Path]:
         if path.relative_to(ROOT).as_posix() not in _SKIP_PATHS
         and not path.relative_to(ROOT).as_posix().startswith(skip_prefixes)
         and not (
-            path.relative_to(ROOT).as_posix().startswith("src/voa_tiss/")
+            path.relative_to(ROOT).as_posix().startswith("src/tiss/")
             and "_data" in path.relative_to(ROOT).parts[2:-1]
         )
     ]

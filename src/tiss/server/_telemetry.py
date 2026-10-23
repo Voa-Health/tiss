@@ -10,7 +10,7 @@ from typing import Any
 
 from lxml import etree
 
-from voa_tiss._schema import parser
+from tiss._schema import parser
 
 _sink: Callable[[str, dict[str, Any]], None] | None = None
 
@@ -81,7 +81,7 @@ def _deliver(event: str, properties: dict[str, Any]) -> bool:
         {
             "api_key": key,
             "event": event,
-            "distinct_id": properties.get("distinct_id", "voa-tiss-api"),
+            "distinct_id": properties.get("distinct_id", "tiss-api"),
             "properties": event_properties,
         },
         ensure_ascii=False,

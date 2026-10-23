@@ -1,12 +1,12 @@
 ---
-name: voa-tiss
+name: tiss
 description: Use ao integrar TISS, gerar ou validar XML TISS, trabalhar com lote TISS, hash do epílogo, glosa, demonstrativo, TUSS ou SP/SADT. Oriente-se pela biblioteca local ou pelo MCP remoto para montar, validar e corrigir documentos, consultar operadoras e testar envios sintéticos.
 ---
 
-# voa-tiss
+# tiss
 
 Use o MCP remoto em `https://tiss-api.voa.health/mcp` ou a biblioteca Python
-`voa_tiss` para operar documentos TISS. Não invente XML de cabeça.
+`tiss` para operar documentos TISS. Não invente XML de cabeça.
 
 ## Quando usar
 
@@ -34,7 +34,7 @@ Use o MCP remoto em `https://tiss-api.voa.health/mcp` ou a biblioteca Python
 7. Leia demonstrativos com `tiss_parse_demonstrativo` e explique glosas com
    `glosa_explain`.
 8. Use `tuss_lookup`/`tuss_search` para TUSS e `operadora_lookup` para operadoras.
-   Para testar envio, use `tiss_sandbox_*` ou `voa_tiss.sandbox`.
+   Para testar envio, use `tiss_sandbox_*` ou `tiss.sandbox`.
    Para autorizações SP/SADT, use `tiss_autorizacao_build`,
    `tiss_autorizacao_parse`, `tiss_autorizacao_check` e
    `tiss_sandbox_autorizacao`.

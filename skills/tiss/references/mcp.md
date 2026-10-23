@@ -46,13 +46,13 @@ revalide com `tiss_validate`. Consulte o esquema do lote em
 Claude Code:
 
 ```sh
-claude mcp add --transport http voa-tiss https://tiss-api.voa.health/mcp
+claude mcp add --transport http tiss https://tiss-api.voa.health/mcp
 ```
 
 Codex (`~/.codex/config.toml`):
 
 ```toml
-[mcp_servers.voa-tiss]
+[mcp_servers.tiss]
 url = "https://tiss-api.voa.health/mcp"
 ```
 
@@ -61,7 +61,7 @@ Cursor (`mcp.json`):
 ```json
 {
   "mcpServers": {
-    "voa-tiss": {
+    "tiss": {
       "url": "https://tiss-api.voa.health/mcp"
     }
   }

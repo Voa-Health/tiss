@@ -15,7 +15,7 @@ from ._service import ServiceError, configured, post
 _HTTP_NOT_FOUND = 404
 _HTTP_UNAVAILABLE = 503
 _CACHE_LIMIT = 10_000
-_logger = logging.getLogger("voa_tiss.server")
+_logger = logging.getLogger("tiss.server")
 _cache: dict[str, tuple[float, dict[str, Any] | None]] = {}
 _lock = threading.Lock()
 _now = time.monotonic

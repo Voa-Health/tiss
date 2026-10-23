@@ -8,13 +8,13 @@ from typing import Any
 
 import jsonschema
 
-import voa_tiss
-from voa_tiss import operadoras, sandbox
-from voa_tiss import rede as _rede_module
-from voa_tiss._retorno import Decisao, RetornoError
-from voa_tiss.rede import RedeIndisponivel
-from voa_tiss.sandbox import SandboxError
-from voa_tiss.tuss import lookup, search
+import tiss
+from tiss import operadoras, sandbox
+from tiss import rede as _rede_module
+from tiss._retorno import Decisao, RetornoError
+from tiss.rede import RedeIndisponivel
+from tiss.sandbox import SandboxError
+from tiss.tuss import lookup, search
 
 from ._context import CallContext
 from ._docs import _load_readme, search_docs
@@ -40,7 +40,7 @@ from ._quota import admit, payment_required
 from ._telemetry import operation_event
 from ._usage import API_CALL, record, wait
 
-logger = logging.getLogger("voa_tiss.server")
+logger = logging.getLogger("tiss.server")
 _USAGE_WAIT_SECONDS = 2.0
 _HTTP_OK = 200
 
@@ -50,14 +50,12 @@ def _decision(value: dict[str, Any]) -> Decisao:
 
 
 def _parse(value: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "decisoes": [decision.to_dict() for decision in voa_tiss.parse_demonstrativo(value["xml"])]
-    }
+    return {"decisoes": [decision.to_dict() for decision in tiss.parse_demonstrativo(value["xml"])]}
 
 
 def _reconcile(value: dict[str, Any]) -> dict[str, Any]:
     decisions = [_decision(item) for item in value["decisoes"]]
-    result = voa_tiss.plan_reconciliation(
+    result = tiss.plan_reconciliation(
         decisions,
         value["guias"],
         id_key=value.get("id_key", "id"),
@@ -183,7 +181,7 @@ _RECONCILIATION = _object(
     },
     ["propostas", "sem_par", "ambiguas"],
 )
-_REPORT = voa_tiss.json_schema("report")
+_REPORT = tiss.json_schema("report")
 _SANDBOX_SEND = _object(
     {
         "aceito": {"type": "boolean"},
@@ -201,7 +199,7 @@ _XML_INPUT = _object({"xml": _string()}, ["xml"])
 _EMPTY = _object({})
 _AUDIT_CONTEXT_SCHEMA = {
     key: value
-    for key, value in voa_tiss.json_schema("audit_context").items()
+    for key, value in tiss.json_schema("audit_context").items()
     if key not in {"$schema", "title"}
 }
 _VALIDATE_INPUT = _object(
@@ -219,8 +217,8 @@ def _validate(value: dict[str, Any]) -> dict[str, Any]:
     if ("xml" in value) == ("lote" in value):
         raise ValueError("Informe exatamente um dos campos 'xml' ou 'lote'.")
     if "xml" in value:
-        return voa_tiss.validate(value["xml"], operadora=value.get("operadora")).to_dict()
-    return voa_tiss.check(
+        return tiss.validate(value["xml"], operadora=value.get("operadora")).to_dict()
+    return tiss.check(
         value["lote"],
         contexto=value.get("contexto"),
         operadora=value.get("operadora"),
@@ -359,7 +357,7 @@ _BASE_OPS = (
     ),
     Op(
         "sadt_missing",
-        lambda value: {"faltando": voa_tiss.sadt_missing(value["values"])},
+        lambda value: {"faltando": tiss.sadt_missing(value["values"])},
         _object({"values": _object({}, additional=True)}, ["values"]),
         _object({"faltando": _STRING_ITEMS}, ["faltando"]),
         (
@@ -371,7 +369,7 @@ _BASE_OPS = (
     ),
     Op(
         "sadt_catalog",
-        lambda value: voa_tiss.sadt_catalog(),
+        lambda value: tiss.sadt_catalog(),
         _EMPTY,
         _object({}, additional=True),
         (

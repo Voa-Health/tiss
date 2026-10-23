@@ -11,7 +11,7 @@ from typing import Any, cast
 
 @lru_cache(maxsize=1)
 def _glosas() -> dict[str, Any]:
-    path = files("voa_tiss") / "_data" / "glosas.json"
+    path = files("tiss") / "_data" / "glosas.json"
     return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
 
 

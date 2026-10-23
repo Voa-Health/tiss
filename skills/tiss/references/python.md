@@ -1,10 +1,10 @@
 # Python
 
-Instale a biblioteca com `pip install voa-tiss`. O exemplo usa um lote TISS
+Instale a biblioteca com `pip install tiss`. O exemplo usa um lote TISS
 sintético do pacote, introduz um valor divergente, aplica a correção e gera XML.
 
 ```python
-from voa_tiss import apply_fixes, build_lote, check, examples, hash_epilogo, parse_lote
+from tiss import apply_fixes, build_lote, check, examples, hash_epilogo, parse_lote
 
 lote = parse_lote(examples.load("lote-valido"))
 item = lote["guias"][0]["procedimentos_executados"][0]
@@ -34,5 +34,5 @@ print({"bytes_xml": len(xml), "hash_epilogo": hash_xml})
 ```
 
 Para ler demonstrativos, use `parse_demonstrativo`; consulte TUSS em
-`voa_tiss.tuss` e glosas com `voa_tiss.glosa`. A operadora simulada fica em
-`voa_tiss.sandbox`.
+`tiss.tuss` e glosas com `tiss.glosa`. A operadora simulada fica em
+`tiss.sandbox`.

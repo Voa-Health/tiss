@@ -296,7 +296,7 @@ def render_html(
         from markupsafe import Markup
     except ImportError as exc:
         raise MissingExtraError(
-            "Instale as dependências de renderização com: pip install 'voa-tiss[pdf]'"
+            "Instale as dependências de renderização com: pip install 'tiss[pdf]'"
         ) from exc
 
     ctx = build_context(
@@ -322,7 +322,7 @@ def render_sadt(
         from weasyprint import CSS, HTML
     except ImportError as exc:
         raise MissingExtraError(
-            "Instale as dependências de renderização com: pip install 'voa-tiss[pdf]'"
+            "Instale as dependências de renderização com: pip install 'tiss[pdf]'"
         ) from exc
 
     bundle = load_bundle()

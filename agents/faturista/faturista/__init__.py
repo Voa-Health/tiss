@@ -1,1 +1,1 @@
-"""Agente de referência que fatura lotes TISS pelo MCP do voa-tiss."""
+"""Agente de referência que fatura lotes TISS pelo MCP do tiss."""

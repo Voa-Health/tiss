@@ -1,4 +1,4 @@
-from voa_tiss import examples, parse_lote, rejection_map
+from tiss import examples, parse_lote, rejection_map
 
 lotes = [parse_lote(examples.load("lote-valido")) for _ in range(2)]
 lotes[0]["prestador"] = {"cnpj": "11222333000181"}

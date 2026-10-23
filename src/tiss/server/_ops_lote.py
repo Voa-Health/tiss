@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from typing import Any
 
-import voa_tiss
+import tiss
 
 from ._ops_schemas import _LOTE_OBJECT_SCHEMA, Op, _object, _string
 
 _AUDIT_CONTEXT_SCHEMA = {
     key: value
-    for key, value in voa_tiss.json_schema("audit_context").items()
+    for key, value in tiss.json_schema("audit_context").items()
     if key not in {"$schema", "title"}
 }
-_REPORT = voa_tiss.json_schema("report")
+_REPORT = tiss.json_schema("report")
 _REJECTION_MAP_OUTPUT = {
     key: value
-    for key, value in voa_tiss.json_schema("rejection_map").items()
+    for key, value in tiss.json_schema("rejection_map").items()
     if key not in {"$schema", "title"}
 }
 _OBJECT_INPUT = _object({}, additional=True)
@@ -38,16 +38,16 @@ _REPORT_INPUT = _object(
 
 
 def _build(value: dict[str, Any]) -> dict[str, Any]:
-    xml = voa_tiss.build_lote(value["lote"])
-    return {"xml": xml.decode("ISO-8859-1"), "hash": voa_tiss.hash_epilogo(xml)}
+    xml = tiss.build_lote(value["lote"])
+    return {"xml": xml.decode("ISO-8859-1"), "hash": tiss.hash_epilogo(xml)}
 
 
 def _hash(value: dict[str, Any]) -> dict[str, Any]:
-    return {"hash": voa_tiss.hash_epilogo(value["xml"])}
+    return {"hash": tiss.hash_epilogo(value["xml"])}
 
 
 def _audit(value: dict[str, Any]) -> dict[str, Any]:
-    return voa_tiss.audit(
+    return tiss.audit(
         value["lote"],
         contexto=value.get("contexto"),
         at=value.get("data"),
@@ -58,7 +58,7 @@ def _audit(value: dict[str, Any]) -> dict[str, Any]:
 def _rejection_map(value: dict[str, Any]) -> dict[str, Any]:
     if "operadora" in value and "regras" in value:
         raise ValueError("Informe no máximo um dos campos 'operadora' ou 'regras'.")
-    return voa_tiss.rejection_map(
+    return tiss.rejection_map(
         value["lotes"],
         contexto=value.get("contexto"),
         operadora=value.get("regras", value.get("operadora")),
@@ -68,7 +68,7 @@ def _rejection_map(value: dict[str, Any]) -> dict[str, Any]:
 
 
 def _apply_fixes(value: dict[str, Any]) -> dict[str, Any]:
-    return {"lote": voa_tiss.apply_fixes(value["lote"], value["report"])}
+    return {"lote": tiss.apply_fixes(value["lote"], value["report"])}
 
 
 LOTE_OPS = (

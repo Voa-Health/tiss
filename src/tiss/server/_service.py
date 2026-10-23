@@ -22,9 +22,7 @@ class ServiceError(RuntimeError):
 
 def configured() -> bool:
     """Indique se o servidor valida chaves no backend; sem ele, o acesso é aberto."""
-    return bool(
-        os.environ.get("VOA_TISS_BACKEND_URL") and os.environ.get("VOA_TISS_SERVICE_SECRET")
-    )
+    return bool(os.environ.get("TISS_BACKEND_URL") and os.environ.get("TISS_SERVICE_SECRET"))
 
 
 def set_transport(transport: Transport | None) -> None:
@@ -37,11 +35,11 @@ def post(path: str, body: dict[str, Any]) -> Any:
     if _transport is not None:
         return _transport(path, body)
     request = urllib.request.Request(
-        f"{os.environ['VOA_TISS_BACKEND_URL'].rstrip('/')}{path}",
+        f"{os.environ['TISS_BACKEND_URL'].rstrip('/')}{path}",
         data=json.dumps(body, separators=(",", ":")).encode(),
         headers={
             "Accept": "application/json",
-            "Authorization": f"Bearer {os.environ['VOA_TISS_SERVICE_SECRET']}",
+            "Authorization": f"Bearer {os.environ['TISS_SERVICE_SECRET']}",
             "Content-Type": "application/json",
         },
         method="POST",

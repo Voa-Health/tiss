@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 from starlette.routing import Route
 from starlette.types import Receive, Scope, Send
 
-import voa_tiss
+import tiss
 
 from ._context import CURRENT_CONTEXT, CallContext
 from ._keys import KEYS_URL, LIMITS, authenticate, bearer_key
@@ -26,7 +26,7 @@ from ._ops import OPS, call
 from ._quota import seconds_until_reset
 from ._waitlist import register_waitlist
 
-_logger = logging.getLogger("voa_tiss.server")
+_logger = logging.getLogger("tiss.server")
 _HTTP_SERVICE_UNAVAILABLE = 503
 _HTTP_TOO_MANY_REQUESTS = 429
 _HTTP_UNAUTHORIZED = 401
@@ -259,9 +259,9 @@ def create_app() -> FastAPI:
     _quiet_external_loggers()
     mcp_manager, _ = create_mcp()
     app = FastAPI(
-        title="voa-tiss",
+        title="tiss",
         description="API HTTP e MCP para documentos TISS.",
-        version=voa_tiss.__version__,
+        version=tiss.__version__,
         lifespan=_lifespan(mcp_manager),
     )
     app.middleware("http")(_request_context)

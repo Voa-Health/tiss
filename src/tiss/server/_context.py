@@ -16,6 +16,6 @@ class CallContext:
     key: str = field(default="", repr=False)
 
 
-CURRENT_CONTEXT: ContextVar[CallContext | None] = ContextVar("voa_tiss_call_context", default=None)
+CURRENT_CONTEXT: ContextVar[CallContext | None] = ContextVar("tiss_call_context", default=None)
 
 __all__ = ["CURRENT_CONTEXT", "CallContext"]

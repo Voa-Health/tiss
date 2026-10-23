@@ -51,7 +51,7 @@ def seconds_until_reset() -> int:
 
 def _key(subject: str) -> str:
     day = dt.datetime.now(dt.timezone.utc).date().isoformat()
-    return f"voa-tiss:{day}:{hashlib.sha256(subject.encode()).hexdigest()[:32]}"
+    return f"tiss:{day}:{hashlib.sha256(subject.encode()).hexdigest()[:32]}"
 
 
 def _denied(status: int, code: str, message: str, link: str) -> tuple[int, dict[str, Any]]:

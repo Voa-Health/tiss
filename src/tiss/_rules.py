@@ -120,7 +120,7 @@ def _package(value: Any) -> dict[str, Any] | None:
         code = value.strip()
         if not code.isdigit() or len(code) not in {5, 6}:
             return None
-        path = files("voa_tiss") / "rules" / f"{code.zfill(6)}.json"
+        path = files("tiss") / "rules" / f"{code.zfill(6)}.json"
         try:
             return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
         except OSError:

@@ -16,7 +16,7 @@ from functools import cache
 from pathlib import Path
 from typing import Any, cast
 
-from voa_tiss import operadoras
+from tiss import operadoras
 
 _MANIFEST_PATH = Path(__file__).parent / "_data" / "manifesto.json"
 _CHUNK_SIZE = 1024 * 1024
@@ -109,7 +109,7 @@ def _baixar_verificado(destino: Path, manifesto: dict[str, Any]) -> Path:
 
 
 def _caminho_banco() -> Path:
-    configurado = os.environ.get("VOA_TISS_REDE")
+    configurado = os.environ.get("TISS_REDE")
     if configurado:
         caminho = Path(configurado).expanduser().resolve()
         if not caminho.is_file():
@@ -119,7 +119,7 @@ def _caminho_banco() -> Path:
     manifesto = _ler_manifesto()
     _validar_manifesto(manifesto)
     raiz_cache = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")).expanduser()
-    caminho = (raiz_cache / "voa-tiss" / f"rede-{manifesto['sqlite_sha256'][:16]}.sqlite").resolve()
+    caminho = (raiz_cache / "tiss" / f"rede-{manifesto['sqlite_sha256'][:16]}.sqlite").resolve()
     if caminho.is_file():
         digest, tamanho = _sha256(caminho)
         if digest == manifesto["sqlite_sha256"] and tamanho == manifesto["sqlite_tamanho"]:

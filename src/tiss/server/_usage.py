@@ -18,7 +18,7 @@ _BATCH = 500
 _MAX_ATTEMPTS = 6
 _HTTP_BAD_REQUEST = 400
 _HTTP_UNAVAILABLE = 503
-_logger = logging.getLogger("voa_tiss.server")
+_logger = logging.getLogger("tiss.server")
 _pending: deque[tuple[dict[str, object], int]] = deque()
 _lock = threading.Lock()
 _worker: threading.Thread | None = None
@@ -39,7 +39,7 @@ def record(access: Access, operation: str, kind: str, occurred_at: dt.datetime) 
     with _lock:
         _pending.append((event, 0))
         if _worker is None:
-            _worker = threading.Thread(target=_run, name="voa-tiss-usage", daemon=True)
+            _worker = threading.Thread(target=_run, name="tiss-usage", daemon=True)
             _worker.start()
 
 

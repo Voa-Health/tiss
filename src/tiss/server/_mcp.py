@@ -25,12 +25,12 @@ from mcp.types import (
 )
 from pydantic import AnyUrl
 
-import voa_tiss
-from voa_tiss import _rules, dominio, operadoras
-from voa_tiss._glosa import _glosas
-from voa_tiss.codes import CODES
-from voa_tiss.dominio import _data as _domain_data
-from voa_tiss.tuss._index import get_default_index
+import tiss
+from tiss import _rules, dominio, operadoras
+from tiss._glosa import _glosas
+from tiss.codes import CODES
+from tiss.dominio import _data as _domain_data
+from tiss.tuss._index import get_default_index
 
 from ._context import CURRENT_CONTEXT
 from ._docs import _load_readme
@@ -61,7 +61,7 @@ def _load_codes() -> Any:
 
 
 def _load_sadt_catalog() -> Any:
-    return voa_tiss.sadt_catalog()
+    return tiss.sadt_catalog()
 
 
 def _load_api_docs() -> str:
@@ -77,11 +77,11 @@ def _load_healthplans() -> Any:
 
 
 def _load_rules_schema() -> Any:
-    return voa_tiss.json_schema("rules")
+    return tiss.json_schema("rules")
 
 
 def _load_lote_schema() -> Any:
-    return voa_tiss.json_schema("lote")
+    return tiss.json_schema("lote")
 
 
 _STATIC_RESOURCE_READERS: dict[str, Callable[[], Any]] = {
@@ -182,7 +182,7 @@ def _template_parameters(template: str, uri: str) -> dict[str, str] | None:
 
 def create_mcp() -> tuple[Any, Any]:
     """Crie o servidor MCP e seu gerenciador HTTP."""
-    server = Server("voa-tiss", instructions=_INSTRUCTIONS)
+    server = Server("tiss", instructions=_INSTRUCTIONS)
     operations = {op.tool_name: op for op in OPS}
 
     @server.list_tools()  # type: ignore[no-untyped-call,untyped-decorator]

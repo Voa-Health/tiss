@@ -1,5 +1,5 @@
-from voa_tiss import examples, parse_demonstrativo
-from voa_tiss.sandbox import demonstrativo, enviar_lote
+from tiss import examples, parse_demonstrativo
+from tiss.sandbox import demonstrativo, enviar_lote
 
 lote = examples.load("lote-valido")
 resposta = enviar_lote(lote, registro_ans="000000")

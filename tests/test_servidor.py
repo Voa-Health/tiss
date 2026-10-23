@@ -21,23 +21,23 @@ from fastapi.testclient import TestClient
 from mcp.client.session import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 
-import voa_tiss
+import tiss
 from scripts._manutencao_ans import _DOMINIOS_GENERICOS
-from voa_tiss import dominio, examples, operadoras, sandbox
-from voa_tiss import sandbox as sandbox_module
-from voa_tiss._glosa import glosa
-from voa_tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
-from voa_tiss.server import _docs, _keys, _ops, _published_rules, _usage
-from voa_tiss.server._context import CallContext
-from voa_tiss.server._docs import search_docs
-from voa_tiss.server._http import create_app
-from voa_tiss.server._keys import ANONYMOUS_LIMIT, LIMITS
-from voa_tiss.server._ops import OPS, _docs_corpus, call, token_estimate
-from voa_tiss.server._ops_schemas import PAID_KINDS, Op, _object
-from voa_tiss.server._prompts import PROMPTS
-from voa_tiss.server._quota import set_counter
-from voa_tiss.server._telemetry import set_sink
-from voa_tiss.tuss import lookup, search
+from tiss import dominio, examples, operadoras, sandbox
+from tiss import sandbox as sandbox_module
+from tiss._glosa import glosa
+from tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
+from tiss.server import _docs, _keys, _ops, _published_rules, _usage
+from tiss.server._context import CallContext
+from tiss.server._docs import search_docs
+from tiss.server._http import create_app
+from tiss.server._keys import ANONYMOUS_LIMIT, LIMITS
+from tiss.server._ops import OPS, _docs_corpus, call, token_estimate
+from tiss.server._ops_schemas import PAID_KINDS, Op, _object
+from tiss.server._prompts import PROMPTS
+from tiss.server._quota import set_counter
+from tiss.server._telemetry import set_sink
+from tiss.tuss import lookup, search
 
 ROOT = Path(__file__).resolve().parents[1]
 HTTP_OK = 200
@@ -70,24 +70,24 @@ def _bearer(tier: str = "verified") -> dict[str, str]:
 
 def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
     xml = examples.load("lote-valido")
-    lote = voa_tiss.parse_lote(xml)
+    lote = tiss.parse_lote(xml)
     fix_lote = json.loads(
         (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
     )
-    fix_report = voa_tiss.check(fix_lote).to_dict()
+    fix_report = tiss.check(fix_lote).to_dict()
     audit_context = {"tabela_operadora": {"procedimentos": []}}
-    audit_report = voa_tiss.audit(lote, contexto=audit_context, operadora="000000").to_dict()
+    audit_report = tiss.audit(lote, contexto=audit_context, operadora="000000").to_dict()
     assert audit_report["findings"]
-    built = voa_tiss.build_lote(lote)
+    built = tiss.build_lote(lote)
     demonstrativo_oficial = (ROOT / "tests/fixtures/demonstrativo-oficial.xml").read_bytes()
-    parsed = voa_tiss.parse_demonstrativo(demonstrativo_oficial)
-    reconciliation = voa_tiss.plan_reconciliation([], [])
+    parsed = tiss.parse_demonstrativo(demonstrativo_oficial)
+    reconciliation = tiss.plan_reconciliation([], [])
     sandbox_result = enviar_lote(xml, registro_ans="000000")
     request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
-    authorization_xml = voa_tiss.build_autorizacao(request)
+    authorization_xml = tiss.build_autorizacao(request)
     authorization_response = sandbox.responder_autorizacao(request)
     return [
-        ("validate", {"lote": lote}, voa_tiss.check(lote).to_dict()),
+        ("validate", {"lote": lote}, tiss.check(lote).to_dict()),
         (
             "parse_demonstrativo",
             {"xml": demonstrativo_oficial.decode()},
@@ -115,9 +115,9 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         (
             "sadt_missing",
             {"values": {}},
-            {"faltando": voa_tiss.sadt_missing({})},
+            {"faltando": tiss.sadt_missing({})},
         ),
-        ("sadt_catalog", {}, voa_tiss.sadt_catalog()),
+        ("sadt_catalog", {}, tiss.sadt_catalog()),
         ("operadora_perfil", {"registro_ans": "005711"}, operadoras.perfil("005711")),
         (
             "sandbox_enviar_lote",
@@ -129,18 +129,18 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
             {"mensagem": request},
             {
                 "xml": authorization_xml.decode("ISO-8859-1"),
-                "hash": voa_tiss.hash_epilogo(authorization_xml),
+                "hash": tiss.hash_epilogo(authorization_xml),
             },
         ),
         (
             "autorizacao_parse",
             {"xml": authorization_xml.decode("ISO-8859-1")},
-            {"mensagem": voa_tiss.parse_autorizacao(authorization_xml)},
+            {"mensagem": tiss.parse_autorizacao(authorization_xml)},
         ),
         (
             "autorizacao_check",
             {"solicitacao": request, "contexto": {"operadora": "000000"}},
-            voa_tiss.check_autorizacao(request, contexto={"operadora": "000000"}).to_dict(),
+            tiss.check_autorizacao(request, contexto={"operadora": "000000"}).to_dict(),
         ),
         (
             "sandbox_autorizacao",
@@ -158,12 +158,12 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         (
             "build",
             {"lote": lote},
-            {"xml": built.decode("ISO-8859-1"), "hash": voa_tiss.hash_epilogo(built)},
+            {"xml": built.decode("ISO-8859-1"), "hash": tiss.hash_epilogo(built)},
         ),
         (
             "hash",
             {"xml": xml.decode("ISO-8859-1")},
-            {"hash": voa_tiss.hash_epilogo(xml)},
+            {"hash": tiss.hash_epilogo(xml)},
         ),
         (
             "audit",
@@ -173,12 +173,12 @@ def _cases() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
         (
             "rejection_map",
             {"lotes": [lote]},
-            voa_tiss.rejection_map([lote]),
+            tiss.rejection_map([lote]),
         ),
         (
             "apply_fixes",
             {"lote": fix_lote, "report": fix_report},
-            {"lote": voa_tiss.apply_fixes(fix_lote, fix_report)},
+            {"lote": tiss.apply_fixes(fix_lote, fix_report)},
         ),
         ("glosa_explain", {"codigo": "1801"}, glosa("1801")),
         ("dominio", {}, {"tabelas": dominio.tables()}),
@@ -262,7 +262,7 @@ def test_http_mcp_parity_and_token_budgets(mcp_cases, monkeypatch):
             headers={"Content-Type": "application/xml"},
         )
         assert response.status_code == HTTP_OK
-        assert response.json() == voa_tiss.validate(xml).to_dict()
+        assert response.json() == tiss.validate(xml).to_dict()
         openapi_response = client.get("/openapi.json")
         assert openapi_response.status_code == HTTP_OK
         openapi = openapi_response.json()
@@ -497,12 +497,12 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
         assert client.post(sandbox[0], json=sandbox[1]).status_code == HTTP_OK
         assert client.post("/v1/validate", json={"xml": xml}).status_code == HTTP_UNAUTHORIZED
         delivered_before = len(tiss_service.usage)
-        monkeypatch.delenv("VOA_TISS_BACKEND_URL")
+        monkeypatch.delenv("TISS_BACKEND_URL")
         for headers in ({}, {"Authorization": "Bearer qualquer"}):
             assert client.post(validate[0], json=validate[1], headers=headers).status_code == 200
         _usage.wait(5)
         assert len(tiss_service.usage) == delivered_before
-        monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+        monkeypatch.setenv("TISS_BACKEND_URL", "https://backend.example")
         events.clear()
         set_counter(lambda key, ttl: 1)
         assert (
@@ -523,9 +523,9 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
         off = {**_bearer(), "X-Voa-Telemetry": "off"}
         assert client.post("/v1/validate", json={"xml": xml}, headers=off).status_code == HTTP_OK
         assert not events
-        marked_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        marked_lote = tiss.parse_lote(examples.load("lote-valido"))
         marked_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
-        marked_xml = voa_tiss.build_lote(marked_lote).decode("ISO-8859-1")
+        marked_xml = tiss.build_lote(marked_lote).decode("ISO-8859-1")
         marked_request = json.loads(
             (ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text()
         )
@@ -533,19 +533,19 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
         marked_request["solicitacao"]["dados_solicitante"]["profissional_solicitante"][
             "nome_profissional"
         ] = marker
-        marked_auth_xml = voa_tiss.build_autorizacao(marked_request).decode("ISO-8859-1")
+        marked_auth_xml = tiss.build_autorizacao(marked_request).decode("ISO-8859-1")
         marked_auth_response = sandbox_module.responder_autorizacao(marked_request)
-        auth_password = voa_tiss.parse_autorizacao(marked_auth_response)["autorizacao"][
+        auth_password = tiss.parse_autorizacao(marked_auth_response)["autorizacao"][
             "dados_autorizacao"
         ]["senha"]
         fix_lote = json.loads(
             (ROOT / "tests/fixtures/lotes/corrigivel-valor-divergente.json").read_text()
         )
         fix_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
-        fix_report = voa_tiss.check(fix_lote).to_dict()
+        fix_report = tiss.check(fix_lote).to_dict()
         cpf = "12345678909"
         secret = "s" * 16
-        cpf_lote = voa_tiss.parse_lote(examples.load("lote-valido"))
+        cpf_lote = tiss.parse_lote(examples.load("lote-valido"))
         cpf_lote["prestador"] = {"cpf": cpf}
         cpf_lote["guias"][0]["dados_solicitante"]["nome_contratado_solicitante"] = marker
         privacy_inputs = [
@@ -764,35 +764,35 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
 
 def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
     set_counter(None)
-    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+    monkeypatch.setenv("TISS_BACKEND_URL", "https://backend.example")
     _published_rules.clear_cache()
     tiss_service.rules_requests.clear()
-    package = json.loads((ROOT / "src/voa_tiss/rules/000000.json").read_text())
+    package = json.loads((ROOT / "src/tiss/rules/000000.json").read_text())
     tiss_service.rules["org-1"] = package
     xml = examples.load("lote-valido").decode()
-    lote = voa_tiss.parse_lote(xml)
+    lote = tiss.parse_lote(xml)
     published = [
-        ("/v1/validate", {"lote": lote}, voa_tiss.check(lote, operadora=package).to_dict()),
-        ("/v1/validate", {"xml": xml}, voa_tiss.validate(xml, operadora=package).to_dict()),
-        ("/v1/audit", {"lote": lote}, voa_tiss.audit(lote, operadora=package).to_dict()),
-        ("/v1/rejection-map", {"lotes": [lote]}, voa_tiss.rejection_map([lote], operadora=package)),
+        ("/v1/validate", {"lote": lote}, tiss.check(lote, operadora=package).to_dict()),
+        ("/v1/validate", {"xml": xml}, tiss.validate(xml, operadora=package).to_dict()),
+        ("/v1/audit", {"lote": lote}, tiss.audit(lote, operadora=package).to_dict()),
+        ("/v1/rejection-map", {"lotes": [lote]}, tiss.rejection_map([lote], operadora=package)),
         ("/v1/sandbox/lotes", {"xml": xml}, enviar_lote(xml, registro_ans=package)),
     ]
     explicit = [
-        ("/v1/validate", {"lote": lote, "operadora": "123456"}, voa_tiss.check(lote).to_dict()),
+        ("/v1/validate", {"lote": lote, "operadora": "123456"}, tiss.check(lote).to_dict()),
         (
             "/v1/audit",
             {"lote": lote, "operadora": "123456"},
-            voa_tiss.audit(lote, operadora="123456").to_dict(),
+            tiss.audit(lote, operadora="123456").to_dict(),
         ),
         (
             "/v1/rejection-map",
             {"lotes": [lote], "operadora": "123456"},
-            voa_tiss.rejection_map([lote], operadora="123456"),
+            tiss.rejection_map([lote], operadora="123456"),
         ),
         ("/v1/sandbox/lotes", {"xml": xml, "registro_ans": "999999"}, enviar_lote(xml)),
     ]
-    plain = voa_tiss.check(lote).to_dict()
+    plain = tiss.check(lote).to_dict()
     assert published[0][2] != plain
     with TestClient(create_app(), base_url="https://testserver") as client:
 
@@ -814,7 +814,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         expired = time.monotonic() + _keys.CACHE_SECONDS + 1
         monkeypatch.setattr(_published_rules, "_now", lambda: expired)
         tiss_service.rules_failures = [HTTP_UNAVAILABLE]
-        caplog.set_level(logging.WARNING, logger="voa_tiss.server")
+        caplog.set_level(logging.WARNING, logger="tiss.server")
         assert post("/v1/validate", {"lote": lote}) == plain
         assert "op=regras status=503" in caplog.text
         assert "sk_tiss_verified" not in caplog.text
@@ -825,12 +825,12 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         assert post("/v1/validate", {"lote": lote}) == plain
         assert post("/v1/validate", {"lote": lote}) == plain
         assert len(tiss_service.rules_requests) == 4
-        monkeypatch.delenv("VOA_TISS_BACKEND_URL")
+        monkeypatch.delenv("TISS_BACKEND_URL")
         _published_rules.clear_cache()
         tiss_service.rules["org-1"] = package
         assert post("/v1/validate", {"lote": lote}) == plain
         assert len(tiss_service.rules_requests) == 4
-    monkeypatch.setenv("VOA_TISS_BACKEND_URL", "https://backend.example")
+    monkeypatch.setenv("TISS_BACKEND_URL", "https://backend.example")
 
     billing = {
         "enforced": True,
@@ -898,8 +898,8 @@ def test_simulated_statement_round_trip(scenario, expected, code, registry, rule
         cenario = scenario.split(".", 1)[1]
         request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
         xml = sandbox.responder_autorizacao(request, cenario=cenario)
-        assert voa_tiss.validate(xml).valid
-        response = voa_tiss.parse_autorizacao(xml)["autorizacao"]
+        assert tiss.validate(xml).valid
+        response = tiss.parse_autorizacao(xml)["autorizacao"]
         assert response["status_solicitacao"] == expected
         assert response["dados_autorizacao"]["numero_guia_operadora"]
         assert xml == sandbox.responder_autorizacao(request, cenario=cenario)
@@ -925,8 +925,8 @@ def test_simulated_statement_round_trip(scenario, expected, code, registry, rule
         assert any(item["rule"]["id"] == rule_id for item in response["regras"])
 
     xml = demonstrativo(response["protocolo"])
-    assert voa_tiss.validate(xml).valid
-    decisions = voa_tiss.parse_demonstrativo(xml)
+    assert tiss.validate(xml).valid
+    decisions = tiss.parse_demonstrativo(xml)
     assert len(decisions) == len(response["resumo"]["guias"])
     if scenario == "sem_autorizacao":
         assert decisions[0].decision == expected
@@ -947,7 +947,7 @@ def test_simulated_statement_round_trip(scenario, expected, code, registry, rule
     retry = enviar_lote(lote, cenario="falha_transitoria", tentativa=2)
     assert all(
         decision.decision == "pago"
-        for decision in voa_tiss.parse_demonstrativo(demonstrativo(retry["protocolo"]))
+        for decision in tiss.parse_demonstrativo(demonstrativo(retry["protocolo"]))
     )
     with pytest.raises(SandboxError) as permanent:
         enviar_lote(lote, cenario="falha_permanente")
@@ -964,8 +964,8 @@ def test_simulated_statement_round_trip(scenario, expected, code, registry, rule
 
     monkeypatch.setattr(socket, "socket", blocked)
     monkeypatch.setattr(socket, "create_connection", blocked)
-    monkeypatch.setenv("VOA_TISS_API_KEY", "local-key")
-    assert voa_tiss.validate(lote).valid
-    assert voa_tiss.parse_demonstrativo(examples.load("demonstrativo"))
+    monkeypatch.setenv("TISS_API_KEY", "local-key")
+    assert tiss.validate(lote).valid
+    assert tiss.parse_demonstrativo(examples.load("demonstrativo"))
     assert lookup("10101012", tabela="22")
     assert enviar_lote(lote)["aceito"]
