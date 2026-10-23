@@ -1,10 +1,11 @@
 "use client";
 
 import { CheckCircleFilled } from "@ant-design/icons";
-import { Card, Col, Descriptions, Grid, Row, Tag, theme, Typography } from "antd";
+import { Alert, Card, Col, Descriptions, Grid, Row, Tag, theme, Typography } from "antd";
 import Link from "next/link";
 import { dataHora, mascararCnpj } from "@/lib/org/formato";
-import type { EstadoDaOrg } from "@/lib/org/tipos";
+import type { Cobranca, EstadoDaOrg } from "@/lib/org/tipos";
+import { useRecurso } from "@/lib/org/cliente";
 import { hrefDaOrg, ROTULO_DO_TIPO } from "./secoes";
 
 type Atalho = { titulo: string; descricao: string; href: string };
@@ -24,6 +25,7 @@ const ATALHOS_DA_OPERADORA: Atalho[] = [
 export function OverviewSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const screens = Grid.useBreakpoint();
+  const cobranca = useRecurso<Cobranca>(org.is_admin || org.my_areas.includes("finance") ? "tiss/org/billing/" : null);
   const operadora = org.type === "pay";
   const atalhos = operadora ? ATALHOS_DA_OPERADORA : ATALHOS_DO_PRESTADOR;
   const rotulos = new Map(org.available_areas.map((area) => [area.value, area.label]));
@@ -33,6 +35,9 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
 
   return (
     <>
+      {!cobranca.carregando && !cobranca.erro && cobranca.dados && !cobranca.dados.payment_method_active && (
+        <Alert type="info" showIcon title={<>Nenhum cartão cadastrado. <Link href={hrefDaOrg("cobranca")}>Configurar cobrança</Link></>} />
+      )}
       <Row gutter={[token.margin, token.margin]}>
         {atalhos.map((atalho) => (
           <Col key={atalho.titulo} xs={24} md={8}>

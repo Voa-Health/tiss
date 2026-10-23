@@ -1,5 +1,28 @@
 export type AreaDisponivel = { value: string; label: string };
 
+export type Cobranca = {
+  payment_method_active: boolean;
+  payment_method: { brand: string; last4: string; exp_month: number; exp_year: number } | null;
+  subscription_status: string | null;
+  billing_url: string;
+};
+
+export type Fatura = {
+  id: string | null;
+  number: string | null;
+  status: string | null;
+  currency: string | null;
+  amount_due: number | null;
+  amount_paid: number | null;
+  total: number | null;
+  created: string | null;
+  period_start: string | null;
+  period_end: string | null;
+  hosted_invoice_url: string | null;
+  invoice_pdf: string | null;
+  member_email: string | null;
+};
+
 export type EstadoDaOrg = {
   id: string;
   name: string;
