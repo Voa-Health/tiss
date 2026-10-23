@@ -12,9 +12,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from voa_tiss import examples, json_schema, validate
-from voa_tiss.codes import CODES
-from voa_tiss.server._ops import render_api_docs
+from tiss import examples, json_schema, validate
+from tiss.codes import CODES
+from tiss.server._ops import render_api_docs
 
 if __package__:
     from ._manutencao_ans import (
@@ -104,8 +104,9 @@ _SKIP_PREFIXES = ("tests/fixtures/",)
 
 
 def _artifact_contents() -> dict[Path, bytes]:
-    from voa_tiss.server import app as server_app
+    from tiss.server._http import create_app
 
+    server_app = create_app()
     artifacts = {
         ROOT / "schemas" / f"{name}.schema.json": (
             json.dumps(json_schema(name), ensure_ascii=False, indent=2).encode("utf-8") + b"\n"
@@ -273,7 +274,7 @@ def gitbook_tutorials(destination: Path) -> int:
         tutorials.append((notebook_path.stem, title, description, content))
 
     destination.mkdir(parents=True, exist_ok=True)
-    intro = "Exemplos práticos com dados sintéticos para integrar o voa-tiss."
+    intro = "Exemplos práticos com dados sintéticos para integrar o tiss."
     index = ["# Tutoriais", "", intro, ""]
     for slug, title, description, content in tutorials:
         index.append(f"- [{title}]({slug}.md): {description}")
@@ -290,7 +291,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     download_command = commands.add_parser("baixar", help="baixar fontes públicas da ANS")
-    download_command.add_argument("--out", type=Path, default=Path("/tmp/voa-tiss-ans"))
+    download_command.add_argument("--out", type=Path, default=Path("/tmp/tiss-ans"))
     artifacts = commands.add_parser("artefatos", help="gerar esquemas, códigos e notebooks")
     artifacts.add_argument("--check", action="store_true")
     tuss = commands.add_parser("tuss", help="preparar dados TUSS")
@@ -313,7 +314,7 @@ def main(argv: list[str] | None = None) -> int:
     painel.add_argument("--out", type=Path, default=INDICADORES_OUT)
     xsd = commands.add_parser("xsd402", help="instalar os esquemas TISS 4.02.00")
     xsd.add_argument("--source", type=Path, required=True)
-    xsd.add_argument("--out", type=Path, default=ROOT / "src/voa_tiss/_data/schemas/4.02.00")
+    xsd.add_argument("--out", type=Path, default=ROOT / "src/tiss/_data/schemas/4.02.00")
     commands.add_parser("verificar", help="verificar padrões, exemplos e artefatos")
     gitbook = commands.add_parser("gitbook", help="gerar páginas GitBook dos tutoriais")
     gitbook.add_argument("destination", type=Path)
@@ -321,7 +322,7 @@ def main(argv: list[str] | None = None) -> int:
     rede.add_argument("--zip", type=Path, required=True)
     rede.add_argument("--out", type=Path, default=REDE_OUT)
     rede.add_argument("--manifesto", type=Path, default=REDE_MANIFEST)
-    avaliacao = commands.add_parser("descoberta", help="medir descoberta do voa-tiss em modelos")
+    avaliacao = commands.add_parser("descoberta", help="medir descoberta do tiss em modelos")
     avaliacao.add_argument("--limite-usd", type=float, default=10.0)
     avaliacao.add_argument("--teto-chamada-usd", type=float, default=0.25)
     avaliacao.add_argument("--brutos", type=Path, help="pasta fora do repo para respostas")
@@ -364,7 +365,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.command == "ans-glosa":
-        origem = args.origem or Path("/tmp/voa-tiss-ans/painel_de_glosas")
+        origem = args.origem or Path("/tmp/tiss-ans/painel_de_glosas")
         if not args.origem:
             baixar_painel(origem)
         write_painel(args.out, bake_painel(origem))

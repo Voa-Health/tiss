@@ -83,6 +83,31 @@ jobs:
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
       - run: uv build
       - run: uvx twine check --strict dist/*
+      - run: python -m venv /tmp/tiss-mcp
+      - run: wheel=$(printf '%s\n' dist/*.whl) && /tmp/tiss-mcp/bin/pip install "${wheel}[mcp]"
+      - run: if /tmp/tiss-mcp/bin/python -c "import fastapi"; then exit 1; fi
+      - run: |
+          /tmp/tiss-mcp/bin/python - <<'PY'
+          import asyncio
+          import sys
+
+          from mcp.client.session import ClientSession
+          from mcp.client.stdio import StdioServerParameters, stdio_client
+
+          async def check():
+              parameters = StdioServerParameters(
+                  command=sys.executable,
+                  args=["-m", "tiss", "mcp"],
+              )
+              async with stdio_client(parameters) as (read_stream, write_stream):
+                  async with ClientSession(read_stream, write_stream) as session:
+                      initialized = await session.initialize()
+                      tools = await session.list_tools()
+                      assert initialized.serverInfo.name == "tiss"
+                      assert any(tool.name == "tiss_validate" for tool in tools.tools)
+
+          asyncio.run(check())
+          PY
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
@@ -136,3 +161,40 @@ jobs:
         working-directory: web
       - run: pnpm build
         working-directory: web
+
+  distribuicao:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./
+        with:
+          version: local
+          paths: tests/fixtures/xml/4.02.00-valido.xml
+      - uses: ./
+        id: invalido
+        continue-on-error: true
+        with:
+          version: local
+          paths: tests/fixtures/xml/4.02.00-invalido.xml
+      - name: Confirmar erro no XML inválido
+        env:
+          RESULTADO: ${{ steps.invalido.outcome }}
+        run: test "$RESULTADO" = failure
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Validar hook pre-commit
+        run: uvx pre-commit try-repo . tiss-validate --files tests/fixtures/xml/4.02.00-valido.xml
+      - name: Validar registro MCP
+        env:
+          MCP_PUBLISHER_VERSION: 1.8.2
+          MCP_PUBLISHER_SHA256: d0554112d8f7affad9a10041776d63129a60b163c05036ae26caf73ecbbd89c8
+        run: |
+          curl --fail --silent --show-error --location \
+            "https://github.com/modelcontextprotocol/registry/releases/download/v${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" \
+            --output mcp-publisher.tar.gz
+          printf '%s  mcp-publisher.tar.gz\n' "$MCP_PUBLISHER_SHA256" | sha256sum --check
+          tar -xzf mcp-publisher.tar.gz mcp-publisher
+          ./mcp-publisher validate server.json

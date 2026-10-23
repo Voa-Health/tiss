@@ -21,8 +21,10 @@ jobs:
           enable-cache: false
       - run: uv build
       - run: uvx twine check --strict dist/*
+      - name: Verify registry versions match tag
+        run: jq -e --arg v "${GITHUB_REF_NAME#v}" '.version == $v and all(.packages[]; .version == $v)' server.json
       - name: Verify tag matches package version
-        run: test -f "dist/voa_tiss-${GITHUB_REF_NAME#v}-py3-none-any.whl"
+        run: test -f "dist/tiss-${GITHUB_REF_NAME#v}-py3-none-any.whl"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
@@ -33,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/voa-tiss
+      url: https://pypi.org/p/tiss
     permissions:
       id-token: write
     steps:

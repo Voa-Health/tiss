@@ -94,7 +94,7 @@ export function OrgCasca({
           style={{ maxWidth: LARGURA, margin: "0 auto", padding: `${token.paddingSM}px ${token.paddingLG}px` }}
         >
           <Flex align="center" gap={token.margin}>
-            <Link href="/" aria-label="voa-tiss, página inicial" style={{ display: "inline-flex" }}>
+            <Link href="/" aria-label="tiss, página inicial" style={{ display: "inline-flex" }}>
               <Image src="/logo.svg" alt="Voa" width={88} height={24} priority />
             </Link>
             <Typography.Text

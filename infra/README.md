@@ -6,13 +6,13 @@ Somente o prefixo `publico/` permite leitura pública.
 ## Pré-requisitos
 
 Credenciais AWS autorizadas a gerenciar o stack e o bucket, além de
-`VOA_TISS_CONTA` com o ID da conta de destino.
+`TISS_CONTA` com o ID da conta de destino.
 
 ## Aplicação
 
 ```sh
-VOA_TISS_CONTA=<id-da-conta> bash infra/aplicar.sh dados --dry-run
-VOA_TISS_CONTA=<id-da-conta> bash infra/aplicar.sh dados
+TISS_CONTA=<id-da-conta> bash infra/aplicar.sh dados --dry-run
+TISS_CONTA=<id-da-conta> bash infra/aplicar.sh dados
 ```
 
 Envie o asset da rede usando uma data imutável no caminho:

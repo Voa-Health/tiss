@@ -46,7 +46,7 @@ export function HealthplanPublishing() {
                   schemas/rules.schema.json
                 </Link>{" "}
                 e salve em{" "}
-                <code>src/voa_tiss/rules/NNNNNN.json</code>, com o registro ANS de seis dígitos no
+                <code>src/tiss/rules/NNNNNN.json</code>, com o registro ANS de seis dígitos no
                 nome.
               </li>
               <li>

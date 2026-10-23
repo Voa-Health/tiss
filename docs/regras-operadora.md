@@ -24,7 +24,7 @@ Pacotes de exemplo devem usar dados sintéticos.
 
 ## Publicação pela operadora
 
-Salve um pacote válido em `src/voa_tiss/rules/NNNNNN.json`, com o registro ANS de seis dígitos
+Salve um pacote válido em `src/tiss/rules/NNNNNN.json`, com o registro ANS de seis dígitos
 no nome, fonte e data em cada regra e `mantenedor` com `tipo: operadora` e `registro_ans`.
 Envie a contribuição pelo GitHub; as verificações automáticas validam o pacote. Após
 aprovação por responsável com e-mail no domínio cadastrado da operadora na ANS, as regras

@@ -3,7 +3,7 @@ requires = ["hatchling>=1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "voa-tiss"
+name = "tiss"
 dynamic = ["version"]
 description = "Biblioteca Python offline para validar e operar documentos TISS."
 readme = "README.md"
@@ -25,12 +25,15 @@ classifiers = [
 ]
 dependencies = ["lxml>=5,<7"]
 
+[project.scripts]
+tiss = "tiss.__main__:main"
+
 [project.optional-dependencies]
 pdf = ["weasyprint>=60", "jinja2>=3.1", "markupsafe>=2.1"]
+mcp = ["jsonschema>=4.23", "mcp>=1.30,<2"]
 server = [
+  "tiss[mcp]",
   "fastapi>=0.115,<1",
-  "jsonschema>=4.23",
-  "mcp>=1.30,<2",
   "uvicorn>=0.34,<1",
 ]
 
@@ -55,16 +58,16 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "src/voa_tiss/__init__.py"
+path = "src/tiss/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/voa_tiss"]
+packages = ["src/tiss"]
 exclude = ["*.sqlite"]
 
 [tool.hatch.build.targets.sdist]
 exclude = ["*.sqlite"]
 include = [
-  "src/voa_tiss",
+  "src/tiss",
   "README.md",
   "LICENSE",
   "DATA_SOURCES.md",

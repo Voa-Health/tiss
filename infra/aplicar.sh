@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CONTA_ESPERADA="${VOA_TISS_CONTA:?defina VOA_TISS_CONTA com o ID da conta AWS de destino}"
+CONTA_ESPERADA="${TISS_CONTA:?defina TISS_CONTA com o ID da conta AWS de destino}"
 REGIAO="${AWS_REGION:-sa-east-1}"
 DIRETORIO="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 

@@ -3,7 +3,7 @@ import type { NextRequest, NextResponse } from "next/server";
 /** Par de tokens Voa guardado no cookie httpOnly; o navegador nunca o lê. */
 export type ParDeTokens = { access: string; refresh: string };
 
-export const COOKIE_DA_ORG = "voa_tiss_org";
+export const COOKIE_DA_ORG = "tiss_org";
 const VALIDADE_S = 7 * 24 * 60 * 60;
 
 export function urlDoBackend(): string | null {

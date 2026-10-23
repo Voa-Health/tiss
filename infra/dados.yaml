@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Bucket de dados publicos do voa-tiss.
+Description: Bucket de dados publicos do tiss.
 
 Parameters:
   NomeDoBucket:
@@ -39,7 +39,7 @@ Resources:
               DaysAfterInitiation: 7
       Tags:
         - Key: projeto
-          Value: voa-tiss
+          Value: tiss
 
   BucketDadosPolicy:
     Type: AWS::S3::BucketPolicy

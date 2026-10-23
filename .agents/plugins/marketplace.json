@@ -1,11 +1,11 @@
 {
-  "name": "voa-tiss",
+  "name": "tiss",
   "interface": {
-    "displayName": "voa-tiss"
+    "displayName": "tiss"
   },
   "plugins": [
     {
-      "name": "voa-tiss",
+      "name": "tiss",
       "source": {
         "source": "local",
         "path": "./"

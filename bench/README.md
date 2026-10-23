@@ -1,7 +1,7 @@
 # TISS-Bench
 
 Benchmark público e reproduzível de tarefas sintéticas TISS 4.03.00 para comparar
-agentes de código com e sem as ferramentas MCP do `voa-tiss`.
+agentes de código com e sem as ferramentas MCP do `tiss`.
 
 As transcrições completas ficam fora do repositório em `.bench/transcricoes/`,
 diretório ignorado pelo Git. O repositório mantém apenas `resumo.jsonl` por data

@@ -3,7 +3,7 @@ import { TermsContent } from "@/components/TermsContent";
 
 export const metadata: Metadata = {
   title: "Termos",
-  description: "Termos de uso do site voa-tiss.",
+  description: "Termos de uso do site tiss.",
 };
 
 export default function TermsPage() {

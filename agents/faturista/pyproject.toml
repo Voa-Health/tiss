@@ -1,7 +1,7 @@
 [project]
 name = "faturista"
 version = "0.1.0"
-description = "Agente de referência que fatura lotes TISS pelo MCP do voa-tiss."
+description = "Agente de referência que fatura lotes TISS pelo MCP do tiss."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
@@ -13,7 +13,7 @@ dependencies = [
   "langchain-openai>=1.7,<2",
   "mcp>=1.20,<2",
   "openpyxl>=3.1",
-  "voa-tiss[server]>=0.3",
+  "tiss[server]>=0.3",
 ]
 
 [project.scripts]
@@ -27,7 +27,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
-voa-tiss = { path = "../..", editable = true }
+tiss = { path = "../..", editable = true }
 
 [tool.mypy]
 strict = true

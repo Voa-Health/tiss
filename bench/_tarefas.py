@@ -10,9 +10,9 @@ from typing import Any
 
 from lxml import etree
 
-import voa_tiss
-from voa_tiss import audit, dominio, examples, glosa, parse_demonstrativo, parse_lote, sandbox
-from voa_tiss.tuss import lookup
+import tiss
+from tiss import audit, dominio, examples, glosa, parse_demonstrativo, parse_lote, sandbox
+from tiss.tuss import lookup
 
 ROOT = Path(__file__).resolve().parent
 TASK_DIR = ROOT / "tarefas"
@@ -47,7 +47,7 @@ def _parse_xml(xml: bytes | str) -> etree._Element:
 
 def _write_hash(root: etree._Element) -> bytes:
     hash_node = root.xpath("//*[local-name()='epilogo']/*[local-name()='hash']")[0]
-    hash_node.text = voa_tiss.hash_epilogo(etree.tostring(root))
+    hash_node.text = tiss.hash_epilogo(etree.tostring(root))
     return etree.tostring(root, xml_declaration=True, encoding="ISO-8859-1")
 
 
@@ -138,7 +138,7 @@ def _new_lote(guide_count: int, item_counts: list[int] | None = None) -> dict[st
 
 
 def _xml_lote(lote: dict[str, Any]) -> bytes:
-    return voa_tiss.build_lote(lote)
+    return tiss.build_lote(lote)
 
 
 def _xml_consulta(lote: dict[str, Any]) -> bytes:
@@ -407,7 +407,7 @@ def _hash_tasks() -> list[dict[str, Any]]:
             root = _parse_xml(xml)
             root.xpath("//*[local-name()='epilogo']/*[local-name()='hash']")[0].text = ""
             xml = etree.tostring(root, xml_declaration=True, encoding="ISO-8859-1")
-        correct_hash = voa_tiss.hash_epilogo(xml)
+        correct_hash = tiss.hash_epilogo(xml)
         wrong_hash = hashlib.md5(_xml_text(xml).encode("utf-8")).hexdigest()
         gestor = index > 3
         prompt = (
@@ -842,7 +842,7 @@ def _rule_tasks() -> list[dict[str, Any]]:
     for index, strict in enumerate((False, True), start=1):
         lote = _new_lote(2 if strict else 1)
         package = _rule_package("123456", strict=strict)
-        report = voa_tiss.check(lote, operadora=package)
+        report = tiss.check(lote, operadora=package)
         expected = {
             "regras": sorted(
                 finding.rule["id"] for finding in report.findings if finding.rule is not None
@@ -851,7 +851,7 @@ def _rule_tasks() -> list[dict[str, Any]]:
         wrong = [*expected["regras"], "regra.inexistente"]
         instruction = (
             "Você é a operadora 123456 e aplica o pacote de regras próprio abaixo (JSON) "
-            "ao lote recebido (JSON do voa-tiss). Quais regras o lote viola?\n\n"
+            "ao lote recebido (JSON do tiss). Quais regras o lote viola?\n\n"
             f"Pacote de regras:\n{_json(package)}\n\nLote:\n{_json(lote)}\n\n"
             "Resposta: JSON com a lista dos ids das regras violadas, ex.: "
             '["id.a", "id.b"] (lista vazia se nenhuma).'
@@ -889,7 +889,7 @@ def _rule_tasks() -> list[dict[str, Any]]:
             f"os procedimentos {code}. Veja a guia abaixo e as autorizações já emitidas. "
             "Falta autorização para esta guia?\n\n"
             f"Autorizações emitidas: {_json(authorizations)}\n\n"
-            f"Guia (JSON do voa-tiss):\n{_json(guide)}\n\n"
+            f"Guia (JSON do tiss):\n{_json(guide)}\n\n"
             'Resposta: apenas "sim" ou "não".'
         )
         tasks.append(

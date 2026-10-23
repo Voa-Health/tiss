@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "voa-tiss",
+  "name": "tiss",
   "version": "0.3.0",
   "description": "Ferramentas para documentos TISS e dados abertos da ANS, para operadoras, prestadores, profissionais de saúde, pacientes e gestores do SUS e do governo.",
   "author": {
@@ -14,12 +14,12 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "voa-tiss",
+        "displayName": "tiss",
         "shortDescription": "Documentos TISS e dados da ANS",
         "developerName": "Voa Health",
         "category": "Developer tools",
         "websiteURL": "https://tiss-api.voa.health",
-        "defaultPrompt": "Use voa-tiss para validar e corrigir documentos TISS, consultar TUSS e operadoras, explicar glosas e ler demonstrativos. Não invente XML TISS."
+        "defaultPrompt": "Use tiss para validar e corrigir documentos TISS, consultar TUSS e operadoras, explicar glosas e ler demonstrativos. Não invente XML TISS."
       }
     }
   }
