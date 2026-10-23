@@ -8,8 +8,8 @@ import unicodedata
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-import voa_tiss
-from voa_tiss import dominio
+import tiss
+from tiss import dominio
 
 Veredito = tuple[bool, str]
 
@@ -69,11 +69,11 @@ def _lote(esperado: dict[str, Any], resposta: str) -> Veredito:
     xml = limpar(resposta)
     if not xml.startswith("<"):
         return False, "resposta não é XML"
-    relatorio = voa_tiss.validate(xml)
+    relatorio = tiss.validate(xml)
     erros = sorted({f.code for f in relatorio.findings if f.severity == "error"})
     if erros:
         return False, "validate com erros: " + ", ".join(erros)
-    lote = voa_tiss.parse_lote(xml)
+    lote = tiss.parse_lote(xml)
     if len(lote.get("guias", [])) != esperado["guias"]:
         return False, "número de guias diferente do esperado"
     for ponteiro, valor in esperado["campos"].items():

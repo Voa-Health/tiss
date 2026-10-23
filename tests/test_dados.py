@@ -9,16 +9,16 @@ import pytest
 from conftest import ROOT
 
 from scripts import _manutencao_glosa, manutencao
-from voa_tiss import dominio, glosa, operadoras
-from voa_tiss._schema import (
+from tiss import dominio, glosa, operadoras
+from tiss._schema import (
     PINNED_PROVENANCE,
     compile_schema,
     schema_dir,
     verify_schema_bundle,
 )
-from voa_tiss.codes import CODE_CATALOG
-from voa_tiss.tuss import info, lookup, search, tables
-from voa_tiss.tuss._index import TussIndex, content_tokens, fold, is_vigente
+from tiss.codes import CODE_CATALOG
+from tiss.tuss import info, lookup, search, tables
+from tiss.tuss._index import TussIndex, content_tokens, fold, is_vigente
 
 
 def test_tuss_lookup_search_and_copy_contract():
@@ -139,7 +139,7 @@ def test_xsd_data_provenance_and_compile():
 
 
 def test_tuss_info_uses_shared_index_header(monkeypatch):
-    from voa_tiss import tuss
+    from tiss import tuss
 
     class Index:
         size = 5

@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from conftest import ROOT, UserGuide, parse_return, return_guide
 
-from voa_tiss import (
+from tiss import (
     Decisao,
     Decision,
     RetornoError,

@@ -1,8 +1,8 @@
 {
   "info": {
     "description": "API HTTP e MCP para documentos TISS.",
-    "title": "voa-tiss",
-    "version": "0.3.1"
+    "title": "tiss",
+    "version": "0.4.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -2034,6 +2034,175 @@
           }
         },
         "summary": "Rejection Map"
+      }
+    },
+    "/v1/rejection-map/config": {
+      "get": {
+        "operationId": "rejection_map_config_v1_rejection_map_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Rejection Map Config"
+      }
+    },
+    "/v1/rejection-map/submit": {
+      "post": {
+        "operationId": "rejection_map_submit_v1_rejection_map_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "additionalProperties": false,
+                "properties": {
+                  "guias": {
+                    "minimum": 0.0,
+                    "type": "integer"
+                  },
+                  "ignorados": {
+                    "items": {
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "type": "array"
+                  },
+                  "linhas": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "codigo": {
+                          "type": "string"
+                        },
+                        "glosa": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "guias": {
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "mes": {
+                          "pattern": "^\\d{4}-\\d{2}$",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prestador": {
+                          "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
+                          "type": "string"
+                        },
+                        "rule_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "valor_afetado": {
+                          "pattern": "^-?\\d+\\.\\d{2}$",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "prestador",
+                        "mes",
+                        "codigo",
+                        "glosa",
+                        "rule_id",
+                        "guias",
+                        "valor_afetado"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "lotes": {
+                    "minimum": 0.0,
+                    "type": "integer"
+                  },
+                  "prestadores": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "guias": {
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "guias_com_achado": {
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "mes": {
+                          "pattern": "^\\d{4}-\\d{2}$",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prestador": {
+                          "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
+                          "type": "string"
+                        },
+                        "valor_afetado": {
+                          "pattern": "^-?\\d+\\.\\d{2}$",
+                          "type": "string"
+                        },
+                        "valor_total": {
+                          "pattern": "^-?\\d+\\.\\d{2}$",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "prestador",
+                        "mes",
+                        "guias",
+                        "guias_com_achado",
+                        "valor_total",
+                        "valor_afetado"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "versao": {
+                    "const": "1"
+                  }
+                },
+                "required": [
+                  "versao",
+                  "lotes",
+                  "guias",
+                  "ignorados",
+                  "prestadores",
+                  "linhas"
+                ],
+                "title": "Mapa de rejeição",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Rejection Map Submit"
       }
     },
     "/v1/sadt_catalog": {

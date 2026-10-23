@@ -1,4 +1,4 @@
-"""Avaliação de descoberta do voa-tiss em respostas de modelos via OpenRouter."""
+"""Avaliação de descoberta do tiss em respostas de modelos via OpenRouter."""
 
 from __future__ import annotations
 
@@ -19,7 +19,11 @@ ROOT = Path(__file__).resolve().parents[1]
 PROMPTS = ROOT / "evals/descoberta/prompts.yaml"
 RESULTADOS = ROOT / "evals/descoberta/resultados"
 API = "https://openrouter.ai/api/v1/chat/completions"
-TERMOS = re.compile(r"voa[-_]tiss|tiss-api\.voa\.health|voa-health/tiss", re.IGNORECASE)
+TERMOS = re.compile(
+    r"tiss-api\.voa\.health|voa-health/tiss|pypi\.org/project/tiss\b|"
+    r"pip install \"?tiss\b|import tiss\b|from tiss import",
+    re.IGNORECASE,
+)
 
 
 class _Orcamento:
@@ -69,7 +73,7 @@ def _perguntar(
         headers={
             "Authorization": f"Bearer {chave}",
             "Content-Type": "application/json",
-            "X-Title": "voa-tiss descoberta",
+            "X-Title": "tiss descoberta",
         },
     )
     for tentativa in range(3):
@@ -148,7 +152,7 @@ def _resumo(modelos: list[dict[str, str]], itens: list[dict[str, Any]]) -> list[
 def tabela(resultado: dict[str, Any]) -> str:
     """Formata o resumo de uma rodada como tabela Markdown."""
     linhas = [
-        "| Modelo | Slug | Respostas | Citam o voa-tiss | Fontes com o voa-tiss | Custo (US$) |",
+        "| Modelo | Slug | Respostas | Citam o tiss | Fontes com o tiss | Custo (US$) |",
         "| --- | --- | ---: | ---: | ---: | ---: |",
     ]
     for linha in resultado["resumo"]:

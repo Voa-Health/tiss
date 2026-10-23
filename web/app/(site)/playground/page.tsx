@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default function PlaygroundPage() {
-  const examples = repositoryPath("src", "voa_tiss", "examples");
+  const examples = repositoryPath("src", "tiss", "examples");
   const errorExample = fs.readFileSync(`${examples}/lote-com-erros.xml`, "utf8");
   const validExample = fs.readFileSync(`${examples}/lote-valido.xml`, "utf8");
   return <Playground errorExample={errorExample} validExample={validExample} />;

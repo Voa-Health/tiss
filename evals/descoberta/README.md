@@ -1,6 +1,6 @@
 # Avaliação de descoberta
 
-Mede se modelos de linguagem citam o voa-tiss ao responder perguntas reais
+Mede se modelos de linguagem citam o tiss ao responder perguntas reais
 sobre TISS, sem que a pergunta cite o projeto. As 20 perguntas em
 [`prompts.yaml`](prompts.yaml) cobrem desenvolvedores, prestadores,
 profissionais de saúde, pacientes, operadoras e gestores do SUS e do governo.
@@ -14,8 +14,8 @@ uv run python scripts/manutencao.py descoberta --limite-usd 10 --teto-chamada-us
 
 Cada pergunta vai a cada modelo de `prompts.yaml` pelo OpenRouter, sem
 ferramentas, com busca web (`:online`, ou o motor indicado em `motor_busca`),
-temperatura 0 e até 4.000 tokens de saída. Uma resposta cita o voa-tiss quando
-o texto casa com `voa[-_]tiss|tiss-api\.voa\.health|voa-health/tiss`; as
+temperatura 0 e até 4.000 tokens de saída. Uma resposta cita o tiss quando
+o texto casa com `tiss-api\.voa\.health|voa-health/tiss|pypi\.org/project/tiss\b|pip install \"?tiss\b|import tiss\b|from tiss import`; as
 fontes citadas pela busca são medidas à parte. O resultado datado vai para
 `resultados/<data>.json`, sem o texto das respostas. `--brutos <pasta>` grava as
 respostas completas numa pasta fora do repositório. O comando para antes de
@@ -25,7 +25,7 @@ só pode passar de `--limite-usd` se uma chamada custar mais que
 
 ## Linha de base — 2026-10-22
 
-| Modelo | Slug | Respostas | Citam o voa-tiss | Fontes com o voa-tiss | Custo (US$) |
+| Modelo | Slug | Respostas | Citam o tiss | Fontes com o tiss | Custo (US$) |
 | --- | --- | ---: | ---: | ---: | ---: |
 | OpenAI | `openai/gpt-6.1-sol` | 20 | 0 | 0 | 2.0515 |
 | Anthropic | `anthropic/claude-sonnet-5.5` | 20 | 1 | 1 | 1.0997 |

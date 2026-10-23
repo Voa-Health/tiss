@@ -1,0 +1,7 @@
+- id: tiss-validate
+  name: Validar XML TISS
+  entry: tiss validate
+  language: python
+  files: \.xml$
+  types: [xml]
+  description: Valida XML TISS com o pacote tiss.

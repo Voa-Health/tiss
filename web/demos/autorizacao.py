@@ -1,4 +1,4 @@
-from voa_tiss import check_autorizacao, examples, parse_autorizacao
+from tiss import check_autorizacao, examples, parse_autorizacao
 
 solicitacao = parse_autorizacao(examples.load("autorizacao-solicitacao"))
 relatorio = check_autorizacao(solicitacao, contexto={"operadora": "000000"})

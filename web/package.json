@@ -1,5 +1,5 @@
 {
-  "name": "voa-tiss-web",
+  "name": "tiss-web",
   "private": true,
   "packageManager": "pnpm@10.13.1",
   "engines": {

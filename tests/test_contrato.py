@@ -13,25 +13,196 @@ from decimal import Decimal
 
 import jsonschema
 import pytest
-from conftest import ROOT
+from conftest import ANS, ROOT
+from lxml import etree
 
-import voa_tiss
+import tiss
 from bench._tarefas import TASK_DIR, gerar
 from bench._verificar import verificar
 from scripts import manutencao
-from voa_tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
-from voa_tiss._sadt import load_bundle, render_html
-from voa_tiss._schema import (
+from tiss import MissingExtraError, examples, render_sadt, sadt_catalog, sadt_missing
+from tiss.__main__ import main as cli_main
+from tiss._rules import _package
+from tiss._sadt import load_bundle, render_html
+from tiss._schema import (
     PINNED_PROVENANCE,
     SchemaBundleError,
+    parser,
     schema_dir,
     verify_schema_bundle,
 )
-from voa_tiss.codes import CODES
+from tiss.codes import CODES
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("lote-valido", set()),
+        (
+            "lote-com-erros",
+            {
+                "guia.sequencial",
+                "item.valor_divergente",
+                "item.valor_zerado",
+                "lote.valor_total_geral",
+            },
+        ),
+        ("guia-consulta", set()),
+        ("hash-divergente", set()),
+        ("hash-ausente", set()),
+        ("autorizacao.aprovar-json", "aprovar_por_regra"),
+        ("autorizacao.pendente-json", "pendente"),
+        ("autorizacao.auditoria-xml", "encaminhar_auditor"),
+        ("autorizacao.sem-regra-xml", "encaminhar_auditor"),
+        ("autorizacao.carteirinha-json", "encaminhar_auditor"),
+    ],
+)
+def test_example_reports(name, expected, tmp_path, capsys):
+    if name.startswith("autorizacao."):
+        case = name.split(".", 1)[1]
+        request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
+        package = _package("000000")
+        assert package is not None
+        context = {"operadora": package}
+        source = request
+        if case == "aprovar-json":
+            package["regras"][0]["check"]["codigos"] = ["99999999"]
+        elif case == "pendente-json":
+            request["solicitacao"].pop("indicacao_clinica")
+        elif case in {"auditoria-xml", "sem-regra-xml"}:
+            source = tiss.build_autorizacao(request)
+            context = {} if case == "sem-regra-xml" else context
+        elif case == "carteirinha-json":
+            package["regras"][0]["check"]["codigos"] = ["99999999"]
+            context["carteirinhas"] = {"AUT-0001": {"ativa": False}}
+        result = tiss.check_autorizacao(source, contexto=context)
+        assert result.decisao is not None
+        assert result.decisao["tipo"] == expected
+        assert expected in {"aprovar_por_regra", "pendente", "encaminhar_auditor"}
+        assert (
+            "negar"
+            not in tiss.json_schema("report")["properties"]["decisao"]["properties"]["tipo"]["enum"]
+        )
+        assert "negar" not in result.to_json()
+        if case == "aprovar-json":
+            assert result.decisao["rules"]
+            for example in ("autorizacao-solicitacao", "autorizacao-resposta"):
+                xml = examples.load(example)
+                assert tiss.build_autorizacao(tiss.parse_autorizacao(xml)) == xml
+                assert tiss.validate(xml).valid
+                hash_start = xml.index(b"<ans:hash>") + len(b"<ans:hash>")
+                replacement = b"0" if xml[hash_start : hash_start + 1] != b"0" else b"1"
+                changed = xml[:hash_start] + replacement + xml[hash_start + 1 :]
+                assert "lote.hash_divergente" in {
+                    finding.code for finding in tiss.validate(changed).findings
+                }
+        elif case == "pendente-json":
+            assert result.decisao["needs"] == ["/solicitacao/indicacao_clinica"]
+        elif case == "auditoria-xml":
+            assert any(
+                finding.code == "autorizacao.exige_auditoria"
+                and finding.rule
+                and finding.rule["id"] == "exige-autorizacao-consulta"
+                for finding in result.findings
+            )
+        elif case == "sem-regra-xml":
+            assert any(finding.code == "autorizacao.sem_regra" for finding in result.findings)
+            assert result.decisao["rules"] == []
+        elif case == "carteirinha-json":
+            assert any(finding.code == "autorizacao.carteirinha" for finding in result.findings)
+        return
+    if name == "guia-consulta":
+        lote = tiss.parse_lote(examples.load("lote-valido"))
+        lote["numero_lote"] = "TISS-001"
+        lote["guias"] = [
+            {
+                "tipo": "consulta",
+                "cabecalho_consulta": {
+                    "registro_ans": "123456",
+                    "numero_guia_prestador": "CONSULTA-001",
+                },
+                "dados_beneficiario": {
+                    "numero_carteira": "000000000001",
+                    "atendimento_rn": "N",
+                },
+                "contratado_executante": {
+                    "codigo_prestador_na_operadora": "PRESTADOR01",
+                    "cnes": "1234567",
+                },
+                "profissional_executante": {
+                    "nome_profissional": "DRA. MARIA COSTA",
+                    "conselho_profissional": "01",
+                    "numero_conselho_profissional": "12345",
+                    "uf": "35",
+                    "cbos": "225125",
+                },
+                "indicacao_acidente": "0",
+                "dados_atendimento": {
+                    "regime_atendimento": "01",
+                    "data_atendimento": "2026-10-21",
+                    "tipo_consulta": "1",
+                    "procedimento": {
+                        "codigo_tabela": "22",
+                        "codigo_procedimento": "10101012",
+                        "valor_procedimento": 15000,
+                    },
+                },
+            }
+        ]
+        xml = tiss.build_lote(lote)
+        assert tiss.validate(xml).valid
+        parsed = tiss.parse_lote(xml)
+        assert parsed == lote
+        report = tiss.check(parsed)
+        assert report.valid and report.findings == ()
+        return
+    if name.startswith("hash-"):
+        root = etree.fromstring(examples.load("lote-valido"), parser())
+        hash_element = root.xpath(".//ans:epilogo/ans:hash", namespaces=ANS)[0]
+        if name == "hash-divergente":
+            hash_element.text = "0" * 32
+        else:
+            hash_element.getparent().remove(hash_element)
+        document = etree.tostring(root, encoding="ISO-8859-1", xml_declaration=True)
+        report = tiss.validate(document)
+        codes = {finding.code for finding in report.findings}
+        if name == "hash-divergente":
+            assert codes == {"lote.hash_divergente"}
+            assert not report.valid
+            finding = report.findings[0]
+            assert finding.xpath.endswith("/ans:epilogo/ans:hash")
+            assert finding.message == "Hash do epílogo divergente do calculado."
+            assert finding.glosa == "5014"
+            assert finding.fix is None
+        else:
+            assert "lote.hash_divergente" not in codes
+            assert any(code.startswith("xsd.") for code in codes)
+        return
+    report = tiss.validate(examples.load(name))
+    codes = {finding.code for finding in report.findings}
+    assert expected <= codes
+    if name == "lote-valido":
+        assert report.valid and report.findings == ()
+        empty_dir = tmp_path / "sem_lotes"
+        empty_dir.mkdir()
+        (empty_dir / "observacoes.txt").write_text("arquivo ignorado")
+        assert cli_main(["validate", str(empty_dir)]) == 2
+        assert capsys.readouterr().err == (
+            f"Nenhum arquivo .xml ou .json encontrado em: {empty_dir.as_posix()}\n"
+        )
+    else:
+        assert 1 <= sum(code.startswith("xsd.") for code in codes) <= 3
+        assert report.findings[0].guia == "ERRO-01"
+        assert {finding.guia for finding in report.findings if finding.guia} == {
+            "ERRO-01",
+            "ERRO-02",
+        }
+        assert any(finding.severity == "warning" for finding in report.findings)
 
 
 def test_public_api_and_example_contract():
-    assert set(voa_tiss.__all__) == {
+    _check_browser_map_contract()
+    assert set(tiss.__all__) == {
         "AuditContext",
         "AutorizacaoError",
         "BundleError",
@@ -69,8 +240,8 @@ def test_public_api_and_example_contract():
         "validate",
         "validate_package",
     }
-    assert set(voa_tiss.json_schema("finding")["properties"]["code"]["enum"]) == set(CODES)
-    assert voa_tiss.examples.names() == [
+    assert set(tiss.json_schema("finding")["properties"]["code"]["enum"]) == set(CODES)
+    assert tiss.examples.names() == [
         "lote-valido",
         "lote-com-erros",
         "demonstrativo",
@@ -78,32 +249,128 @@ def test_public_api_and_example_contract():
         "autorizacao-resposta",
     ]
     with pytest.raises(ValueError):
-        voa_tiss.examples.load("../unknown")
+        tiss.examples.load("../unknown")
     request = json.loads((ROOT / "tests/fixtures/autorizacao-solicitacao.json").read_text())
-    authorization_xml = voa_tiss.build_autorizacao(request)
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.build_autorizacao({**request, "solicitacao": None, "autorizacao": {}})
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.build_autorizacao(
+    authorization_xml = tiss.build_autorizacao(request)
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.build_autorizacao({**request, "solicitacao": None, "autorizacao": {}})
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.build_autorizacao(
             {key: value for key, value in request.items() if key != "solicitacao"}
         )
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.build_autorizacao(
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.build_autorizacao(
             {
                 **request,
                 "solicitacao": {**request["solicitacao"], "campo_desconhecido": "x"},
             }
         )
-    with pytest.raises(voa_tiss.AutorizacaoError):
-        voa_tiss.parse_autorizacao(
+    with pytest.raises(tiss.AutorizacaoError):
+        tiss.parse_autorizacao(
             authorization_xml.replace(b"SOLICITACAO_PROCEDIMENTOS", b"TIPO_INVALIDO")
         )
+
+
+def _check_browser_map_contract():
+    node = shutil.which("node")
+    if (
+        node is None
+        or int(subprocess.check_output([node, "--version"]).decode()[1:].split(".")[0]) < 22
+    ):
+        return
+    vectors = []
+    for cpf, secret in [("000.000.000-00", "a" * 64), ("00000000001", "chave-sintética")]:
+        lote = tiss.parse_lote(examples.load("lote-valido"))
+        lote["prestador"] = {"cpf": cpf}
+        value = tiss.rejection_map([lote], segredo_pseudonimo=secret)
+        vectors.append([cpf, secret, value["prestadores"][0]["prestador"]])
+    script = r"""
+import assert from "node:assert/strict";
+import {
+  identificarPrestador, lerCadastro, prepararCadastro, matrizDoMapa, rotuloDoPrestador,
+} from "./web/lib/org/mapa.ts";
+import { rotaPermitida } from "./web/lib/org/rotas.ts";
+import { secoesVisiveisDaOrg } from "./web/components/org/secoes.ts";
+for (const [cpf, secret, expected] of JSON.parse(process.argv[1])) {
+  assert.equal(await identificarPrestador(cpf, async () => secret), expected);
+}
+const segredo = async () => "a".repeat(64);
+const csv = 'prestador,nome\n000.000.000-00,"Clínica, Sintética"\n' +
+  '00.000.000/0000-00,Hospital\ncodigo: A,Centro';
+const itens = await prepararCadastro(lerCadastro(csv, false), segredo);
+assert.match(itens[0].prestador, /^cpf:hmac:[0-9a-f]{64}$/);
+assert.equal(itens[0].nome, "Clínica, Sintética");
+assert.equal(itens[1].prestador, "cnpj:00000000000000");
+assert.equal(itens[2].prestador, "codigo:A");
+assert.deepEqual(lerCadastro("[]", true), []);
+assert.deepEqual(await prepararCadastro([], segredo), []);
+for (const body of [
+  '[{"prestador":"A","nome":"X","extra":1}]', '[{"prestador":"A","nome":""}]', '{}',
+]) {
+  assert.throws(() => lerCadastro(body, true));
+}
+assert.throws(() => lerCadastro('prestador,nome\n"incompleto', false));
+assert.throws(() => lerCadastro('nome,prestador\nA,X', false));
+await assert.rejects(() => prepararCadastro([{prestador:"cpf:abc",nome:"X"}], segredo));
+await assert.rejects(() => prepararCadastro(
+  [{prestador:"00000000000",nome:"X"}], async () => {throw Error("indisponível")},
+));
+await assert.rejects(() => prepararCadastro(
+  [{prestador:"A",nome:"X"},{prestador:"codigo:A",nome:"Y"}], segredo,
+));
+const prestador = {id:"codigo:A",nome:null,nome_origem:null};
+const linha = {
+  prestador, mes:"2026-10", codigo:"X", glosa:null, rule_id:null, guias:2, valor_afetado:"0.10",
+};
+const matriz = matrizDoMapa([linha,{...linha,valor_afetado:"0.20"},{...linha,mes:null}]);
+assert.deepEqual(matriz.meses, ["2026-10","sem mês"]);
+assert.deepEqual(matriz.linhas[0].total, {guias:6,centavos:40});
+assert.deepEqual(matrizDoMapa([]), {meses:[],linhas:[]});
+assert.equal(rotuloDoPrestador(prestador), "Código A");
+assert.equal(rotuloDoPrestador({...prestador,id:"cnpj:00000000000000"}), "00.000.000/0000-00");
+assert.equal(
+  rotuloDoPrestador({...prestador,id:"cpf:hmac:"+"a".repeat(64)}), "CPF pseudonimizado …aaaa",
+);
+const org = {
+  type:"pay",is_admin:false,my_areas:["auditoria"],rejection_map:{eligible:true,enabled:false},
+};
+const visivel = (value) => secoesVisiveisDaOrg(value).some(s => s.key === "mapa");
+assert.equal(visivel(org), true);
+assert.equal(visivel({...org,my_areas:[]}), false);
+assert.equal(visivel({...org,type:"prov"}), false);
+assert.equal(visivel({...org,rejection_map:{eligible:false}}), false);
+assert.equal(visivel({...org,my_areas:["administration"]}), true);
+const base = "tiss/org/rejection-map/";
+for (const [path, methods] of [
+  [base,["GET","DELETE"]], [base+"enable/",["POST"]], [base+"disable/",["POST"]],
+  [base+"secret/",["GET"]], [base+"providers/",["GET","PUT"]],
+]) {
+  for (const method of ["GET","POST","PUT","DELETE","PATCH"]) {
+    assert.equal(rotaPermitida(path, method), methods.includes(method));
+  }
+}
+assert.equal(rotaPermitida(base+"extra/", "GET"), false);
+"""
+    subprocess.run(
+        [
+            node,
+            "--experimental-strip-types",
+            "--input-type=module",
+            "-e",
+            script,
+            json.dumps(vectors),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_generated_artifacts_and_golden_report_are_current():
     assert manutencao._write_artifacts(check=True)
     expected = (ROOT / "tests/golden/lote-com-erros.report.json").read_text().strip()
-    assert voa_tiss.validate(voa_tiss.examples.load("lote-com-erros")).to_json() == expected
+    assert tiss.validate(tiss.examples.load("lote-com-erros")).to_json() == expected
 
 
 @pytest.mark.parametrize("change", ["missing", "tampered", "extra", "provenance", "symlink"])
@@ -150,16 +417,16 @@ def test_xsd_bundle_rejects_unclosed_imports(tmp_path, monkeypatch, location):
 
 def test_report_schema_and_determinism():
     reports = [
-        voa_tiss.validate(examples.load("lote-valido")),
-        voa_tiss.validate(examples.load("lote-com-erros")),
-        voa_tiss.validate((ROOT / "tests/fixtures/xml/malformed.xml").read_bytes()),
+        tiss.validate(examples.load("lote-valido")),
+        tiss.validate(examples.load("lote-com-erros")),
+        tiss.validate((ROOT / "tests/fixtures/xml/malformed.xml").read_bytes()),
     ]
-    validator = jsonschema.Draft202012Validator(voa_tiss.json_schema("report"))
+    validator = jsonschema.Draft202012Validator(tiss.json_schema("report"))
     for report in reports:
         validator.validate(report.to_dict())
         assert json.loads(report.to_json()) == report.to_dict()
     code = (
-        "from voa_tiss import examples,validate;"
+        "from tiss import examples,validate;"
         "print(validate(examples.load('lote-com-erros')).to_json())"
     )
     outputs = []
@@ -175,14 +442,14 @@ def test_public_apis_are_offline(monkeypatch):
 
     monkeypatch.setattr(socket, "socket", blocked)
     monkeypatch.setattr(socket, "create_connection", blocked)
-    assert voa_tiss.validate(examples.load("lote-valido")).valid
-    assert voa_tiss.parse_demonstrativo(examples.load("demonstrativo"))
-    from voa_tiss.tuss import lookup, search
+    assert tiss.validate(examples.load("lote-valido")).valid
+    assert tiss.parse_demonstrativo(examples.load("demonstrativo"))
+    from tiss.tuss import lookup, search
 
     assert lookup("10101012", tabela="22")
     assert search("consultorio")
-    assert voa_tiss.sadt_catalog()
-    assert isinstance(voa_tiss.sadt_missing({}), list)
+    assert tiss.sadt_catalog()
+    assert isinstance(tiss.sadt_missing({}), list)
 
 
 def test_sadt_catalog_completeness_and_optional_dependencies(monkeypatch, tmp_path):
@@ -196,7 +463,7 @@ def test_sadt_catalog_completeness_and_optional_dependencies(monkeypatch, tmp_pa
     monkeypatch.setattr(builtins, "__import__", without_pdf)
     assert sadt_catalog()["fields"]
     assert isinstance(sadt_missing({}), list)
-    with pytest.raises(MissingExtraError, match="voa-tiss\\[pdf\\]"):
+    with pytest.raises(MissingExtraError, match="tiss\\[pdf\\]"):
         render_sadt({}, tmp_path / "guide.pdf")
 
 
@@ -225,7 +492,7 @@ def test_complete_guide_and_line_totals_and_html():
     }
     assert sadt_missing(complete) == []
 
-    from voa_tiss._line_total import LineTotalError, line_total, line_total_cents
+    from tiss._line_total import LineTotalError, line_total, line_total_cents
 
     assert line_total(unit_price="12.50", quantity=2) == Decimal("25.00")
     assert line_total_cents(unit_price_cents=7, quantity=3, factor="0.5") == Decimal("10.5")

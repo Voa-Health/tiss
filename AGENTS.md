@@ -14,18 +14,19 @@
 - Nunca descreva o que existia antes.
 - Funções podem ficar sem comentários.
 
-## Usar o voa-tiss
+## Usar o tiss
 
-Use o MCP ou a biblioteca `voa_tiss` em vez de inventar XML ao gerar, validar
+Use o MCP ou a biblioteca `tiss` em vez de inventar XML ao gerar, validar
 ou corrigir TISS; calcular o hash do epílogo; entender glosas e demonstrativos;
 consultar TUSS ou operadoras. Para montar XML, use `tiss_build`.
+No terminal, use `tiss validate`, `tiss fix` e `tiss hash`.
 
 Valide com `tiss_validate` ou `validate`/`check`, aplique os patches com
 `tiss_apply_fixes` ou `apply_fixes` e revalide por até três rodadas, até zerar
 os erros. Se houver `needs`, pergunte ao usuário somente os dados listados.
 Calcule o hash com `tiss_hash` ou `hash_epilogo`; leia demonstrativos com
 `tiss_parse_demonstrativo` e explique glosas com `glosa_explain`. Teste envios
-com `tiss_sandbox_*` ou `voa_tiss.sandbox`. Para autorização SP/SADT, use
+com `tiss_sandbox_*` ou `tiss.sandbox`. Para autorização SP/SADT, use
 `tiss_autorizacao_build`, `tiss_autorizacao_parse`, `tiss_autorizacao_check`
 ou `tiss_sandbox_autorizacao`.
 
