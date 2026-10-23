@@ -35,7 +35,8 @@ from ._ops_schemas import (
     _string,
 )
 from ._prompts import PROMPTS
-from ._quota import admit
+from ._published_rules import with_published_rules
+from ._quota import admit, payment_required
 from ._telemetry import operation_event
 from ._usage import API_CALL, record, wait
 
@@ -281,6 +282,7 @@ _BASE_OPS = (
         ),
         2500,
         scope="tiss:validate",
+        rules_input="operadora",
     ),
     Op(
         "parse_demonstrativo",
@@ -496,6 +498,7 @@ _BASE_OPS = (
         2500,
         path="/v1/sandbox/lotes",
         scope="tiss:sandbox",
+        rules_input="registro_ans",
     ),
     Op(
         "sandbox_demonstrativo",
@@ -526,7 +529,7 @@ def call(
     op: Op, entrada: dict[str, Any], ctx: CallContext | None = None
 ) -> tuple[int, dict[str, Any]]:
     ctx = ctx or CallContext()
-    denied = admit(op.name, ctx, op.scope)
+    denied = admit(op.name, ctx, op.scope) or payment_required(op, ctx.access)
     if denied is not None:
         logger.info("op=%s status=%d ms=0.0", op.name, denied[0])
         return denied
@@ -534,7 +537,7 @@ def call(
     status = _HTTP_OK
     try:
         _VALIDATORS[op.name].validate(entrada)
-        result = op.run(entrada)
+        result = op.run(with_published_rules(op, entrada, ctx))
     except jsonschema.ValidationError as exc:
         status = 422
         result = {"erro": {"codigo": "entrada_invalida", "mensagem": exc.message}}

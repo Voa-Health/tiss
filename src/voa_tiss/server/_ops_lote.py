@@ -122,6 +122,7 @@ LOTE_OPS = (
         ),
         1000,
         scope="tiss:rules",
+        rules_input="operadora",
     ),
     Op(
         "rejection_map",
@@ -151,6 +152,7 @@ LOTE_OPS = (
         4000,
         path="/v1/rejection-map",
         scope="tiss:rules",
+        rules_input="regras",
     ),
     Op(
         "apply_fixes",

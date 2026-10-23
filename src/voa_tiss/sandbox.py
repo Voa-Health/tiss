@@ -324,9 +324,9 @@ def enviar_lote(
     *,
     cenario: str = "aprovado",
     tentativa: int = 1,
-    registro_ans: str | None = None,
+    registro_ans: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Envio e protocolo de lote no cenário escolhido."""
+    """Envio e protocolo de lote; `registro_ans` aceita registro ou pacote de regras."""
     if cenario not in _SCENARIOS:
         raise ValueError(f"Cenário desconhecido: {cenario}")
     if not isinstance(tentativa, int) or tentativa < 1:

@@ -4,6 +4,16 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+PAID_KINDS = frozenset(
+    {
+        "tiss_cloud_guia",
+        "tiss_extractor",
+        "tiss_appeal",
+        "tiss_accounts_review",
+        "tiss_authorization",
+    }
+)
+
 
 @dataclass(frozen=True)
 class Op:
@@ -17,6 +27,11 @@ class Op:
     path: str | None = None
     scope: str | None = None
     usage_kind: str = "tiss_api_call"
+    rules_input: str | None = None
+
+    @property
+    def paid(self) -> bool:
+        return self.usage_kind in PAID_KINDS
 
     @property
     def route(self) -> str:
