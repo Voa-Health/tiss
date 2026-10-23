@@ -9,7 +9,7 @@ import { PageStack } from "@/components/ui/PageStack";
 import { Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
 import { track } from "@/lib/analytics";
-import { audiences, healthplanFeatures, type Audience } from "@/lib/audiences";
+import { audiences, cliFeature, type Audience } from "@/lib/audiences";
 
 function AudienceCard({ audience }: { audience: Audience }) {
   const { token } = theme.useToken();
@@ -68,7 +68,7 @@ export function HomeContent() {
           />
         </Col>
         <Col xs={24} lg={13}>
-          <TerminalGif item={healthplanFeatures[0]} priority />
+          <TerminalGif item={cliFeature} priority />
         </Col>
       </Row>
 

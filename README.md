@@ -35,9 +35,9 @@ em código aberto: uma biblioteca Python que roda offline, uma API HTTP e um MCP
 remoto para o seu agente de IA.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Voa-Health/tiss/main/agents/faturista/execucao-real/fluxo.gif" alt="Agente faturista fechando o ciclo TISS no terminal: valida o lote, corrige, envia à operadora simulada, lê as glosas e rascunha os recursos" width="820">
+  <img src="https://raw.githubusercontent.com/Voa-Health/tiss/main/web/public/demos/cli.gif" alt="Terminal: tiss validate aprova o lote e confere o hash, o código do procedimento sai do lote para tiss tuss e o código da glosa sai do demonstrativo para tiss glosa" width="820">
   <br>
-  <sub>O <a href="https://github.com/Voa-Health/tiss/blob/main/agents/faturista/README.md">agente faturista</a> usando só o MCP público: corrige dois erros do lote, envia à operadora simulada, lê as glosas e rascunha um recurso por guia, sem inventar evidência.</sub>
+  <sub>A CLI <code>tiss</code> valida o lote, consulta o procedimento cobrado e explica a glosa que voltou no demonstrativo, tudo offline. Para ver um agente fechando o ciclo, veja o <a href="https://github.com/Voa-Health/tiss/blob/main/agents/faturista/README.md">agente faturista</a>.</sub>
 </div>
 
 <!-- mcp-name: health.voa/tiss -->
