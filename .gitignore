@@ -11,18 +11,29 @@ __pycache__/
 .tox/
 .nox/
 .ipynb_checkpoints/
+.pyre/
+.pytype/
+__pypackages__/
+.pdm-python
 
 # Build e cobertura
 dist/
 build/
+*.egg
 *.egg-info/
 .eggs/
+wheels/
+pip-wheel-metadata/
 .coverage
 .coverage.*
+*.cover
 coverage.xml
 htmlcov/
+nosetests.xml
+profile_default/
 
 # Web
+.cache/
 node_modules/
 .next/
 out/
@@ -45,6 +56,9 @@ src/tiss/referencia/_data/*.sqlite*
 # Segredos e certificados (inclusive ICP-Brasil A1)
 .env*
 !.env.example
+.envrc
+.direnv/
+.claude/settings.local.json
 *.pem
 *.key
 *.p12
