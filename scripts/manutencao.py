@@ -14,7 +14,7 @@ from typing import Any
 
 from tiss import examples, json_schema, validate
 from tiss.codes import CODES
-from tiss.server._ops import render_api_docs
+from tiss.server._ops import OPS, render_api_docs
 
 if __package__:
     from ._manutencao_ans import (
@@ -139,6 +139,18 @@ def _artifact_contents() -> dict[Path, bytes]:
             "utf-8"
         )
         + b"\n"
+    )
+    tools = [
+        {
+            "name": op.tool_name,
+            "description": op.description,
+            "inputSchema": op.input_schema,
+            "outputSchema": op.output_schema,
+        }
+        for op in OPS
+    ]
+    artifacts[ROOT / "schemas" / "mcp-tools.json"] = (
+        json.dumps(tools, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n"
     )
     requirements = subprocess.run(
         [

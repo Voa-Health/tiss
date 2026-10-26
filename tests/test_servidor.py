@@ -622,6 +622,14 @@ def test_http_mcp_parity_and_token_budgets(
         )
         assert tools.status_code == HTTP_OK
         tool_definitions = tools.json()["result"]["tools"]
+        tool_snapshot = json.loads(
+            (ROOT / "schemas" / "mcp-tools.json").read_text(encoding="utf-8")
+        )
+        listed_tools = [
+            {key: tool[key] for key in ("name", "description", "inputSchema", "outputSchema")}
+            for tool in tool_definitions
+        ]
+        assert listed_tools == tool_snapshot
         assert all(tool["inputSchema"].get("type") == "object" for tool in tool_definitions)
         assert all(
             not any(key in tool["inputSchema"] for key in ("oneOf", "anyOf", "allOf"))

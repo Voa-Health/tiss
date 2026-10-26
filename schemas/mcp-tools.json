@@ -1,0 +1,2223 @@
+[
+  {
+    "description": "Valida XML TISS ou lote em JSON. Quando usar: antes de gerar ou enviar um lote. Quando não usar: para corrigir achados sem aplicar o ciclo validar → tiss_apply_fixes → validar de novo.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "contexto": {
+          "additionalProperties": false,
+          "properties": {
+            "autorizacoes": {
+              "type": "object"
+            },
+            "carteirinhas": {
+              "type": "object"
+            },
+            "tabela_operadora": {
+              "additionalProperties": false,
+              "properties": {
+                "exige_autorizacao": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "max_guias": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "procedimentos": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "registro_ans": {
+                  "type": "string"
+                },
+                "vigencia_fim": {
+                  "format": "date",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "vigencia_inicio": {
+                  "format": "date",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "data": {
+          "format": "date",
+          "type": "string"
+        },
+        "lote": {
+          "additionalProperties": true,
+          "description": "Schema estrutural disponível em tiss://schemas/lote.",
+          "properties": {},
+          "type": "object"
+        },
+        "operadora": {
+          "pattern": "^[0-9]{5,6}$",
+          "type": "string"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "tiss_validate",
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "properties": {
+        "decisao": {
+          "additionalProperties": false,
+          "properties": {
+            "needs": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "rules": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "mantenedor": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "registro_ans": {
+                        "type": "string"
+                      },
+                      "tipo": {
+                        "enum": [
+                          "comunidade",
+                          "operadora"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "tipo"
+                    ],
+                    "type": "object"
+                  },
+                  "source": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "acesso": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "string"
+                      },
+                      "official": {
+                        "type": "boolean"
+                      },
+                      "titulo": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "titulo",
+                      "data",
+                      "acesso",
+                      "official"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "id",
+                  "source",
+                  "mantenedor"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "tipo": {
+              "enum": [
+                "aprovar_por_regra",
+                "pendente",
+                "encaminhar_auditor"
+              ]
+            }
+          },
+          "required": [
+            "tipo",
+            "rules",
+            "needs"
+          ],
+          "type": "object"
+        },
+        "findings": {
+          "items": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "enum": [
+                  "audit.autorizacao_ausente",
+                  "audit.autorizacao_vencida",
+                  "audit.carteirinha_ausente",
+                  "audit.carteirinha_inativa",
+                  "audit.carteirinha_vencida",
+                  "audit.data_ausente",
+                  "audit.operadora_divergente",
+                  "audit.procedimento_ausente",
+                  "audit.procedimento_fora_da_tabela",
+                  "audit.tabela_fora_de_vigencia",
+                  "audit.tabela_sem_procedimentos",
+                  "audit.valor_nao_positivo",
+                  "autorizacao.carteirinha",
+                  "autorizacao.dado_ausente",
+                  "autorizacao.exige_auditoria",
+                  "autorizacao.sem_regra",
+                  "guia.carteirinha_ausente",
+                  "guia.executante_ausente",
+                  "guia.sequencial",
+                  "item.valor_divergente",
+                  "item.valor_zerado",
+                  "lote.acima_do_teto",
+                  "lote.caractere_invalido",
+                  "lote.estrutura",
+                  "lote.guia_duplicada",
+                  "lote.hash_divergente",
+                  "lote.valor_total_geral",
+                  "lote.vazio",
+                  "regra.combinacao_proibida",
+                  "regra.exige_autorizacao",
+                  "regra.max_itens",
+                  "regra.obrigatorio",
+                  "regra.padrao",
+                  "regra.valores",
+                  "tuss.fora_de_vigencia",
+                  "tuss.inexistente",
+                  "versao.divergente",
+                  "versao.nao_detectada",
+                  "versao.nao_suportada",
+                  "xml.doctype",
+                  "xml.encoding",
+                  "xml.malformado",
+                  "xsd.atributo",
+                  "xsd.elemento_ausente",
+                  "xsd.elemento_inesperado",
+                  "xsd.enumeracao",
+                  "xsd.outro",
+                  "xsd.padrao",
+                  "xsd.tamanho",
+                  "xsd.tipo"
+                ]
+              },
+              "fix": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "items": {
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                ]
+              },
+              "glosa": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "guia": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "needs": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ]
+              },
+              "pointer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rule": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "xpath": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "severity",
+              "guia",
+              "xpath",
+              "pointer",
+              "message",
+              "fix",
+              "needs",
+              "glosa",
+              "rule"
+            ],
+            "title": "Finding",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "valid",
+        "version",
+        "findings"
+      ],
+      "title": "Report",
+      "type": "object"
+    }
+  },
+  {
+    "description": "Lê decisões de um demonstrativo. Quando usar: para identificar pagamentos e glosas. Quando não usar: para validar lotes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_parse_demonstrativo",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "decisoes": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "decision": {
+                "enum": [
+                  "pago",
+                  "glosado",
+                  "glosa_parcial"
+                ]
+              },
+              "guia_operadora": {
+                "type": "string"
+              },
+              "guia_ref": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              },
+              "tuss_code": {
+                "type": "string"
+              },
+              "valor_glosa_cents": {
+                "type": "integer"
+              },
+              "valor_liberado_cents": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "guia_ref",
+              "decision",
+              "motivo"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "decisoes"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Propõe vínculos entre decisões e guias. Quando usar: após ler um demonstrativo. Quando não usar: para alterar guias.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "decisoes": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "decision": {
+                "enum": [
+                  "pago",
+                  "glosado",
+                  "glosa_parcial"
+                ]
+              },
+              "guia_operadora": {
+                "type": "string"
+              },
+              "guia_ref": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              },
+              "tuss_code": {
+                "type": "string"
+              },
+              "valor_glosa_cents": {
+                "type": "integer"
+              },
+              "valor_liberado_cents": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "guia_ref",
+              "decision",
+              "motivo"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "guias": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "id_key": {
+          "type": "string"
+        },
+        "operadora_key": {
+          "type": "string"
+        },
+        "prestador_key": {
+          "type": "string"
+        },
+        "status_key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "decisoes",
+        "guias"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_plan_reconciliation",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "ambiguas": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "decision": {
+                "enum": [
+                  "pago",
+                  "glosado",
+                  "glosa_parcial"
+                ]
+              },
+              "guia_operadora": {
+                "type": "string"
+              },
+              "guia_ref": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              },
+              "tuss_code": {
+                "type": "string"
+              },
+              "valor_glosa_cents": {
+                "type": "integer"
+              },
+              "valor_liberado_cents": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "guia_ref",
+              "decision",
+              "motivo"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "propostas": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "sem_par": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "decision": {
+                "enum": [
+                  "pago",
+                  "glosado",
+                  "glosa_parcial"
+                ]
+              },
+              "guia_operadora": {
+                "type": "string"
+              },
+              "guia_ref": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              },
+              "tuss_code": {
+                "type": "string"
+              },
+              "valor_glosa_cents": {
+                "type": "integer"
+              },
+              "valor_liberado_cents": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "guia_ref",
+              "decision",
+              "motivo"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "propostas",
+        "sem_par",
+        "ambiguas"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Busca um código TUSS exato. Quando usar: para consultar código ou vigência. Quando não usar: para buscar por descrição.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "data": {
+          "format": "date",
+          "type": "string"
+        },
+        "include_expired": {
+          "type": "boolean"
+        },
+        "tabela": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "type": "object"
+    },
+    "name": "tuss_lookup",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "resultados": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "resultados"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Busca códigos TUSS por texto. Quando usar: para localizar procedimentos por descrição. Quando não usar: para validar XML.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "format": "date",
+          "type": "string"
+        },
+        "include_expired": {
+          "type": "boolean"
+        },
+        "limite": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tabela": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "type": "object"
+    },
+    "name": "tuss_search",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "resultados": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "resultados"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Identifica campos obrigatórios SP/SADT ausentes. Quando usar: antes de renderizar uma guia. Quando não usar: para validar um lote.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "values": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "values"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_sadt_missing",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "faltando": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "faltando"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Retorna o catálogo SP/SADT. Quando usar: para conhecer campos e domínios. Quando não usar: para preencher uma guia sem dados.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "name": "tiss_sadt_catalog",
+    "outputSchema": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    }
+  },
+  {
+    "description": "Consulta as operadoras vinculadas a um CNPJ ou CNES. Quando usar: para identificar vínculos de um estabelecimento. Quando não usar: para buscar o cadastro geral; use operadora_lookup.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "cnes": {
+          "type": "string"
+        },
+        "cnpj": {
+          "type": "string"
+        },
+        "limite": {
+          "default": 200,
+          "maximum": 1000,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "name": "tiss_rede",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "atualizado_em": {
+          "type": "string"
+        },
+        "fonte": {
+          "type": "string"
+        },
+        "operadoras": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "cnes": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "disponibilidade": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "dt_vinculo_inicio": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "nome": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "nome_estabelecimento": {
+                "type": "string"
+              },
+              "planos": {
+                "type": "integer"
+              },
+              "registro_ans": {
+                "type": "string"
+              },
+              "tipo_contrato": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "tipo_prestador": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "urgencia_emergencia": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "registro_ans",
+              "nome",
+              "cnes",
+              "nome_estabelecimento",
+              "tipo_contrato",
+              "disponibilidade",
+              "tipo_prestador",
+              "urgencia_emergencia",
+              "dt_vinculo_inicio",
+              "planos"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "total": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "atualizado_em",
+        "fonte",
+        "total",
+        "operadoras"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Consulta os estabelecimentos vinculados a uma operadora. Quando usar: para identificar unidades da rede por UF. Quando não usar: para buscar o cadastro geral; use operadora_lookup.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "limite": {
+          "default": 200,
+          "maximum": 1000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "registro": {
+          "type": "string"
+        },
+        "uf": {
+          "pattern": "^[A-Za-z]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "registro"
+      ],
+      "type": "object"
+    },
+    "name": "operadora_rede",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "atualizado_em": {
+          "type": "string"
+        },
+        "estabelecimentos": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "cd_municipio": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "classe": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "cnes": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "cnpj": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "disponibilidade": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "dt_vinculo_inicio": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "nome": {
+                "type": "string"
+              },
+              "planos": {
+                "type": "integer"
+              },
+              "tipo_contrato": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "tipo_prestador": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "uf": {
+                "type": "string"
+              },
+              "urgencia_emergencia": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "cnes",
+              "cnpj",
+              "nome",
+              "classe",
+              "cd_municipio",
+              "uf",
+              "tipo_contrato",
+              "disponibilidade",
+              "tipo_prestador",
+              "urgencia_emergencia",
+              "dt_vinculo_inicio",
+              "planos"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "fonte": {
+          "type": "string"
+        },
+        "por_uf": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "registro_ans": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "atualizado_em",
+        "fonte",
+        "registro_ans",
+        "total",
+        "por_uf",
+        "estabelecimentos"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Consulta o cadastro e a série semestral de glosa e pagamento de uma operadora na ANS. Quando usar: para conhecer uma operadora pelo registro ANS. Quando não usar: para buscar operadoras por nome.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "registro_ans": {
+          "pattern": "^[0-9]{5,6}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "registro_ans"
+      ],
+      "type": "object"
+    },
+    "name": "operadora_perfil",
+    "outputSchema": {
+      "additionalProperties": true,
+      "properties": {
+        "indicadores": {
+          "additionalProperties": false,
+          "properties": {
+            "fonte": {
+              "additionalProperties": true,
+              "properties": {},
+              "type": "object"
+            },
+            "serie": {
+              "items": {
+                "additionalProperties": true,
+                "properties": {},
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "fonte",
+            "serie"
+          ],
+          "type": "object"
+        },
+        "razao_social": {
+          "type": "string"
+        },
+        "registro_ans": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "registro_ans",
+        "razao_social",
+        "indicadores"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Envia um lote à operadora simulada. Quando usar: para testar integração local. Quando não usar: para transmitir dados reais.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "cenario": {
+          "enum": [
+            "aprovado",
+            "duplicidade",
+            "carteirinha_vencida",
+            "sem_autorizacao",
+            "falha_transitoria",
+            "falha_permanente"
+          ]
+        },
+        "registro_ans": {
+          "pattern": "^[0-9]{5,6}$",
+          "type": "string"
+        },
+        "tentativa": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_sandbox_enviar_lote",
+    "outputSchema": {
+      "additionalProperties": true,
+      "properties": {
+        "aceito": {
+          "type": "boolean"
+        },
+        "cenario": {
+          "type": "string"
+        },
+        "findings": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "numero_lote": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "numero_protocolo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "protocolo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resumo": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "aceito",
+        "protocolo",
+        "numero_protocolo",
+        "numero_lote",
+        "cenario",
+        "findings"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Gera o demonstrativo de um protocolo simulado. Quando usar: após enviar um lote. Quando não usar: com protocolo de outra operadora.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "protocolo": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocolo"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_sandbox_demonstrativo",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "protocolo": {
+          "type": "string"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocolo",
+        "xml"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Gera o XML TISS 4.03.00 de um lote em JSON, com hash do epílogo. Consulte tiss://schemas/lote para o esquema estrutural. Quando usar: depois de validar o lote em JSON sem erros. Quando não usar: para corrigir achados; use tiss_apply_fixes.",
+    "inputSchema": {
+      "additionalProperties": true,
+      "properties": {
+        "lote": {
+          "additionalProperties": true,
+          "description": "Schema estrutural disponível em tiss://schemas/lote.",
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "lote"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_build",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml",
+        "hash"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Calcula o hash do epílogo de um XML TISS. Quando usar: para conferir a integridade do XML. Quando não usar: para validar o conteúdo; use tiss_validate.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_hash",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "hash": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "hash"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Audita um lote JSON com regras locais e contexto da operadora. Quando usar: para identificar inconsistências administrativas. Quando não usar: para aplicar correções; use tiss_apply_fixes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "contexto": {
+          "additionalProperties": false,
+          "properties": {
+            "autorizacoes": {
+              "type": "object"
+            },
+            "carteirinhas": {
+              "type": "object"
+            },
+            "tabela_operadora": {
+              "additionalProperties": false,
+              "properties": {
+                "exige_autorizacao": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "max_guias": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "procedimentos": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "registro_ans": {
+                  "type": "string"
+                },
+                "vigencia_fim": {
+                  "format": "date",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "vigencia_inicio": {
+                  "format": "date",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "data": {
+          "format": "date",
+          "type": "string"
+        },
+        "lote": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        },
+        "operadora": {
+          "pattern": "^[0-9]{5,6}$",
+          "type": [
+            "string",
+            "object"
+          ]
+        }
+      },
+      "required": [
+        "lote"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_audit",
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "properties": {
+        "decisao": {
+          "additionalProperties": false,
+          "properties": {
+            "needs": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "rules": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "mantenedor": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "registro_ans": {
+                        "type": "string"
+                      },
+                      "tipo": {
+                        "enum": [
+                          "comunidade",
+                          "operadora"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "tipo"
+                    ],
+                    "type": "object"
+                  },
+                  "source": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "acesso": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "string"
+                      },
+                      "official": {
+                        "type": "boolean"
+                      },
+                      "titulo": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "titulo",
+                      "data",
+                      "acesso",
+                      "official"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "id",
+                  "source",
+                  "mantenedor"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "tipo": {
+              "enum": [
+                "aprovar_por_regra",
+                "pendente",
+                "encaminhar_auditor"
+              ]
+            }
+          },
+          "required": [
+            "tipo",
+            "rules",
+            "needs"
+          ],
+          "type": "object"
+        },
+        "findings": {
+          "items": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "enum": [
+                  "audit.autorizacao_ausente",
+                  "audit.autorizacao_vencida",
+                  "audit.carteirinha_ausente",
+                  "audit.carteirinha_inativa",
+                  "audit.carteirinha_vencida",
+                  "audit.data_ausente",
+                  "audit.operadora_divergente",
+                  "audit.procedimento_ausente",
+                  "audit.procedimento_fora_da_tabela",
+                  "audit.tabela_fora_de_vigencia",
+                  "audit.tabela_sem_procedimentos",
+                  "audit.valor_nao_positivo",
+                  "autorizacao.carteirinha",
+                  "autorizacao.dado_ausente",
+                  "autorizacao.exige_auditoria",
+                  "autorizacao.sem_regra",
+                  "guia.carteirinha_ausente",
+                  "guia.executante_ausente",
+                  "guia.sequencial",
+                  "item.valor_divergente",
+                  "item.valor_zerado",
+                  "lote.acima_do_teto",
+                  "lote.caractere_invalido",
+                  "lote.estrutura",
+                  "lote.guia_duplicada",
+                  "lote.hash_divergente",
+                  "lote.valor_total_geral",
+                  "lote.vazio",
+                  "regra.combinacao_proibida",
+                  "regra.exige_autorizacao",
+                  "regra.max_itens",
+                  "regra.obrigatorio",
+                  "regra.padrao",
+                  "regra.valores",
+                  "tuss.fora_de_vigencia",
+                  "tuss.inexistente",
+                  "versao.divergente",
+                  "versao.nao_detectada",
+                  "versao.nao_suportada",
+                  "xml.doctype",
+                  "xml.encoding",
+                  "xml.malformado",
+                  "xsd.atributo",
+                  "xsd.elemento_ausente",
+                  "xsd.elemento_inesperado",
+                  "xsd.enumeracao",
+                  "xsd.outro",
+                  "xsd.padrao",
+                  "xsd.tamanho",
+                  "xsd.tipo"
+                ]
+              },
+              "fix": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "items": {
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                ]
+              },
+              "glosa": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "guia": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "needs": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ]
+              },
+              "pointer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rule": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "xpath": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "severity",
+              "guia",
+              "xpath",
+              "pointer",
+              "message",
+              "fix",
+              "needs",
+              "glosa",
+              "rule"
+            ],
+            "title": "Finding",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "valid",
+        "version",
+        "findings"
+      ],
+      "title": "Report",
+      "type": "object"
+    }
+  },
+  {
+    "description": "Agrega achados por prestador e mês, sem expor dados das guias; CPF é pseudonimizado. Quando usar: para analisar rejeições por prestador. Quando não usar: para consultar guias individuais ou corrigir lotes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "contexto": {
+          "additionalProperties": false,
+          "properties": {
+            "autorizacoes": {
+              "type": "object"
+            },
+            "carteirinhas": {
+              "type": "object"
+            },
+            "tabela_operadora": {
+              "additionalProperties": false,
+              "properties": {
+                "exige_autorizacao": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "max_guias": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "procedimentos": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "registro_ans": {
+                  "type": "string"
+                },
+                "vigencia_fim": {
+                  "format": "date",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "vigencia_inicio": {
+                  "format": "date",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "data": {
+          "format": "date",
+          "type": "string"
+        },
+        "lotes": {
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "type": "array"
+        },
+        "operadora": {
+          "pattern": "^[0-9]{5,6}$",
+          "type": "string"
+        },
+        "regras": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        },
+        "segredo_pseudonimo": {
+          "minLength": 16,
+          "type": "string"
+        }
+      },
+      "required": [
+        "lotes"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_rejection_map",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "guias": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "ignorados": {
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "linhas": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "codigo": {
+                "type": "string"
+              },
+              "glosa": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "guias": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "mes": {
+                "pattern": "^\\d{4}-\\d{2}$",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "prestador": {
+                "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
+                "type": "string"
+              },
+              "rule_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "valor_afetado": {
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "prestador",
+              "mes",
+              "codigo",
+              "glosa",
+              "rule_id",
+              "guias",
+              "valor_afetado"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "lotes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "prestadores": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "guias": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "guias_com_achado": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "mes": {
+                "pattern": "^\\d{4}-\\d{2}$",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "prestador": {
+                "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
+                "type": "string"
+              },
+              "valor_afetado": {
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              },
+              "valor_total": {
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "prestador",
+              "mes",
+              "guias",
+              "guias_com_achado",
+              "valor_total",
+              "valor_afetado"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "versao": {
+          "const": "1"
+        }
+      },
+      "required": [
+        "versao",
+        "lotes",
+        "guias",
+        "ignorados",
+        "prestadores",
+        "linhas"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Aplica correções JSON Patch de um relatório ao lote. Quando usar: depois de tiss_validate ou tiss_audit com achados corrigíveis. Quando não usar: para inventar dados ausentes; peça-os ao usuário.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "lote": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        },
+        "report": {
+          "additionalProperties": true,
+          "properties": {
+            "findings": {
+              "items": {
+                "additionalProperties": true,
+                "properties": {},
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "findings"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "lote",
+        "report"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_apply_fixes",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "lote": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "lote"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Explica um código da Tabela 38 da ANS. Quando usar: ao interpretar uma glosa recebida. Quando não usar: para validar ou corrigir o lote.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "codigo": {
+          "pattern": "^[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "codigo"
+      ],
+      "type": "object"
+    },
+    "name": "glosa_explain",
+    "outputSchema": {
+      "additionalProperties": true,
+      "properties": {
+        "codigo": {
+          "type": "string"
+        },
+        "descricao": {
+          "type": "string"
+        },
+        "fonte": {
+          "additionalProperties": true,
+          "properties": {
+            "data": {
+              "type": "string"
+            },
+            "titulo": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data",
+            "titulo",
+            "url"
+          ],
+          "type": "object"
+        },
+        "grupo": {
+          "type": "string"
+        },
+        "orientacao": {
+          "additionalProperties": true,
+          "properties": {
+            "fonte": {
+              "type": "string"
+            },
+            "texto": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fonte",
+            "texto"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "codigo",
+        "descricao",
+        "grupo",
+        "fonte",
+        "orientacao"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Consulta tabelas e códigos de domínio TISS. Quando usar: para localizar um código ou termo de domínio. Quando não usar: para buscar procedimentos TUSS; use tuss_search.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "dependentRequired": {
+        "codigo": [
+          "tabela"
+        ]
+      },
+      "not": {
+        "required": [
+          "codigo",
+          "texto"
+        ]
+      },
+      "properties": {
+        "codigo": {
+          "type": "string"
+        },
+        "data": {
+          "format": "date",
+          "type": "string"
+        },
+        "include_expired": {
+          "type": "boolean"
+        },
+        "limite": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tabela": {
+          "type": "string"
+        },
+        "texto": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "tiss_dominio",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "resultados": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "tabelas": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  },
+  {
+    "description": "Busca operadoras ativas pelo nome, registro, CNPJ ou localidade. Quando usar: para localizar uma operadora na base pública. Quando não usar: para consultar vínculos hospitalares; use tiss_rede.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "limite": {
+          "default": 10,
+          "maximum": 50,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "texto": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "texto"
+      ],
+      "type": "object"
+    },
+    "name": "operadora_lookup",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "resultados": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {},
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "resultados"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Consulta valores unitários de referência D-TISS da ANS por procedimento TUSS. Quando usar: para comparar valores informados por UF, modalidade, porte e semestre. Quando não usar: para glosa ou preço contratado de uma operadora; use as ferramentas de operadoras.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "codigo": {
+          "pattern": "^[0-9]{1,10}$",
+          "type": "string"
+        },
+        "modalidade": {
+          "type": "string"
+        },
+        "porte": {
+          "type": "string"
+        },
+        "semestre": {
+          "pattern": "^[0-9]{4}-[12]$",
+          "type": "string"
+        },
+        "tabela": {
+          "pattern": "^[0-9]{2}$",
+          "type": "string"
+        },
+        "uf": {
+          "pattern": "^[A-Za-z]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "codigo",
+        "uf"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_referencia",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "atualizado_em": {
+          "type": "string"
+        },
+        "aviso": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fonte": {
+          "type": "string"
+        },
+        "minimo_n": {
+          "type": "integer"
+        },
+        "referencia": {
+          "additionalProperties": true,
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "semestre": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "referencia",
+        "semestre",
+        "fonte",
+        "atualizado_em",
+        "aviso",
+        "minimo_n"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Gera XML TISS 4.03.00 para solicitação ou resposta de autorização SP/SADT.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "mensagem": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "mensagem"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_autorizacao_build",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml",
+        "hash"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Interpreta solicitações e respostas de autorização SP/SADT.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml"
+      ],
+      "type": "object"
+    },
+    "name": "tiss_autorizacao_parse",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "mensagem": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "mensagem"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Valida uma solicitação SP/SADT e retorna uma decisão explicável.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "contexto": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        },
+        "solicitacao": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "tiss_autorizacao_check",
+    "outputSchema": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    }
+  },
+  {
+    "description": "Gera uma resposta SP/SADT sintética nos cenários disponíveis.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "cenario": {
+          "enum": [
+            "aprovado",
+            "pendente",
+            "negado"
+          ]
+        },
+        "solicitacao": {
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object"
+        },
+        "xml": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "tiss_sandbox_autorizacao",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "xml": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xml"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "Busca trechos da documentação local da biblioteca. Quando usar: para encontrar instruções e referências da API. Quando não usar: para consultar dados clínicos ou códigos específicos.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "limite": {
+          "default": 3,
+          "maximum": 10,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "texto": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "texto"
+      ],
+      "type": "object"
+    },
+    "name": "buscar_docs",
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "resultados": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "titulo": {
+                "type": "string"
+              },
+              "trecho": {
+                "type": "string"
+              },
+              "uri": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "uri",
+              "titulo",
+              "trecho"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "resultados"
+      ],
+      "type": "object"
+    }
+  }
+]
