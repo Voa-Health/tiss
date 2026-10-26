@@ -3,6 +3,7 @@
 ## Não lançado
 
 - API hospedada aceita chaves `sk_voa_` da organização, válidas para os produtos da Voa; `sk_tiss_` continuam aceitas.
+- `schemas/mcp-tools.json` registra o manifest `tools/list` do MCP; mudanças em nome, descrição ou esquema de uma ferramenta aparecem no diff.
 
 ## 0.4.0
 
