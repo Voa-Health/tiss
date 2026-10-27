@@ -4,7 +4,7 @@ function objeto(valor: unknown): valor is Record<string, unknown> {
   return typeof valor === "object" && valor !== null && !Array.isArray(valor);
 }
 
-/** As falas da cadeia ativa da conversa, na ordem dela; `null` se a resposta não é uma lista de mensagens. */
+/** Falas da cadeia ativa, em ordem; `null` se a resposta não é uma lista. */
 export function lerHistorico(corpo: unknown): FalaDoHistorico[] | null {
   if (!Array.isArray(corpo)) return null;
   const falas: FalaDoHistorico[] = [];

@@ -6,7 +6,7 @@ export type FalhaDoChat = {
 };
 
 export type LigacaoDoChat = {
-  /** Abre um turno e só resolve quando a resposta termina; devolve o corpo quando o turno não abre resposta. */
+  /** Resolve quando a resposta termina; devolve o corpo do turno sem resposta. */
   turno(corpo: Record<string, unknown>): Promise<Record<string, unknown> | null>;
   reconectar(): void;
   fechar(): void;
