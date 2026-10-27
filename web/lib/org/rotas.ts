@@ -1,39 +1,37 @@
-/** Caminhos de `/api/v1/` que o painel pode chamar, com os métodos de cada um. */
-const ROTAS: { padrao: RegExp; metodos: readonly string[] }[] = [
-  { padrao: /^tiss\/organizations\/$/, metodos: ["GET", "POST"] },
-  { padrao: /^tiss\/organizations\/lookup\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/keys\/$/, metodos: ["GET", "POST"] },
-  { padrao: /^tiss\/org\/keys\/[\w-]+\/$/, metodos: ["DELETE"] },
-  { padrao: /^tiss\/org\/usage\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/billing\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/billing\/setup\/$/, metodos: ["POST"] },
-  { padrao: /^tiss\/org\/billing\/invoices\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/settings\/$/, metodos: ["GET", "PATCH"] },
-  { padrao: /^tiss\/org\/audit\/$/, metodos: ["GET", "POST"] },
-  { padrao: /^tiss\/org\/audit\/[\w-]+\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/audit\/[\w-]+\/(?:approve|reject)\/$/, metodos: ["POST"] },
-  { padrao: /^tiss\/org\/accounts\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/rejection-map\/$/, metodos: ["GET", "DELETE"] },
-  { padrao: /^tiss\/org\/rejection-map\/(?:enable|disable)\/$/, metodos: ["POST"] },
-  { padrao: /^tiss\/org\/rejection-map\/secret\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/rejection-map\/providers\/$/, metodos: ["GET", "PUT"] },
-  { padrao: /^tiss\/org\/accounts\/[\w-]+\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/rules\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/rules\/draft\/$/, metodos: ["PUT"] },
-  { padrao: /^tiss\/org\/rules\/validate\/$/, metodos: ["POST"] },
-  { padrao: /^tiss\/org\/rules\/diff\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/rules\/publish\/$/, metodos: ["POST"] },
-  { padrao: /^tiss\/org\/rules\/versions\/$/, metodos: ["GET"] },
-  { padrao: /^tiss\/org\/rules\/official-pr\/$/, metodos: ["GET"] },
-  { padrao: /^organization\/members\/$/, metodos: ["GET"] },
-  { padrao: /^organization\/members\/[\w-]+\/$/, metodos: ["PATCH", "DELETE"] },
-  { padrao: /^organization\/invites\/$/, metodos: ["GET", "POST"] },
-  { padrao: /^organization\/invites\/[\w-]+\/(?:resend|cancel)\/$/, metodos: ["POST"] },
-];
+const ORG = String.raw`org\/[\w-]+\/`;
+const ID = String.raw`[\w-]+\/`;
+
+/** Caminhos de `/api/v2/` que o painel pode chamar, com os métodos de cada um. */
+const ROTAS = ([
+  ["me/tiss/organizations/", ["GET", "POST"]],
+  ["me/tiss/organizations/lookup/", ["GET"]],
+  [`${ORG}tiss/`, ["GET"]],
+  [`${ORG}tiss/onboard/`, ["POST"]],
+  [`${ORG}tiss/settings/`, ["GET", "PATCH"]],
+  [`${ORG}tiss/audit/`, ["GET"]],
+  [`${ORG}tiss/audit/${ID}`, ["GET"]],
+  [`${ORG}tiss/audit/${ID}(?:approve|reject)/`, ["POST"]],
+  [`${ORG}tiss/accounts/`, ["GET"]],
+  [`${ORG}tiss/rules/`, ["GET"]],
+  [`${ORG}tiss/rules/publish/`, ["POST"]],
+  [`${ORG}tiss/rules/versions/`, ["GET"]],
+  [`${ORG}tiss/rules/official-pr/`, ["GET"]],
+  [`${ORG}tiss/rejection-map/`, ["GET", "DELETE"]],
+  [`${ORG}tiss/rejection-map/(?:enable|disable)/`, ["POST"]],
+  [`${ORG}tiss/rejection-map/secret/`, ["GET"]],
+  [`${ORG}tiss/rejection-map/providers/`, ["PUT"]],
+  [`${ORG}product-keys/`, ["GET", "POST"]],
+  [`${ORG}product-keys/${ID}`, ["DELETE"]],
+  [`${ORG}usage/`, ["GET"]],
+  [`${ORG}billing/`, ["GET"]],
+  [`${ORG}billing/setup/`, ["POST"]],
+  [`${ORG}billing/invoices/`, ["GET"]],
+  [`${ORG}members/`, ["GET"]],
+  [`${ORG}members/${ID}`, ["PATCH", "DELETE"]],
+  [`${ORG}invites/`, ["GET", "POST"]],
+  [`${ORG}invites/${ID}(?:resend|cancel)/`, ["POST"]],
+] satisfies [string, string[]][]).map(([caminho, metodos]) => ({ padrao: new RegExp(`^${caminho}$`), metodos }));
 
 export function rotaPermitida(caminho: string, metodo: string): boolean {
   return ROTAS.some(({ padrao, metodos }) => padrao.test(caminho) && metodos.includes(metodo));
 }
-
-export const ROTA_DO_ONBOARDING = "tiss/organizations/";

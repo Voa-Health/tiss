@@ -85,9 +85,9 @@ function linhasPorChave(uso: Uso): LinhaDaChave[] {
   return [...linhas.values()].sort((a, b) => b.cobradas + b.gratis - (a.cobradas + a.gratis));
 }
 
-export function UsageSection({ podeVer, rotuloFinanceiro }: { podeVer: boolean; rotuloFinanceiro: string }) {
+export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: string; podeVer: boolean; rotuloFinanceiro: string }) {
   const { token } = theme.useToken();
-  const uso = useRecurso<Uso>(podeVer ? `tiss/org/usage/?days=${DIAS}` : null);
+  const uso = useRecurso<Uso>(podeVer ? `org/${orgId}/usage/?days=${DIAS}` : null);
 
   if (!podeVer) {
     return (

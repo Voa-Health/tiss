@@ -14,7 +14,7 @@ describe("chaveDaBusca", () => {
   });
 
   it("monta o caminho do BFF", () => {
-    assert.equal(caminhoDaBusca({ campo: "cnpj", valor: "11222333000181" }), "tiss/organizations/lookup/?cnpj=11222333000181");
+    assert.equal(caminhoDaBusca({ campo: "cnpj", valor: "11222333000181" }), "me/tiss/organizations/lookup/?cnpj=11222333000181");
   });
 });
 

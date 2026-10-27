@@ -32,13 +32,13 @@ const PRECOS = (Object.keys(launchPrices) as ModuleSlug[]).map((chave) => ({
   nota: launchPrices[chave].note ?? "—",
 }));
 
-export function BillingSection({ podeVer, rotuloFinanceiro }: { podeVer: boolean; rotuloFinanceiro: string }) {
+export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: string; podeVer: boolean; rotuloFinanceiro: string }) {
   const { token } = theme.useToken();
   const retorno = useSearchParams().get("setup");
-  const cobranca = useRecurso<Cobranca>(podeVer ? "tiss/org/billing/" : null);
-  const faturas = useRecurso<Fatura[]>(podeVer ? "tiss/org/billing/invoices/" : null);
+  const cobranca = useRecurso<Cobranca>(podeVer ? `org/${orgId}/billing/` : null);
+  const faturas = useRecurso<Fatura[]>(podeVer ? `org/${orgId}/billing/invoices/` : null);
   const dias = new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", day: "numeric" }).format(new Date());
-  const uso = useRecurso<Uso>(podeVer ? `tiss/org/usage/?days=${dias}` : null);
+  const uso = useRecurso<Uso>(podeVer ? `org/${orgId}/usage/?days=${dias}` : null);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<FalhaDoPedido | null>(null);
   const erros = [cobranca.erro, faturas.erro, erro];
@@ -48,7 +48,7 @@ export function BillingSection({ podeVer, rotuloFinanceiro }: { podeVer: boolean
     setEnviando(true);
     setErro(null);
     try {
-      const dados = await pedir<{ checkout_url: string }>("tiss/org/billing/setup/", { method: "POST" });
+      const dados = await pedir<{ checkout_url: string }>(`org/${orgId}/billing/setup/`, { method: "POST" });
       window.location.assign(dados.checkout_url);
     } catch (motivo) {
       setErro(motivo instanceof FalhaDoPedido ? motivo : new FalhaDoPedido(0, "Não foi possível cadastrar o cartão."));
@@ -150,7 +150,7 @@ export function BillingSection({ podeVer, rotuloFinanceiro }: { podeVer: boolean
         ) : (
           <Statistic title="Custo estimado do mês" value={uso.dados ? brl(uso.dados.estimated_total_brl) : "—"} />
         )}
-        <Link href={hrefDaOrg("uso")}>Ver detalhes de uso</Link>
+        <Link href={hrefDaOrg(orgId, "uso")}>Ver detalhes de uso</Link>
       </Card>
       {!indisponivel && (
         <Card title="Faturas">

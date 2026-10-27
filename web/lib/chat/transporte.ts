@@ -1,17 +1,4 @@
-import {
-  analisarEnvelope,
-  quadroDeEnvio,
-  quadroDeResolucao,
-  type AprovacaoPendente,
-  type Envelope,
-} from "./protocolo";
-
-export type CredencialDoChat = {
-  token: string;
-  socket: string;
-  chat_id: string;
-  profile: string;
-};
+import { analisarEnvelope, leitorSse, type Envelope } from "./protocolo";
 
 export type FalhaDoChat = {
   mensagem: string;
@@ -19,143 +6,152 @@ export type FalhaDoChat = {
 };
 
 export type LigacaoDoChat = {
-  enviar(texto: string): void;
-  resolver(aprovacao: AprovacaoPendente, aprovada: boolean, motivo?: string): void;
+  /** Resolve quando a resposta termina; devolve o corpo do turno sem resposta. */
+  turno(corpo: Record<string, unknown>): Promise<Record<string, unknown> | null>;
   reconectar(): void;
   fechar(): void;
 };
 
 export type AparelhagemDoChat = {
-  chatId: string;
-  carregarCredencial(signal: AbortSignal): Promise<CredencialDoChat>;
+  /** `/api/conversa/<org>/<chat>` */
+  base: string;
   aoEvento(envelope: Envelope): void;
   aoEstado(conectado: boolean): void;
   aoFalha(falha: FalhaDoChat | null): void;
 };
 
 const MAXIMO_DE_TENTATIVAS = 5;
+const FIM = new Set(["stream-end", "stream-expired"]);
+
+type Corrida = { runId: string | null; cursor: string | null; terminou: boolean };
+
+function objeto(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === "object" && valor !== null && !Array.isArray(valor);
+}
+
+async function corpoJson(resposta: Response): Promise<Record<string, unknown>> {
+  const corpo: unknown = await resposta.json().catch(() => null);
+  return objeto(corpo) ? corpo : {};
+}
+
+function falhaDaResposta(status: number, corpo: Record<string, unknown>): FalhaDoChat {
+  const texto = [corpo.detail, corpo.erro].find((valor): valor is string => typeof valor === "string");
+  const codigo = [corpo.code, corpo.codigo].find((valor): valor is string => typeof valor === "string");
+  return { codigo: codigo ?? `http_${status}`, mensagem: texto ?? "Não foi possível falar com o Assistente." };
+}
+
+const esperar = (ms: number, signal: AbortSignal) =>
+  new Promise<void>((resolve) => {
+    const relogio = setTimeout(resolve, ms);
+    signal.addEventListener("abort", () => {
+      clearTimeout(relogio);
+      resolve();
+    }, { once: true });
+  });
 
 export function ligarChat(aparelhagem: AparelhagemDoChat): LigacaoDoChat {
-  let socket: WebSocket | null = null;
-  let encerrado = false;
-  let tentativas = 0;
-  let retorno: ReturnType<typeof setTimeout> | null = null;
-  let abortador: AbortController | null = null;
-  let perfil = "";
-  const fila: unknown[] = [];
+  const abortador = new AbortController();
+  let pendente: Corrida | null = null;
 
-  function enviarQuadro(quadro: unknown) {
-    if (encerrado) return;
-    if (socket?.readyState === WebSocket.OPEN) {
+  async function ler(resposta: Response, corrida: Corrida) {
+    if (!resposta.body) return;
+    const leitor = resposta.body.getReader();
+    const decodificador = new TextDecoder();
+    const alimentar = leitorSse(({ id, evento, dados }) => {
+      if (id) corrida.cursor = id;
+      let valor: unknown;
       try {
-        socket.send(JSON.stringify(quadro));
-        return;
+        valor = JSON.parse(dados);
       } catch {
-        fila.push(quadro);
-        socket.close();
         return;
       }
+      if (evento === "turn-accepted") {
+        if (objeto(valor) && typeof valor.run_id === "string") corrida.runId = valor.run_id;
+        return;
+      }
+      const envelope = analisarEnvelope(valor);
+      if (!envelope) return;
+      if (FIM.has(envelope.event_type ?? "")) corrida.terminou = true;
+      aparelhagem.aoEvento(envelope);
+    });
+    while (!corrida.terminou) {
+      const { value, done } = await leitor.read();
+      if (done) break;
+      alimentar(decodificador.decode(value, { stream: true }));
     }
-    fila.push(quadro);
+    if (corrida.terminou) leitor.cancel().catch(() => undefined);
   }
 
-  async function conectar() {
-    if (encerrado) return;
-    abortador?.abort();
-    abortador = new AbortController();
-    aparelhagem.aoEstado(false);
-    try {
-      const credencial = await aparelhagem.carregarCredencial(abortador.signal);
-      if (encerrado || abortador.signal.aborted) return;
-      if (!credencial.token || !credencial.socket || credencial.chat_id !== aparelhagem.chatId) {
-        throw new Error("Credencial de conversa inválida.");
+  async function seguir(corrida: Corrida) {
+    pendente = corrida;
+    for (let tentativa = 1; !corrida.terminou && corrida.runId; tentativa += 1) {
+      if (tentativa > MAXIMO_DE_TENTATIVAS) {
+        aparelhagem.aoFalha({ codigo: "conexao_interrompida", mensagem: "A conexão foi interrompida. Tente reconectar." });
+        return;
       }
-      perfil = credencial.profile;
-      const token = credencial.token;
-      const novoSocket = new WebSocket(credencial.socket, ["Authorization", token]);
-      socket = novoSocket;
-      novoSocket.onopen = () => {
-        if (encerrado || socket !== novoSocket) return;
-        tentativas = 0;
-        aparelhagem.aoEstado(true);
-        aparelhagem.aoFalha(null);
-        while (fila.length) {
-          novoSocket.send(JSON.stringify(fila.shift()));
-        }
-      };
-      novoSocket.onmessage = (evento) => {
-        if (encerrado || socket !== novoSocket) return;
-        let envelope: Envelope | null = null;
-        try {
-          envelope = analisarEnvelope(JSON.parse(String(evento.data)));
-        } catch {
-          return;
-        }
-        if (envelope) aparelhagem.aoEvento(envelope);
-      };
-      novoSocket.onclose = (evento) => {
-        if (encerrado || socket !== novoSocket) return;
-        socket = null;
-        aparelhagem.aoEstado(false);
-        tentativas += 1;
-        if (tentativas >= MAXIMO_DE_TENTATIVAS) {
-          aparelhagem.aoFalha({
-            codigo: String(evento.code),
-            mensagem: "A conexão foi interrompida. Tente reconectar.",
-          });
-          return;
-        }
-        retorno = setTimeout(() => {
-          retorno = null;
-          void conectar();
-        }, Math.min(1_000 * 2 ** (tentativas - 1), 15_000));
-      };
-      novoSocket.onerror = () => {};
-    } catch (erro) {
-      if (encerrado || abortador.signal.aborted) return;
-      tentativas += 1;
-      aparelhagem.aoFalha({
-        codigo: "conexao_indisponivel",
-        mensagem: erro instanceof Error ? erro.message : "Não foi possível conectar ao Assistente.",
-      });
       aparelhagem.aoEstado(false);
-      if (tentativas < MAXIMO_DE_TENTATIVAS) {
-        retorno = setTimeout(() => {
-          retorno = null;
-          void conectar();
-        }, Math.min(1_000 * 2 ** (tentativas - 1), 15_000));
+      await esperar(Math.min(1_000 * 2 ** (tentativa - 1), 15_000), abortador.signal);
+      if (abortador.signal.aborted) return;
+      try {
+        const resposta = await fetch(`${aparelhagem.base}/runs/${corrida.runId}`, {
+          headers: corrida.cursor ? { "last-event-id": corrida.cursor } : undefined,
+          cache: "no-store",
+          signal: abortador.signal,
+        });
+        if (resposta.status === 404 || resposta.status === 409) {
+          aparelhagem.aoFalha(falhaDaResposta(resposta.status, await corpoJson(resposta)));
+          corrida.terminou = true;
+          break;
+        }
+        if (resposta.ok) {
+          aparelhagem.aoEstado(true);
+          const antes = corrida.cursor;
+          await ler(resposta, corrida);
+          if (corrida.cursor !== antes) tentativa = 0;
+        }
+      } catch {
+        if (abortador.signal.aborted) return;
       }
     }
+    pendente = null;
+    aparelhagem.aoEstado(true);
   }
 
-  void conectar();
   return {
-    enviar(texto) {
-      enviarQuadro(quadroDeEnvio(aparelhagem.chatId, texto, perfil));
-    },
-    resolver(aprovacao, aprovada, motivo) {
-      enviarQuadro(quadroDeResolucao(aparelhagem.chatId, aprovacao, aprovada, motivo));
+    async turno(corpo) {
+      aparelhagem.aoFalha(null);
+      const corrida: Corrida = { runId: null, cursor: null, terminou: false };
+      try {
+        const resposta = await fetch(`${aparelhagem.base}/turnos`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(corpo),
+          cache: "no-store",
+          signal: abortador.signal,
+        });
+        if (!resposta.ok) {
+          aparelhagem.aoFalha(falhaDaResposta(resposta.status, await corpoJson(resposta)));
+          return null;
+        }
+        if (!(resposta.headers.get("content-type") ?? "").includes("text/event-stream")) return corpoJson(resposta);
+        await ler(resposta, corrida);
+      } catch {
+        if (abortador.signal.aborted) return null;
+        if (!corrida.runId) {
+          aparelhagem.aoFalha({ codigo: "conexao_indisponivel", mensagem: "Não foi possível falar com o Assistente." });
+          return null;
+        }
+      }
+      if (!corrida.terminou) await seguir(corrida);
+      return null;
     },
     reconectar() {
-      if (encerrado) return;
-      tentativas = 0;
       aparelhagem.aoFalha(null);
-      if (retorno) clearTimeout(retorno);
-      retorno = null;
-      socket?.close();
-      void conectar();
+      if (pendente && !pendente.terminou) void seguir(pendente);
+      else aparelhagem.aoEstado(true);
     },
     fechar() {
-      encerrado = true;
-      abortador?.abort();
-      if (retorno) clearTimeout(retorno);
-      retorno = null;
-      const atual = socket;
-      socket = null;
-      if (atual) {
-        atual.onopen = atual.onmessage = atual.onerror = atual.onclose = null;
-        atual.close();
-      }
+      abortador.abort();
     },
   };
 }
