@@ -43,10 +43,10 @@ function SegredoUmaVez({ chave, aoFechar }: { chave: ChaveCriada | null; aoFecha
   );
 }
 
-export function KeysSection({ podeGerenciar }: { podeGerenciar: boolean }) {
+export function KeysSection({ orgId, podeGerenciar }: { orgId: string; podeGerenciar: boolean }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const chaves = useRecurso<{ keys: Chave[] }>("tiss/org/keys/");
+  const chaves = useRecurso<{ keys: Chave[] }>(`org/${orgId}/product-keys/`);
   const [form] = Form.useForm<NovaChave>();
   const [criando, setCriando] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -55,7 +55,7 @@ export function KeysSection({ podeGerenciar }: { podeGerenciar: boolean }) {
   async function criar(valores: NovaChave) {
     setEnviando(true);
     try {
-      const chave = await pedir<ChaveCriada>("tiss/org/keys/", { method: "POST", body: valores });
+      const chave = await pedir<ChaveCriada>(`org/${orgId}/product-keys/`, { method: "POST", body: valores });
       setCriando(false);
       form.resetFields();
       setCriada(chave);
@@ -69,7 +69,7 @@ export function KeysSection({ podeGerenciar }: { podeGerenciar: boolean }) {
 
   async function revogar(chave: Chave) {
     try {
-      await pedir(`tiss/org/keys/${chave.id}/`, { method: "DELETE" });
+      await pedir(`org/${orgId}/product-keys/${chave.id}/`, { method: "DELETE" });
       message.success(`Chave ${chave.name} revogada.`);
       chaves.recarregar();
     } catch (erro) {

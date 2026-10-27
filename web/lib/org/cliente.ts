@@ -85,7 +85,7 @@ export function useRecurso<T>(caminho: string | null): Recurso<T> {
   return { dados: resultado.dados, erro: carregando ? null : resultado.erro, carregando, recarregar };
 }
 
-/** Recarrega a página: a org do cookie mudou e os dados em memória ficaram velhos. */
+/** Recarrega a página: a sessão mudou e os dados em memória ficaram velhos. */
 export function abrirDeNovo(caminho = "/org"): void {
   window.location.replace(new URL(caminho, window.location.origin));
 }

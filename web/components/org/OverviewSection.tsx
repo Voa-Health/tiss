@@ -16,18 +16,18 @@ const ATALHOS_DO_PRESTADOR: Atalho[] = [
   { titulo: "Extrator", descricao: "Guia SP/SADT a partir de PDF ou imagem.", href: "/extrator" },
 ];
 
-const ATALHOS_DA_OPERADORA: Atalho[] = [
+const atalhosDaOperadora = (orgId: string): Atalho[] => [
   { titulo: "Análise de contas", descricao: "Indícios por guia para a Auditoria decidir.", href: "/analise-contas" },
   { titulo: "Autorização", descricao: "Parecer proposto; a negativa é sempre humana.", href: "/autorizacao" },
-  { titulo: "Regras de envio", descricao: "Cadastre e teste as regras com o assistente.", href: hrefDaOrg("visao", true) },
+  { titulo: "Regras de envio", descricao: "Cadastre e teste as regras com o assistente.", href: hrefDaOrg(orgId, "visao", true) },
 ];
 
 export function OverviewSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const screens = Grid.useBreakpoint();
-  const cobranca = useRecurso<Cobranca>(org.is_admin || org.my_areas.includes("finance") ? "tiss/org/billing/" : null);
+  const cobranca = useRecurso<Cobranca>(org.is_admin || org.my_areas.includes("finance") ? `org/${org.id}/billing/` : null);
   const operadora = org.type === "pay";
-  const atalhos = operadora ? ATALHOS_DA_OPERADORA : ATALHOS_DO_PRESTADOR;
+  const atalhos = operadora ? atalhosDaOperadora(org.id) : ATALHOS_DO_PRESTADOR;
   const rotulos = new Map(org.available_areas.map((area) => [area.value, area.label]));
   const aceite = org.terms.accepted
     ? `Versão ${org.terms.version}${org.terms.accepted_by ? `, aceitos por ${org.terms.accepted_by}` : ""} em ${dataHora(org.terms.accepted_at)}`
@@ -36,7 +36,7 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
   return (
     <>
       {!cobranca.carregando && !cobranca.erro && cobranca.dados && cobranca.dados.enabled !== false && !cobranca.dados.payment_method_active && (
-        <Alert type="info" showIcon title={<>Nenhum cartão cadastrado. <Link href={hrefDaOrg("cobranca")}>Configurar cobrança</Link></>} />
+        <Alert type="info" showIcon title={<>Nenhum cartão cadastrado. <Link href={hrefDaOrg(org.id, "cobranca")}>Configurar cobrança</Link></>} />
       )}
       <Row gutter={[token.margin, token.margin]}>
         {atalhos.map((atalho) => (
@@ -74,7 +74,7 @@ export function OverviewSection({ org }: { org: EstadoDaOrg }) {
             },
             operadora
               ? { key: "ans", label: "Registro ANS", children: org.registro_ans || "—" }
-              : { key: "cnes", label: "CNES", children: org.cnes || <Link href={hrefDaOrg("tiss")}>Escolher unidade</Link> },
+              : { key: "cnes", label: "CNES", children: org.cnes || <Link href={hrefDaOrg(org.id, "tiss")}>Escolher unidade</Link> },
             { key: "termos", label: "Termos", children: aceite },
             {
               key: "areas",

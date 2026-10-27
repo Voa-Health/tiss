@@ -5,6 +5,8 @@ export type RespostaDoBackend = {
   corpo: unknown;
   /** Par renovado no caminho, ou `null` se a renovação falhou. */
   par: ParDeTokens | null | undefined;
+  /** Corpo em `text/event-stream`, repassado sem ler. */
+  fluxo?: ReadableStream<Uint8Array>;
 };
 
 async function lerCorpo(resposta: Response): Promise<unknown> {
@@ -51,7 +53,7 @@ export async function renovar(par: ParDeTokens, extras: Record<string, string> =
 export async function chamarBackend(
   par: ParDeTokens,
   caminho: string,
-  init: { method: string; body?: string },
+  init: { method: string; body?: string; cabecalhos?: Record<string, string>; signal?: AbortSignal },
   extras: Record<string, string> = {},
 ): Promise<RespostaDoBackend> {
   const base = urlDoBackend();
@@ -62,11 +64,13 @@ export async function chamarBackend(
       headers: {
         ...extras,
         accept: "application/json",
+        ...init.cabecalhos,
         authorization: `Bearer ${access}`,
         ...(init.body !== undefined ? { "content-type": "application/json" } : {}),
       },
       body: init.body,
       cache: "no-store",
+      signal: init.signal,
     });
   try {
     let resposta = await enviar(par.access);
@@ -76,26 +80,11 @@ export async function chamarBackend(
       if (!novoPar) return { status: 401, corpo: { detail: "Entre novamente." }, par: null };
       resposta = await enviar(novoPar.access);
     }
+    if (resposta.ok && resposta.body && resposta.headers.get("content-type")?.includes("text/event-stream")) {
+      return { status: resposta.status, corpo: null, par: novoPar, fluxo: resposta.body };
+    }
     return { status: resposta.status, corpo: await lerCorpo(resposta), par: novoPar };
   } catch {
     return { status: 502, corpo: { detail: "O servidor não respondeu. Tente de novo." }, par: undefined };
   }
-}
-
-/** Troca a org do par pelo mecanismo do backend e devolve o par novo. */
-export async function trocarOrganizacao(
-  par: ParDeTokens,
-  organizationId: string,
-  extras: Record<string, string> = {},
-): Promise<{ status: number; corpo: unknown; par: ParDeTokens | null | undefined }> {
-  const resposta = await chamarBackend(par, "/api/auth/switch-organization/", {
-    method: "POST",
-    body: JSON.stringify({ organization_id: organizationId }),
-  }, extras);
-  if (resposta.status !== 200 || typeof resposta.corpo !== "object" || resposta.corpo === null) return resposta;
-  const { access, refresh } = resposta.corpo as { access?: unknown; refresh?: unknown };
-  if (typeof access !== "string" || typeof refresh !== "string") {
-    return { status: 502, corpo: { detail: "Resposta inválida do servidor." }, par: resposta.par };
-  }
-  return { status: 200, corpo: { organization_id: organizationId }, par: { access, refresh } };
 }

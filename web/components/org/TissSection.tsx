@@ -11,7 +11,7 @@ import { SeloDeVerificacao } from "./SeloDeVerificacao";
 
 type Campos = { registro_ans?: string; cnes?: string; padrao?: string; max_guias_por_lote?: number | null };
 
-function RegrasDaOperadora({ registro, pacotes }: { registro: string; pacotes: PacoteDeRegras[] }) {
+function RegrasDaOperadora({ orgId, registro, pacotes }: { orgId: string; registro: string; pacotes: PacoteDeRegras[] }) {
   const pacote = pacotes.find((item) => item.registro === registro.replace(/\D/g, ""));
   return (
     <Card title="Regras de envio">
@@ -23,7 +23,7 @@ function RegrasDaOperadora({ registro, pacotes }: { registro: string; pacotes: P
         </Typography.Text>
         <Flex wrap gap="var(--ant-margin-sm)">
           {pacote && <Button href={`/operadoras/${pacote.registro}`}>Ver pacote</Button>}
-          <Link href={hrefDaOrg("tiss", true)}>
+          <Link href={hrefDaOrg(orgId, "tiss", true)}>
             <Button type="primary">Cadastrar com o assistente</Button>
           </Link>
         </Flex>
@@ -36,7 +36,7 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
   const { token } = theme.useToken();
   const { message } = App.useApp();
   const [form] = Form.useForm<Campos>();
-  const configuracoes = useRecurso<ConfiguracoesTiss>("tiss/org/settings/");
+  const configuracoes = useRecurso<ConfiguracoesTiss>(`org/${org.id}/tiss/settings/`);
   const [salvando, setSalvando] = useState(false);
   const [unidades, setUnidades] = useState<{ buscando: boolean; situacao: Situacao | null }>({ buscando: false, situacao: null });
   const operadora = org.type === "pay";
@@ -67,7 +67,7 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
     if (!Object.keys(mudou).length) return;
     setSalvando(true);
     try {
-      await pedir("tiss/org/settings/", { method: "PATCH", body: mudou });
+      await pedir(`org/${org.id}/tiss/settings/`, { method: "PATCH", body: mudou });
       message.success("Configurações salvas.");
       // Registro ANS e CNES refazem a verificação; o selo vem do estado da org.
       if ("registro_ans" in mudou || "cnes" in mudou) abrirDeNovo(`${window.location.pathname}${window.location.search}`);
@@ -143,7 +143,7 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
         {!podeEditar && <Alert type="info" showIcon title="Só quem tem a Área Administração altera as configurações." />}
         {conteudo}
       </Card>
-      {operadora && <RegrasDaOperadora registro={org.registro_ans} pacotes={pacotes} />}
+      {operadora && <RegrasDaOperadora orgId={org.id} registro={org.registro_ans} pacotes={pacotes} />}
     </Flex>
   );
 }

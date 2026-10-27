@@ -25,11 +25,13 @@ function rotulosDasAreas(areas: string[], disponiveis: AreaDisponivel[]): string
 }
 
 function EditorDeAreas({
+  orgId,
   membro,
   disponiveis,
   aoFechar,
   aoSalvar,
 }: {
+  orgId: string;
   membro: Membro;
   disponiveis: AreaDisponivel[];
   aoFechar: () => void;
@@ -44,7 +46,7 @@ function EditorDeAreas({
   async function salvar() {
     setSalvando(true);
     try {
-      await pedir(`organization/members/${membro.id}/`, { method: "PATCH", body: { areas } });
+      await pedir(`org/${orgId}/members/${membro.id}/`, { method: "PATCH", body: { areas } });
       message.success(`${membro.name || membro.email} atualizado(a).`);
       aoSalvar();
     } catch (erro) {
@@ -90,16 +92,16 @@ function EditorDeAreas({
   );
 }
 
-function ListaDeMembros({ podeGerenciar, areasDaOrg }: { podeGerenciar: boolean; areasDaOrg: AreaDisponivel[] }) {
+function ListaDeMembros({ orgId, podeGerenciar, areasDaOrg }: { orgId: string; podeGerenciar: boolean; areasDaOrg: AreaDisponivel[] }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const membros = useRecurso<Membros>("organization/members/");
+  const membros = useRecurso<Membros>(`org/${orgId}/members/`);
   const [editando, setEditando] = useState<Membro | null>(null);
   const disponiveis = membros.dados?.available_areas ?? areasDaOrg;
 
   async function remover(membro: Membro) {
     try {
-      await pedir(`organization/members/${membro.id}/`, { method: "DELETE" });
+      await pedir(`org/${orgId}/members/${membro.id}/`, { method: "DELETE" });
       message.success(`${membro.name || membro.email} removido(a).`);
       membros.recarregar();
     } catch (erro) {
@@ -174,6 +176,7 @@ function ListaDeMembros({ podeGerenciar, areasDaOrg }: { podeGerenciar: boolean;
       {editando && (
         <EditorDeAreas
           key={editando.id}
+          orgId={orgId}
           membro={editando}
           disponiveis={disponiveis}
           aoFechar={() => setEditando(null)}
@@ -187,13 +190,13 @@ function ListaDeMembros({ podeGerenciar, areasDaOrg }: { podeGerenciar: boolean;
   );
 }
 
-function ListaDeConvites({ versao }: { versao: number }) {
+function ListaDeConvites({ orgId, versao }: { orgId: string; versao: number }) {
   const { message } = App.useApp();
-  const convites = useRecurso<{ invites: Convite[] }>(`organization/invites/?v=${versao}`);
+  const convites = useRecurso<{ invites: Convite[] }>(`org/${orgId}/invites/?v=${versao}`);
 
   async function agir(convite: Convite, acao: "resend" | "cancel") {
     try {
-      await pedir(`organization/invites/${convite.id}/${acao}/`, { method: "POST", body: {} });
+      await pedir(`org/${orgId}/invites/${convite.id}/${acao}/`, { method: "POST", body: {} });
       message.success(acao === "resend" ? "Convite reenviado." : "Convite cancelado.");
       convites.recarregar();
     } catch (erro) {
@@ -242,7 +245,7 @@ function ListaDeConvites({ versao }: { versao: number }) {
   );
 }
 
-function ConvidarMembros({ aberto, aoFechar, aoConvidar }: { aberto: boolean; aoFechar: () => void; aoConvidar: () => void }) {
+function ConvidarMembros({ orgId, aberto, aoFechar, aoConvidar }: { orgId: string; aberto: boolean; aoFechar: () => void; aoConvidar: () => void }) {
   const { notification } = App.useApp();
   const [form] = Form.useForm<{ emails: string }>();
   const [enviando, setEnviando] = useState(false);
@@ -252,7 +255,7 @@ function ConvidarMembros({ aberto, aoFechar, aoConvidar }: { aberto: boolean; ao
     if (!emails.length) return;
     setEnviando(true);
     try {
-      const resultado = await pedir<{ invites: Convite[]; already_member: string[] }>("organization/invites/", {
+      const resultado = await pedir<{ invites: Convite[]; already_member: string[] }>(`org/${orgId}/invites/`, {
         method: "POST",
         body: { emails },
       });
@@ -287,12 +290,12 @@ function ConvidarMembros({ aberto, aoFechar, aoConvidar }: { aberto: boolean; ao
   );
 }
 
-export function MembersSection({ podeGerenciar, areasDaOrg }: { podeGerenciar: boolean; areasDaOrg: AreaDisponivel[] }) {
+export function MembersSection({ orgId, podeGerenciar, areasDaOrg }: { orgId: string; podeGerenciar: boolean; areasDaOrg: AreaDisponivel[] }) {
   const { token } = theme.useToken();
   const [aba, setAba] = useState("membros");
   const [convidando, setConvidando] = useState(false);
   const [versao, setVersao] = useState(0);
-  const lista = <ListaDeMembros podeGerenciar={podeGerenciar} areasDaOrg={areasDaOrg} />;
+  const lista = <ListaDeMembros orgId={orgId} podeGerenciar={podeGerenciar} areasDaOrg={areasDaOrg} />;
 
   return (
     <Card
@@ -306,7 +309,7 @@ export function MembersSection({ podeGerenciar, areasDaOrg }: { podeGerenciar: b
           onChange={setAba}
           items={[
             { key: "membros", label: "Membros", children: lista },
-            { key: "convites", label: "Convites enviados", children: <ListaDeConvites versao={versao} /> },
+            { key: "convites", label: "Convites enviados", children: <ListaDeConvites orgId={orgId} versao={versao} /> },
           ]}
         />
       ) : (
@@ -317,6 +320,7 @@ export function MembersSection({ podeGerenciar, areasDaOrg }: { podeGerenciar: b
       )}
       {podeGerenciar && (
         <ConvidarMembros
+          orgId={orgId}
           aberto={convidando}
           aoFechar={() => setConvidando(false)}
           aoConvidar={() => {

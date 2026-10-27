@@ -17,8 +17,8 @@ function nomeDaRegra(regra: RegraTiss): string {
 export function RulesSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const estado = useRecurso<EstadoDasRegras>("tiss/org/rules/");
-  const versoes = useRecurso<VersoesDasRegras>("tiss/org/rules/versions/");
+  const estado = useRecurso<EstadoDasRegras>(`org/${org.id}/tiss/rules/`);
+  const versoes = useRecurso<VersoesDasRegras>(`org/${org.id}/tiss/rules/versions/`);
   const [publicando, setPublicando] = useState(false);
   const [buscandoLink, setBuscandoLink] = useState(false);
   const [link, setLink] = useState<ReturnType<typeof montarLinkOficial> | null>(null);
@@ -41,7 +41,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
   async function publicar() {
     setPublicando(true);
     try {
-      await pedir("tiss/org/rules/publish/", { method: "POST" });
+      await pedir(`org/${org.id}/tiss/rules/publish/`, { method: "POST" });
       message.success("Versão publicada.");
       estado.recarregar();
       versoes.recarregar();
@@ -57,7 +57,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
     setBuscandoLink(true);
     try {
       const dados = await pedir<PayloadDoLinkOficial>(
-        `tiss/org/rules/official-pr/?version=${pacote.published.version}`,
+        `org/${org.id}/tiss/rules/official-pr/?version=${pacote.published.version}`,
       );
       setLink(montarLinkOficial(dados));
     } catch (erro) {
@@ -160,7 +160,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
               </Button>
             </>
           ) : (
-            <Link href={hrefDaOrg("regras", true)}>Abrir Assistente</Link>
+            <Link href={hrefDaOrg(org.id, "regras", true)}>Abrir Assistente</Link>
           )}
         </Space>
         {podePublicar && (

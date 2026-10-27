@@ -35,11 +35,11 @@ export function secaoValida(valor?: string, org?: OrgDaNavegacao): SecaoDaOrg {
   return secoesVisiveisDaOrg(org).find((secao) => secao.key === valor)?.key ?? "visao";
 }
 
-export function hrefDaOrg(secao: SecaoDaOrg, painel = false): string {
-  if (secao === "cobranca") return `/org/cobranca${painel ? "?painel=assistente" : ""}`;
+export function hrefDaOrg(orgId: string, secao: SecaoDaOrg, painel = false): string {
+  if (secao === "cobranca") return `/org/${orgId}/cobranca${painel ? "?painel=assistente" : ""}`;
   const params = new URLSearchParams({ secao });
   if (painel) params.set("painel", "assistente");
-  return `/org?${params.toString()}`;
+  return `/org/${orgId}?${params.toString()}`;
 }
 
 export const ROTULO_DO_TIPO: Record<string, string> = {
