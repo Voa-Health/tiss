@@ -2,8 +2,8 @@
 
 Pacotes JSON usam o contrato de [`rules.schema.json`](https://github.com/Voa-Health/tiss/blob/main/schemas/rules.schema.json).
 Cada regra declara a origem, a severidade, o caminho e uma primitiva segura.
-O caractere `*` percorre itens de listas. Padrões `padrao` usam RE2, são
-compilados com `fullmatch` e avaliados em tempo linear; lookaround e
+O caractere `*` percorre itens de listas. Padrões `padrao` usam RE2, casam o
+valor inteiro (`fullmatch`) e são avaliados em tempo linear; lookaround e
 backreferences não são aceitos. Cada pacote aceita até 500 regras, cada regex
 tem até 200 caracteres e valores com mais de 10 000 caracteres falham sem
 avaliar a regex.
