@@ -871,29 +871,43 @@ def _assert_redirects_within_origin(monkeypatch, environment, call, body, author
             server.shutdown()
 
 
-def _assert_redirect_handler_rejects_other_origins():
-    handler = RedirecionamentoMesmaOrigem()
-    headers = {"Authorization": "Bearer x"}
-    for target in ("http://api.example/b", "https://api.example:8443/b", "https://b.example/"):
-        with pytest.raises(RedirecionamentoRecusado, match="outra origem") as refused_error:
-            handler.redirect_request(
-                urllib.request.Request("https://api.example/a", headers=headers),
-                io.BytesIO(),
-                302,
-                "Found",
-                http.client.HTTPMessage(),
-                target,
-            )
-        assert target not in str(refused_error.value)
-    followed = handler.redirect_request(
-        urllib.request.Request("https://api.example/a", headers=headers),
+_REDIRECTS_RECUSADOS = (
+    ("https://api.example/a", "http://api.example/b"),
+    ("https://api.example/a", "https://api.example:8443/b"),
+    ("https://api.example/a", "https://b.example/"),
+    ("https://api.example/a", "https://api.example:0/b"),
+    ("https://api.example:0/a", "https://api.example/b"),
+    ("http://api.example/a", "http://api.example:0/b"),
+    ("http://api.example/a", "https://api.example/b"),
+)
+_REDIRECTS_SEGUIDOS = (
+    ("https://api.example/a", "https://API.example:443/b"),
+    ("https://api.example:443/a", "https://api.example/b"),
+    ("http://api.example/a", "http://api.example:80/b"),
+    ("http://api.example:0/a", "http://api.example:0/b"),
+)
+
+
+def _redirect(handler, origin, target):
+    return handler.redirect_request(
+        urllib.request.Request(origin, headers={"Authorization": "Bearer x"}),
         io.BytesIO(),
         302,
         "Found",
         http.client.HTTPMessage(),
-        "https://API.example:443/b",
+        target,
     )
-    assert followed is not None and followed.get_header("Authorization") == "Bearer x"
+
+
+def _assert_redirect_handler_rejects_other_origins():
+    handler = RedirecionamentoMesmaOrigem()
+    for origin, target in _REDIRECTS_RECUSADOS:
+        with pytest.raises(RedirecionamentoRecusado, match="outra origem") as refused_error:
+            _redirect(handler, origin, target)
+        assert target not in str(refused_error.value)
+    for origin, target in _REDIRECTS_SEGUIDOS:
+        followed = _redirect(handler, origin, target)
+        assert followed is not None and followed.get_header("Authorization") == "Bearer x"
 
 
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
