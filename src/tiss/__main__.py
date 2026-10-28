@@ -22,6 +22,7 @@ from ._audit import AuditContext
 from ._lote import Lote
 from ._mapa import rejection_map
 from ._mapa_html import render_rejection_map_html
+from ._requisicao_segura import abrir
 from ._rules import validate_package
 from ._schema import parser as xml_parser
 
@@ -37,7 +38,7 @@ def _org_secret(url: str, key: str) -> str | None:
         headers={"Authorization": f"Bearer {key}"},
     )
     try:
-        with urllib.request.urlopen(request, timeout=10) as response:
+        with abrir(request, timeout=10) as response:
             value = json.load(response)
         if isinstance(value, dict) and value.get("enabled") is True:
             secret = value.get("secret")
@@ -128,7 +129,7 @@ def _send_map(url: str, key: str, body: bytes) -> bool:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=10):
+        with abrir(request, timeout=10):
             pass
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError):
         sys.stderr.write("Falha ao enviar o mapa.\n")

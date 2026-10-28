@@ -26,6 +26,7 @@ def rules_schema() -> dict[str, Any]:
             "versao_tiss": {"const": "4.03.00"},
             "regras": {
                 "type": "array",
+                "maxItems": 500,
                 "items": {
                     "type": "object",
                     "additionalProperties": False,

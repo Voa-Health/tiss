@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -233,12 +234,50 @@ def _execucao_side_present(values: dict[str, Any], catalog: dict[str, Any]) -> b
     return False
 
 
+_LOGO_FORMATS = ((b"\x89PNG\r\n\x1a\n", "image/png"), (b"\xff\xd8\xff", "image/jpeg"))
+
+
+def _logo_data_uri(logo: bytes | Path | None) -> str | None:
+    """Embute o logo PNG ou JPEG como URI `data:`."""
+    if logo is None:
+        return None
+    content = logo.read_bytes() if isinstance(logo, Path) else bytes(logo)
+    for magic, mime in _LOGO_FORMATS:
+        if content.startswith(magic):
+            return f"data:{mime};base64,{base64.b64encode(content).decode('ascii')}"
+    raise ValueError("Logo deve ser uma imagem PNG ou JPEG.")
+
+
+def _require_data_uri(url: str) -> None:
+    if not url.lower().startswith("data:"):
+        raise ValueError("Recurso externo recusado na guia SP/SADT.")
+
+
+def _data_only_fetcher(urls: Any) -> Any:
+    """Cria o fetcher do WeasyPrint que resolve apenas URIs `data:`."""
+    base: Any = getattr(urls, "URLFetcher", None)
+    if base is None:
+
+        def fetch(url: str, *args: Any, **kwargs: Any) -> Any:
+            _require_data_uri(url)
+            return urls.default_url_fetcher(url, *args, **kwargs)
+
+        return fetch
+
+    class DataOnlyFetcher(base):  # type: ignore[misc]
+        def fetch(self, url: str, headers: Any = None) -> Any:
+            _require_data_uri(url)
+            return super().fetch(url, headers)
+
+    return DataOnlyFetcher()
+
+
 def build_context(
     values: dict[str, Any],
     catalog: dict[str, Any],
     *,
     gen_date: date | None = None,
-    logo_src: str | None = None,
+    logo: bytes | Path | None = None,
     clinic_name: str = "",
 ) -> dict[str, Any]:
     """Monta o contexto formatado para o template."""
@@ -272,7 +311,7 @@ def build_context(
         "show_despesas": show_despesas,
         "totais": totais,
         "signatures": catalog.get("signature_areas", []),
-        "logo_src": logo_src or _clean(values.get("logo_src")) or None,
+        "logo_uri": _logo_data_uri(logo),
         "clinic_name": clinic_name
         or _clean(values.get("clinic_name"))
         or f.get("solicitante_nome_contratado", ""),
@@ -287,7 +326,7 @@ def render_html(
     bundle: SadtBundle,
     *,
     gen_date: date | None = None,
-    logo_src: str | None = None,
+    logo: bytes | Path | None = None,
     clinic_name: str = "",
 ) -> str:
     """Renderiza a guia SP/SADT como HTML."""
@@ -300,7 +339,7 @@ def render_html(
         ) from exc
 
     ctx = build_context(
-        values, bundle.catalog, gen_date=gen_date, logo_src=logo_src, clinic_name=clinic_name
+        values, bundle.catalog, gen_date=gen_date, logo=logo, clinic_name=clinic_name
     )
     # O CSS do pacote precisa permanecer sem escape HTML.
     ctx["css"] = Markup(bundle.template_css)
@@ -314,22 +353,23 @@ def render_sadt(
     out_path: str | Path,
     *,
     gen_date: date | None = None,
-    logo_src: str | None = None,
+    logo: bytes | Path | None = None,
     clinic_name: str = "",
 ) -> str:
     """Gera um PDF da guia SP/SADT preenchida."""
     try:
-        from weasyprint import CSS, HTML
+        from weasyprint import CSS, HTML, urls
     except ImportError as exc:
         raise MissingExtraError(
             "Instale as dependências de renderização com: pip install 'tiss[pdf]'"
         ) from exc
 
     bundle = load_bundle()
-    html_str = render_html(
-        values, bundle, gen_date=gen_date, logo_src=logo_src, clinic_name=clinic_name
-    )
+    html_str = render_html(values, bundle, gen_date=gen_date, logo=logo, clinic_name=clinic_name)
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    HTML(string=html_str).write_pdf(str(out), stylesheets=[CSS(string="")])
+    fetcher = _data_only_fetcher(urls)
+    HTML(string=html_str, url_fetcher=fetcher).write_pdf(
+        str(out), stylesheets=[CSS(string="", url_fetcher=fetcher)]
+    )
     return str(out)

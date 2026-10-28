@@ -9,6 +9,8 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any
 
+from .._requisicao_segura import abrir
+
 Transport = Callable[[str, dict[str, Any]], Any]
 _transport: Transport | None = None
 _HTTP_UNAVAILABLE = 503
@@ -45,7 +47,7 @@ def post(path: str, body: dict[str, Any]) -> Any:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=3) as response:
+        with abrir(request, timeout=3) as response:
             return json.loads(response.read())
     except urllib.error.HTTPError as exc:
         raise ServiceError(exc.code) from None
