@@ -55,7 +55,7 @@ export function GET() {
     "## Integrações locais",
     "- MCP remoto: `claude mcp add --transport http tiss https://tiss-api.voa.health/mcp`",
     "- GitHub Action: `Voa-Health/tiss@v0` com `paths: lotes/`.",
-    "- pre-commit: `https://github.com/Voa-Health/tiss`, revisão `v0.4.0`, hook `tiss-validate`.",
+    "- pre-commit: `https://github.com/Voa-Health/tiss`, revisão `v0.5.0`, hook `tiss-validate`.",
     "",
     "## Operadoras",
     healthplans,

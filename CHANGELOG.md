@@ -1,6 +1,6 @@
 # Registro de alterações
 
-## Não lançado
+## 0.5.0
 
 - Regras `padrao` usam RE2 com casamento `fullmatch` em tempo linear e rejeitam
   lookaround, backreferences ou UTF-8 inválido com o motivo

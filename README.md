@@ -234,7 +234,7 @@ instalar o hook, adicione ao `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/Voa-Health/tiss
-    rev: v0.4.0
+    rev: v0.5.0
     hooks:
       - id: tiss-validate
 ```
