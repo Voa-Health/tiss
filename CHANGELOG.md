@@ -2,6 +2,8 @@
 
 ## Não lançado
 
+- `render_sadt`, `render_html` e `build_context` recebem o logo em `logo` (bytes ou `Path` de PNG ou JPEG), embutido no PDF; outros formatos levantam `ValueError`, e o renderizador só resolve URIs `data:`.
+- CLI e clientes do servidor hospedado seguem redirects só para a mesma origem (esquema, host e porta); outra origem levanta `RedirecionamentoRecusado` sem reenviar a credencial.
 - API hospedada aceita chaves `sk_voa_` da organização, válidas para os produtos da Voa; `sk_tiss_` continuam aceitas.
 - `schemas/mcp-tools.json` registra o manifest `tools/list` do MCP; mudanças em nome, descrição ou esquema de uma ferramenta aparecem no diff.
 
