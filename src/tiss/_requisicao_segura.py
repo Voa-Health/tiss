@@ -22,7 +22,9 @@ def _origem(url: str) -> tuple[str, str, int | None]:
         porta = partes.port
     except ValueError:
         raise RedirecionamentoRecusado("redirecionamento com porta inválida recusado") from None
-    return esquema, (partes.hostname or "").lower(), porta or _PORTAS_PADRAO.get(esquema)
+    if porta is None:
+        porta = _PORTAS_PADRAO.get(esquema)
+    return esquema, (partes.hostname or "").lower(), porta
 
 
 class RedirecionamentoMesmaOrigem(urllib.request.HTTPRedirectHandler):
