@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+- Regras `padrao` usam RE2 com casamento `fullmatch` em tempo linear e rejeitam
+  lookaround ou backreferences com o motivo `regex não suportada: …`.
+- Pacotes aceitam até 500 regras, regex até 200 caracteres e rejeitam sem avaliação
+  valores acima de 10 000 caracteres.
+- Regras de pacotes publicados inválidos não executam e geram aviso no log.
 - API hospedada aceita chaves `sk_voa_` da organização, válidas para os produtos da Voa; `sk_tiss_` continuam aceitas.
 - `schemas/mcp-tools.json` registra o manifest `tools/list` do MCP; mudanças em nome, descrição ou esquema de uma ferramenta aparecem no diff.
 

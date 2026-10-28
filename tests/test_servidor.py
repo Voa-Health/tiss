@@ -18,6 +18,7 @@ import threading
 import time
 import urllib.request
 import zipfile
+from copy import deepcopy
 from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from typing import Any
@@ -1390,8 +1391,78 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         assert tiss_service.rules_requests == ["sk_voa_verified"]
         for route, body, expected in explicit:
             assert post(route, body) == expected, route
+        invalid_explicit = deepcopy(package)
+        padrao = deepcopy(invalid_explicit["regras"][0])
+        padrao["id"] = "regex-invalida"
+        padrao["check"] = {
+            "tipo": "padrao",
+            "pointer": "/operadora/registro_ans",
+            "regex": "(",
+        }
+        invalid_explicit["regras"].append(padrao)
+        invalid_response = client.post(
+            "/v1/audit",
+            json={"lote": lote, "operadora": invalid_explicit},
+            headers=_bearer(),
+        )
+        assert invalid_response.status_code == HTTP_OK, invalid_response.text
+        assert any(
+            finding["message"] == "Pacote de regras inválido."
+            for finding in invalid_response.json()["findings"]
+        )
+        redos_package = deepcopy(package)
+        redos_rule = deepcopy(package["regras"][0])
+        redos_rule["id"] = "regex-linear"
+        redos_rule["check"] = {
+            "tipo": "padrao",
+            "pointer": "/numero_lote",
+            "regex": "^(a+)+$",
+        }
+        redos_package["regras"].append(redos_rule)
+        long_lote = deepcopy(lote)
+        long_lote["numero_lote"] = "a" * 100_000 + "!"
+        started = time.perf_counter()
+        redos_response = client.post(
+            "/v1/audit",
+            json={"lote": long_lote, "operadora": redos_package},
+            headers=_bearer(),
+        )
+        redos_elapsed = time.perf_counter() - started
+        assert redos_response.status_code == HTTP_OK, redos_response.text
+        assert redos_elapsed < 0.5
+        assert any(
+            finding["code"] == "regra.padrao" for finding in redos_response.json()["findings"]
+        )
+        invalid_published = deepcopy(package)
+        invalid_rule = deepcopy(package["regras"][0])
+        invalid_rule["id"] = "regex-nao-suportada"
+        invalid_rule["check"] = {
+            "tipo": "padrao",
+            "pointer": "/numero_lote",
+            "regex": "(?=a)a",
+        }
+        invalid_published["regras"].append(invalid_rule)
+        tiss_service.rules["org-1"] = invalid_published
+        _published_rules.clear_cache()
+        caplog.set_level(logging.WARNING, logger="tiss.server")
+        invalid_published_response = client.post(
+            "/v1/audit", json={"lote": lote}, headers=_bearer()
+        )
+        assert invalid_published_response.status_code == HTTP_OK, invalid_published_response.text
+        assert any(
+            finding["code"] == "regra.padrao" and finding["message"] == "Pacote de regras inválido."
+            for finding in invalid_published_response.json()["findings"]
+        )
+        warning = next(
+            record.getMessage()
+            for record in caplog.records
+            if record.getMessage() == "op=regras status=422"
+        )
+        assert "org-1" not in warning and "sk_voa_verified" not in warning
+        tiss_service.rules["org-1"] = package
+        _published_rules.clear_cache()
         assert post("/v1/sandbox/lotes", {"xml": xml}, {}) == enviar_lote(xml)
-        assert len(tiss_service.rules_requests) == 1
+        assert len(tiss_service.rules_requests) == 2
 
         expired = time.monotonic() + _keys.CACHE_SECONDS + 1
         monkeypatch.setattr(_published_rules, "_now", lambda: expired)
@@ -1401,17 +1472,17 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         assert "op=regras status=503" in caplog.text
         assert "sk_voa_verified" not in caplog.text
         assert post("/v1/validate", {"lote": lote}) == published[0][2]
-        assert len(tiss_service.rules_requests) == 3
+        assert len(tiss_service.rules_requests) == 4
         del tiss_service.rules["org-1"]
         monkeypatch.setattr(_published_rules, "_now", lambda: expired * 2)
         assert post("/v1/validate", {"lote": lote}) == plain
         assert post("/v1/validate", {"lote": lote}) == plain
-        assert len(tiss_service.rules_requests) == 4
+        assert len(tiss_service.rules_requests) == 5
         monkeypatch.delenv("TISS_BACKEND_URL")
         _published_rules.clear_cache()
         tiss_service.rules["org-1"] = package
         assert post("/v1/validate", {"lote": lote}) == plain
-        assert len(tiss_service.rules_requests) == 4
+        assert len(tiss_service.rules_requests) == 5
     monkeypatch.setenv("TISS_BACKEND_URL", "https://backend.example")
 
     billing = {

@@ -7,6 +7,8 @@ import threading
 import time
 from typing import Any
 
+from tiss._rules import validate_package
+
 from ._context import CallContext
 from ._keys import CACHE_SECONDS, Access
 from ._ops_schemas import Op
@@ -41,6 +43,8 @@ def published_rules(access: Access, key: str) -> dict[str, Any] | None:
     package: dict[str, Any] | None
     try:
         package = _package(post("/tiss/service/rules", {"key": key}))
+        if validate_package(package):
+            _logger.warning("op=regras status=422")
     except Exception as exc:
         status = exc.status if isinstance(exc, ServiceError) else _HTTP_UNAVAILABLE
         if status != _HTTP_NOT_FOUND:

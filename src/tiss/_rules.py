@@ -7,10 +7,18 @@ import re
 from importlib.resources import files
 from typing import Any, TypedDict, cast
 
+import re2
+
 from ._lote import _procedure_records
 from ._report import Finding
 from ._rules_schema import rules_schema
 from .codes import CODE_CATALOG
+
+_MAX_RULES = 500
+_MAX_REGEX_LENGTH = 200
+_MAX_VALUE_LENGTH = 10_000
+_REGEX_OPTIONS = re2.Options()
+_REGEX_OPTIONS.log_errors = False
 
 
 class RulePackage(TypedDict, total=False):
@@ -40,9 +48,16 @@ def validate_package(package: Any) -> list[str]:
     if not isinstance(rules, list):
         errors.append("regras deve ser uma lista.")
         return errors
+    if len(rules) > _MAX_RULES:
+        errors.append("regras deve ter no máximo 500 itens.")
+        return errors
     for index, rule in enumerate(rules):
         errors.extend(f"regras/{index}: {error}" for error in _rule_errors(rule))
     return errors
+
+
+def _compile_regex(pattern: str) -> Any:
+    return re2.compile(pattern, _REGEX_OPTIONS)
 
 
 def _rule_errors(rule: Any) -> list[str]:
@@ -100,12 +115,12 @@ def _check_errors(check: dict[str, Any]) -> list[str]:
         return [f"{kind} requer pointer."]
     if kind == "padrao":
         regex = check.get("regex")
-        if not isinstance(regex, str) or len(regex) > 200:
+        if not isinstance(regex, str) or len(regex) > _MAX_REGEX_LENGTH:
             return ["regex deve ter até 200 caracteres."]
         try:
-            re.compile(regex)
-        except re.error:
-            return ["regex inválida."]
+            _compile_regex(regex)
+        except re2.error as exc:
+            return [f"regex não suportada: {exc.args[0].decode('utf-8')}"]
     elif kind == "valores" and not isinstance(check.get("permitidos"), list):
         return ["valores requer permitidos como lista."]
     elif kind == "max_itens":
@@ -210,6 +225,7 @@ def rule_findings(lote: dict[str, Any], value: Any) -> list[Finding]:
                     )
             continue
         pointer = check.get("pointer", "")
+        compiled: Any = _compile_regex(check["regex"]) if kind == "padrao" else None
         values = _resolve(lote, pointer) if pointer else []
         if kind == "obrigatorio":
             if not values:
@@ -238,7 +254,11 @@ def rule_findings(lote: dict[str, Any], value: Any) -> list[Finding]:
                 continue
             failed = False
             if kind == "padrao":
-                failed = not isinstance(actual, str) or re.fullmatch(check["regex"], actual) is None
+                failed = (
+                    not isinstance(actual, str)
+                    or len(actual) > _MAX_VALUE_LENGTH
+                    or compiled.fullmatch(actual) is None
+                )
             elif kind == "valores":
                 failed = actual not in check.get("permitidos", [])
             elif kind == "max_itens":
