@@ -3,7 +3,8 @@
 ## Não lançado
 
 - Regras `padrao` usam RE2 com casamento `fullmatch` em tempo linear e rejeitam
-  lookaround ou backreferences com o motivo `regex não suportada: …`.
+  lookaround, backreferences ou UTF-8 inválido com o motivo
+  `regex não suportada: …`.
 - Pacotes aceitam até 500 regras e regex de até 200 caracteres; valor com mais de
   10 000 caracteres falha a regra `padrao` sem avaliar a regex.
 - Pacote publicado da organização que não passa em `validate_package` não executa e

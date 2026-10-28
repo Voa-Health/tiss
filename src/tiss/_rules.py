@@ -60,6 +60,13 @@ def _compile_regex(pattern: str) -> Any:
     return re2.compile(pattern, _REGEX_OPTIONS)
 
 
+def _matches(compiled: Any, value: str) -> bool:
+    try:
+        return compiled.fullmatch(value) is not None
+    except UnicodeEncodeError:
+        return False
+
+
 def _rule_errors(rule: Any) -> list[str]:
     if not isinstance(rule, dict) or not isinstance(rule.get("check"), dict):
         return ["regra ou check inválido."]
@@ -121,6 +128,8 @@ def _check_errors(check: dict[str, Any]) -> list[str]:
             _compile_regex(regex)
         except re2.error as exc:
             return [f"regex não suportada: {exc.args[0].decode('utf-8')}"]
+        except UnicodeEncodeError:
+            return ["regex não suportada: UTF-8 inválido"]
     elif kind == "valores" and not isinstance(check.get("permitidos"), list):
         return ["valores requer permitidos como lista."]
     elif kind == "max_itens":
@@ -257,7 +266,7 @@ def rule_findings(lote: dict[str, Any], value: Any) -> list[Finding]:
                 failed = (
                     not isinstance(actual, str)
                     or len(actual) > _MAX_VALUE_LENGTH
-                    or compiled.fullmatch(actual) is None
+                    or not _matches(compiled, actual)
                 )
             elif kind == "valores":
                 failed = actual not in check.get("permitidos", [])

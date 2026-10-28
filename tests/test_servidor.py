@@ -1410,6 +1410,27 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
             finding["message"] == "Pacote de regras inválido."
             for finding in invalid_response.json()["findings"]
         )
+        invalid_utf8_package = deepcopy(package)
+        invalid_utf8_rule = deepcopy(package["regras"][0])
+        invalid_utf8_rule["id"] = "regex-utf8-invalido"
+        invalid_utf8_rule["check"] = {
+            "tipo": "padrao",
+            "pointer": "/operadora/registro_ans",
+            "regex": "\ud800",
+        }
+        invalid_utf8_package["regras"].append(invalid_utf8_rule)
+        invalid_utf8_response = client.post(
+            "/v1/audit",
+            content=json.dumps(
+                {"lote": lote, "operadora": invalid_utf8_package}, ensure_ascii=True
+            ).encode("utf-8"),
+            headers={**_bearer(), "Content-Type": "application/json"},
+        )
+        assert invalid_utf8_response.status_code == HTTP_OK, invalid_utf8_response.text
+        assert any(
+            finding["message"] == "Pacote de regras inválido."
+            for finding in invalid_utf8_response.json()["findings"]
+        )
         redos_package = deepcopy(package)
         redos_rule = deepcopy(package["regras"][0])
         redos_rule["id"] = "regex-linear"

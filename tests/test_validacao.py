@@ -163,6 +163,7 @@ _MALFORMED_RULES = {
     "se_sem_pointer": ("combinacao_proibida.invalido", "check.se.pointer", None),
     "regex_lookahead": ("padrao.valido", "check.regex", "(?=a)a"),
     "regex_backreference": ("padrao.valido", "check.regex", r"(a)\1"),
+    "regex_utf8": ("padrao.valido", "check.regex", "\ud800"),
 }
 
 
@@ -189,6 +190,7 @@ _MALFORMED_RULES = {
         ("limite.regras_501", True),
         ("limite.valor_10000", False),
         ("limite.valor_10001", True),
+        ("valor_utf8", True),
         ("redos", True),
         *((f"malformado.{name}", True) for name in _MALFORMED_RULES),
     ],
@@ -212,6 +214,17 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
             assert errors == ["regras deve ter no máximo 500 itens."]
         else:
             assert not errors
+        return
+    if case == "valor_utf8":
+        rule = deepcopy(next(rule for rule in package["regras"] if rule["id"] == "padrao.valido"))
+        package["regras"] = [rule]
+        rule["check"]["pointer"] = "/numero_lote"
+        lote = deepcopy(valid_lote)
+        lote["numero_lote"] = "\ud800"
+        findings = [
+            finding for finding in rule_findings(lote, package) if finding.code == "regra.padrao"
+        ]
+        assert bool(findings) is fails
         return
     if case.startswith("limite.valor_") or case == "redos":
         rule = deepcopy(next(rule for rule in package["regras"] if rule["id"] == "padrao.valido"))
@@ -245,7 +258,9 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
             target[key] = value
         errors = validate_package(package)
         assert errors
-        if case in {"malformado.regex_lookahead", "malformado.regex_backreference"}:
+        if case == "malformado.regex_utf8":
+            assert errors == ["regras/0: regex não suportada: UTF-8 inválido"]
+        elif case in {"malformado.regex_lookahead", "malformado.regex_backreference"}:
             assert all(error.startswith("regras/0: regex não suportada:") for error in errors)
         findings = tiss.check(valid_lote, operadora=package).findings
         assert [finding.message for finding in findings if finding.code == "regra.padrao"] == [
