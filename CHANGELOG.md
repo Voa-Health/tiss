@@ -2,6 +2,13 @@
 
 ## Não lançado
 
+- Regras `padrao` usam RE2 com casamento `fullmatch` em tempo linear e rejeitam
+  lookaround, backreferences ou UTF-8 inválido com o motivo
+  `regex não suportada: …`.
+- Pacotes aceitam até 500 regras e regex de até 200 caracteres; valor com mais de
+  10 000 caracteres falha a regra `padrao` sem avaliar a regex.
+- Pacote publicado da organização que não passa em `validate_package` não executa e
+  gera o aviso `op=regras status=422` no log.
 - `render_sadt`, `render_html` e `build_context` recebem o logo em `logo` (bytes ou `Path` de PNG ou JPEG), embutido no PDF; outros formatos levantam `ValueError`, e o renderizador só resolve URIs `data:`.
 - CLI e clientes do servidor hospedado seguem redirects só para a mesma origem (esquema, host e porta); outra origem levanta `RedirecionamentoRecusado` sem reenviar a credencial.
 - API hospedada aceita chaves `sk_voa_` da organização, válidas para os produtos da Voa; `sk_tiss_` continuam aceitas.

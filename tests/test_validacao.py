@@ -4,6 +4,7 @@ import hashlib
 import io
 import json
 import re
+import time
 from copy import deepcopy
 from datetime import date
 from decimal import Decimal
@@ -17,7 +18,7 @@ import tiss
 from tiss import _requisicao_segura, examples
 from tiss.__main__ import main as cli_main
 from tiss._mapa_html import render_rejection_map_html
-from tiss._rules import validate_package
+from tiss._rules import rule_findings, validate_package
 from tiss._schema import parser
 from tiss.codes import CODES
 
@@ -159,6 +160,9 @@ _MALFORMED_RULES = {
     "permitidos": ("valores.invalido", "check.permitidos", "AB"),
     "max_booleano": ("max_itens.invalido", "check.max", True),
     "se_sem_pointer": ("combinacao_proibida.invalido", "check.se.pointer", None),
+    "regex_lookahead": ("padrao.valido", "check.regex", "(?=a)a"),
+    "regex_backreference": ("padrao.valido", "check.regex", r"(a)\1"),
+    "regex_utf8": ("padrao.valido", "check.regex", "\ud800"),
 }
 
 
@@ -181,6 +185,12 @@ _MALFORMED_RULES = {
         ("official.operadora.true", False),
         ("official.comunidade.true", True),
         ("official.operadora.false", True),
+        ("limite.regras_500", False),
+        ("limite.regras_501", True),
+        ("limite.valor_10000", False),
+        ("limite.valor_10001", True),
+        ("valor_utf8", True),
+        ("redos", True),
         *((f"malformado.{name}", True) for name in _MALFORMED_RULES),
     ],
 )
@@ -194,6 +204,46 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
         package["regras"] = []
         assert bool(validate_package(package)) is fails
         return
+    if case.startswith("limite.regras_"):
+        source = deepcopy(package["regras"][0])
+        count = int(case.removeprefix("limite.regras_"))
+        package["regras"] = [{**source, "id": f"regra-{index}"} for index in range(count)]
+        errors = validate_package(package)
+        if fails:
+            assert errors == ["regras deve ter no máximo 500 itens."]
+        else:
+            assert not errors
+        return
+    if case == "valor_utf8":
+        rule = deepcopy(next(rule for rule in package["regras"] if rule["id"] == "padrao.valido"))
+        package["regras"] = [rule]
+        rule["check"]["pointer"] = "/numero_lote"
+        lote = deepcopy(valid_lote)
+        lote["numero_lote"] = "\ud800"
+        findings = [
+            finding for finding in rule_findings(lote, package) if finding.code == "regra.padrao"
+        ]
+        assert bool(findings) is fails
+        return
+    if case.startswith("limite.valor_") or case == "redos":
+        rule = deepcopy(next(rule for rule in package["regras"] if rule["id"] == "padrao.valido"))
+        package["regras"] = [rule]
+        rule["check"]["pointer"] = "/numero_lote"
+        length = 100_001 if case == "redos" else int(case.removeprefix("limite.valor_"))
+        rule["check"]["regex"] = "^(a+)+$" if case == "redos" else ".+"
+        lote = deepcopy(valid_lote)
+        lote["numero_lote"] = "a" * (length - (1 if case == "redos" else 0))
+        if case == "redos":
+            lote["numero_lote"] += "!"
+        started = time.perf_counter()
+        findings = [
+            finding for finding in rule_findings(lote, package) if finding.code == "regra.padrao"
+        ]
+        elapsed = time.perf_counter() - started
+        assert bool(findings) is fails
+        if case == "redos":
+            assert elapsed < 0.5
+        return
     if case.startswith("malformado."):
         rule_id, field, value = _MALFORMED_RULES[case.removeprefix("malformado.")]
         package["regras"] = [rule for rule in package["regras"] if rule["id"] == rule_id]
@@ -205,7 +255,12 @@ def test_healthplan_rule_cases(valid_lote, healthplan_rules, case, fails):
             del target[key]
         else:
             target[key] = value
-        assert tiss.validate_package(package)
+        errors = validate_package(package)
+        assert errors
+        if case == "malformado.regex_utf8":
+            assert errors == ["regras/0: regex não suportada: UTF-8 inválido"]
+        elif case in {"malformado.regex_lookahead", "malformado.regex_backreference"}:
+            assert all(error.startswith("regras/0: regex não suportada:") for error in errors)
         findings = tiss.check(valid_lote, operadora=package).findings
         assert [finding.message for finding in findings if finding.code == "regra.padrao"] == [
             "Pacote de regras inválido."
