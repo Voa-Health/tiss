@@ -1,20 +1,26 @@
 from __future__ import annotations
 
 import builtins
+import dataclasses
 import datetime
 import hashlib
+import http.server
 import json
 import os
 import shutil
 import socket
+import struct
 import subprocess
 import sys
+import threading
+import zlib
 from decimal import Decimal
 
 import jsonschema
 import pytest
 from conftest import ANS, ROOT
 from lxml import etree
+from pypdf import PdfReader
 
 import tiss
 from bench._tarefas import TASK_DIR, gerar
@@ -502,11 +508,68 @@ def test_complete_guide_and_line_totals_and_html():
     assert "&lt;script&gt;" in html and "<script>injection</script>" not in html
 
 
-def test_sadt_pdf_render_when_available(tmp_path):
+def _png() -> bytes:
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        checksum = struct.pack(">I", zlib.crc32(kind + data))
+        return struct.pack(">I", len(data)) + kind + data + checksum
+
+    header = struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0)
+    pixels = zlib.compress(b"\x00\xff\x00\x00")
+    return (
+        b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", pixels) + chunk(b"IEND", b"")
+    )
+
+
+def test_sadt_pdf_embeds_only_explicit_logo(tmp_path, monkeypatch):
     pytest.importorskip("weasyprint")
-    output = tmp_path / "guide.pdf"
-    render_sadt({}, output, gen_date=datetime.date(2026, 6, 22))
-    assert output.is_file() and output.stat().st_size > 0
+
+    class Recorder(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            self.server.requests.append(self.path)
+            self.send_response(404)
+            self.end_headers()
+
+        def log_message(self, format: str, *args: object) -> None:
+            del format, args
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Recorder)
+    server.requests = []
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_port}"
+    png_path = tmp_path / "logo.png"
+    png_path.write_bytes(_png())
+    bundle = load_bundle()
+    hostile = dataclasses.replace(
+        bundle,
+        template_html=bundle.template_html.replace(
+            "<body>",
+            f'<body><img src="{base}/img"><img src="{png_path.as_uri()}">'
+            f'<link rel="stylesheet" href="{base}/css">',
+            1,
+        ),
+        template_css=bundle.template_css + f'body {{ background: url("{base}/fundo") }}',
+    )
+
+    def images(path):
+        return sum(len(page.images) for page in PdfReader(path).pages)
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr("tiss._sadt.load_bundle", lambda: hostile)
+            output = tmp_path / "hostil.pdf"
+            render_sadt({"logo_src": f"{base}/logo"}, output, gen_date=datetime.date(2026, 6, 22))
+            assert images(output) == 0
+        for logo in (png_path, _png()):
+            output = tmp_path / "logo.pdf"
+            render_sadt({}, output, logo=logo)
+            assert images(output) == 1
+    finally:
+        server.shutdown()
+    assert server.requests == []
+    html = render_html({"logo_src": png_path.as_uri()}, bundle, logo=b"\xff\xd8\xff\xe0")
+    assert "data:image/jpeg;base64," in html and png_path.as_uri() not in html
+    with pytest.raises(ValueError, match="PNG ou JPEG"):
+        render_html({}, bundle, logo=b"GIF89a")
 
 
 @pytest.mark.parametrize("task", gerar(), ids=lambda task: task["id"])

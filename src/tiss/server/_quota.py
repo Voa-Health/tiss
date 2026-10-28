@@ -10,6 +10,7 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any
 
+from .._requisicao_segura import abrir
 from ._context import CallContext
 from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, KEYS_URL, TIER_LIMITS, Access
 from ._ops_schemas import Op
@@ -27,7 +28,7 @@ def _redis(key: str, ttl: int) -> int:
         data=json.dumps([["INCR", key], ["EXPIRE", key, ttl]]).encode(),
         headers={"Authorization": f"Bearer {os.environ['KV_REST_API_TOKEN']}"},
     )
-    with urllib.request.urlopen(request, timeout=2) as response:
+    with abrir(request, timeout=2) as response:
         return int(json.load(response)[0]["result"])
 
 

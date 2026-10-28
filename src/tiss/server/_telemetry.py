@@ -10,6 +10,7 @@ from typing import Any
 
 from lxml import etree
 
+from tiss._requisicao_segura import abrir
 from tiss._schema import parser
 
 _sink: Callable[[str, dict[str, Any]], None] | None = None
@@ -93,7 +94,7 @@ def _deliver(event: str, properties: dict[str, Any]) -> bool:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=2):
+    with abrir(request, timeout=2):
         pass
     return True
 

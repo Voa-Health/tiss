@@ -7,7 +7,6 @@ import re
 from copy import deepcopy
 from datetime import date
 from decimal import Decimal
-from urllib import request
 
 import jsonschema
 import pytest
@@ -15,7 +14,7 @@ from conftest import ANS, ROOT, mutate, remove_element, set_text
 from lxml import etree
 
 import tiss
-from tiss import examples
+from tiss import _requisicao_segura, examples
 from tiss.__main__ import main as cli_main
 from tiss._mapa_html import render_rejection_map_html
 from tiss._rules import validate_package
@@ -238,7 +237,7 @@ def _check_cli(tmp_path, capsys, monkeypatch):
     def forbidden_network(*args, **kwargs):
         raise AssertionError("unexpected network request")
 
-    monkeypatch.setattr(request, "urlopen", forbidden_network)
+    monkeypatch.setattr(_requisicao_segura._ABRIDOR, "open", forbidden_network)
     for case in _CLI_CASES:
         try:
             if case == "version":
@@ -523,7 +522,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
         sent["timeout"] = timeout
         return io.BytesIO()
 
-    monkeypatch.setattr(request, "urlopen", urlopen)
+    monkeypatch.setattr(_requisicao_segura._ABRIDOR, "open", urlopen)
     monkeypatch.setenv("TISS_MAPA_URL", "https://mapa.example.invalid/")
     monkeypatch.setenv("TISS_KEY", "k" * 16)
     assert cli_main(["mapa", str(folder), "--json", str(json_path), "--enviar"]) == 0
@@ -543,7 +542,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
             return io.BytesIO(json.dumps({"enabled": True, "secret": "a" * 64}).encode())
         return io.BytesIO(b"{}")
 
-    monkeypatch.setattr(request, "urlopen", hosted_urlopen)
+    monkeypatch.setattr(_requisicao_segura._ABRIDOR, "open", hosted_urlopen)
     assert cli_main(["mapa", str(folder), "--json", str(json_path), "--enviar"]) == 0
     assert [req.full_url for req in requests] == [
         "https://tiss-api.voa.health/v1/rejection-map/config",
@@ -557,7 +556,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     def unavailable_urlopen(req, timeout):
         return io.BytesIO(b'{"enabled": false}')
 
-    monkeypatch.setattr(request, "urlopen", unavailable_urlopen)
+    monkeypatch.setattr(_requisicao_segura._ABRIDOR, "open", unavailable_urlopen)
     assert cli_main(["mapa", str(folder), "--enviar"]) == 2
     assert "Coleta indisponível" in capsys.readouterr().err
 

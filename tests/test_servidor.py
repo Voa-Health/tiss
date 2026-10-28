@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import csv
 import datetime as dt
+import http.client
 import http.server
 import io
 import json
@@ -32,11 +33,13 @@ from mcp.client.streamable_http import streamablehttp_client
 import tiss
 from scripts._manutencao_ans import _DOMINIOS_GENERICOS
 from scripts._manutencao_dtiss import bake_dtiss
-from tiss import dominio, examples, operadoras, referencia, sandbox
+from tiss import _requisicao_segura, dominio, examples, operadoras, referencia, sandbox
 from tiss import sandbox as sandbox_module
+from tiss.__main__ import _org_secret, _send_map
 from tiss._glosa import glosa
+from tiss._requisicao_segura import RedirecionamentoMesmaOrigem, RedirecionamentoRecusado
 from tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
-from tiss.server import _docs, _keys, _ops, _published_rules, _rejection_map, _usage
+from tiss.server import _docs, _keys, _ops, _published_rules, _quota, _rejection_map, _usage
 from tiss.server._context import CallContext
 from tiss.server._docs import search_docs
 from tiss.server._http import create_app
@@ -45,7 +48,8 @@ from tiss.server._ops import OPS, _docs_corpus, call, token_estimate
 from tiss.server._ops_schemas import PAID_KINDS, Op, _object
 from tiss.server._prompts import PROMPTS
 from tiss.server._quota import set_counter
-from tiss.server._telemetry import set_sink
+from tiss.server._service import ServiceError, post, set_transport
+from tiss.server._telemetry import _deliver, set_sink
 from tiss.tuss import lookup, search
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -788,8 +792,117 @@ def test_http_mcp_parity_and_token_budgets(
     assert recorder.requests == []
 
 
+class _Redirector(http.server.BaseHTTPRequestHandler):
+    def _respond(self) -> None:
+        self.rfile.read(int(self.headers.get("Content-Length", "0")))
+        self.server.requests.append((self.path, self.headers.get("Authorization")))
+        if self.path == "/destino":
+            self.send_response(200)
+            body = self.server.body
+        else:
+            self.send_response(302)
+            self.send_header("Location", self.server.location)
+            body = b""
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    do_GET = do_POST = _respond
+
+    def log_message(self, format: str, *args: Any) -> None:
+        del format, args
+
+
+_REDIRECT_CALLERS = {
+    "servico": (
+        {"TISS_BACKEND_URL": "{base}", "TISS_SERVICE_SECRET": "s" * 16},
+        lambda base: post("/v1/keys/verify", {}),
+        b'{"active": true}',
+        f"Bearer {'s' * 16}",
+    ),
+    "cli_config": (
+        {},
+        lambda base: _org_secret(f"{base}/v1/submit", "k" * 16),
+        json.dumps({"enabled": True, "secret": "a" * 64}).encode(),
+        f"Bearer {'k' * 16}",
+    ),
+    "cli_envio": (
+        {},
+        lambda base: _send_map(f"{base}/v1/submit", "k" * 16, b"{}"),
+        b"{}",
+        f"Bearer {'k' * 16}",
+    ),
+    "cota": (
+        {"KV_REST_API_URL": "{base}", "KV_REST_API_TOKEN": "t" * 16},
+        lambda base: _quota._redis("cota", 60),
+        b'[{"result": 1}]',
+        f"Bearer {'t' * 16}",
+    ),
+    "telemetria": (
+        {"POSTHOG_KEY": "phc_teste", "POSTHOG_HOST": "{base}"},
+        lambda base: _deliver("evento", {}),
+        b"{}",
+        None,
+    ),
+}
+
+
+def _assert_redirects_within_origin(monkeypatch, environment, call, body, authorization):
+    servers = [http.server.ThreadingHTTPServer(("127.0.0.1", 0), _Redirector) for _ in range(2)]
+    for server in servers:
+        server.requests, server.body = [], body
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+    origin, other = (f"http://127.0.0.1:{server.server_port}" for server in servers)
+    for name, value in environment.items():
+        monkeypatch.setenv(name, value.format(base=origin))
+    try:
+        servers[0].location = f"{other}/destino"
+        try:
+            refused = call(origin)
+        except (OSError, ServiceError):
+            refused = None
+        assert not refused and servers[1].requests == []
+        servers[0].location, servers[0].requests = "/destino", []
+        assert call(origin)
+        assert servers[0].requests[-1] == ("/destino", authorization)
+    finally:
+        for server in servers:
+            server.shutdown()
+
+
+def _assert_redirect_handler_rejects_other_origins():
+    handler = RedirecionamentoMesmaOrigem()
+    headers = {"Authorization": "Bearer x"}
+    for target in ("http://api.example/b", "https://api.example:8443/b", "https://b.example/"):
+        with pytest.raises(RedirecionamentoRecusado, match="outra origem") as refused_error:
+            handler.redirect_request(
+                urllib.request.Request("https://api.example/a", headers=headers),
+                io.BytesIO(),
+                302,
+                "Found",
+                http.client.HTTPMessage(),
+                target,
+            )
+        assert target not in str(refused_error.value)
+    followed = handler.redirect_request(
+        urllib.request.Request("https://api.example/a", headers=headers),
+        io.BytesIO(),
+        302,
+        "Found",
+        http.client.HTTPMessage(),
+        "https://API.example:443/b",
+    )
+    assert followed is not None and followed.get_header("Authorization") == "Bearer x"
+
+
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
     """Verifica chaves, escopos, uso, níveis, telemetria e privacidade dos logs."""
+    set_transport(None)
+    for caller in _REDIRECT_CALLERS.values():
+        with monkeypatch.context() as patch:
+            _assert_redirects_within_origin(patch, *caller)
+    _assert_redirect_handler_rejects_other_origins()
+    set_transport(tiss_service)
     monkeypatch.setenv("POSTHOG_KEY", "test-posthog-key")
     events: list[tuple[str, dict[str, Any]]] = []
     set_sink(lambda event, properties: events.append((event, properties)))
@@ -886,7 +999,7 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
             return io.BytesIO(b'[{"result": 11}, {"result": 1}]')
 
         set_counter(None)
-        monkeypatch.setattr(urllib.request, "urlopen", redis)
+        monkeypatch.setattr(_requisicao_segura._ABRIDOR, "open", redis)
         monkeypatch.setenv("KV_REST_API_URL", "https://kv.example")
         monkeypatch.setenv("KV_REST_API_TOKEN", "kv-token")
         for status in (HTTP_TOO_MANY, HTTP_UNAVAILABLE):
