@@ -72,11 +72,16 @@ def _detect_columns(headers: list[str]) -> dict[str, str]:
                 resolved[field] = header
                 return
 
-    claim("codigo", lambda value: value in {"codigo do termo", "codigo tuss", "codigo"})
+    claim("codigo", lambda value: value in {"codigo do termo", "codigo tuss", "codigo", "cd_termo"})
     claim("codigo", lambda value: value.startswith("codigo") and "tabela" not in value)
-    claim("termo", lambda value: value == "termo")
+    claim("termo", lambda value: value in {"termo", "nm_termo"})
     claim("termo", lambda value: value.startswith("termo") and "reduzid" not in value)
-    claim("descricao", lambda value: value in {"descricao", "descricao do termo"})
+    claim(
+        "descricao",
+        lambda value: (
+            value in {"descricao", "descricao do termo", "ds_termo_detalhada", "ds_termo_detalhado"}
+        ),
+    )
     claim("descricao", lambda value: "descricao" in value)
     claim("descricao", lambda value: value.startswith("termo reduzid"))
     claim("vigencia_inicio", lambda value: "vigencia" in value and "inicio" in value)

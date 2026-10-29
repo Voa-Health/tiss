@@ -3,12 +3,14 @@ from __future__ import annotations
 import datetime
 import hashlib
 import json
+import zipfile
 from typing import ClassVar
 
 import pytest
 from conftest import ROOT
 
 from scripts import _manutencao_glosa, manutencao
+from scripts._manutencao_tuss import bake_tuss_archive
 from tiss import dominio, glosa, operadoras
 from tiss._schema import (
     PINNED_PROVENANCE,
@@ -57,6 +59,30 @@ def test_tuss_bake_and_index_are_deterministic(tmp_path):
     )
     assert not dated.get("X1", include_expired=False, today=datetime.date(2026, 1, 1))
     assert dated.get("X1", include_expired=True, today=datetime.date(2026, 1, 1))
+
+    header = '"CD_TERMO";"NM_TERMO";"DS_TERMO_DETALHADA";"DT_INICIO_VIGENCIA";"DT_FIM_VIGENCIA"'
+    archive = tmp_path / "pda-049-tuss.zip"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        for table, name in {
+            "18": "diarias_e_taxas",
+            "19": "materiais_e_opme",
+            "20": "medicamentos",
+            "22": "procedimentos_e_eventos_em_saude",
+        }.items():
+            row = f'"9{table}000001";"Item sintético {table}";"Detalhe {table}";"01/01/2020";""'
+            rows = [header, row]
+            bundle.writestr(f"pda-049-tabela_{table}_{name}.csv", "\n".join(rows).encode("latin-1"))
+
+    records = bake_tuss_archive(archive)["records"]
+
+    assert records[-1] == {
+        "tabela": "22",
+        "codigo": "922000001",
+        "termo": "Item sintético 22",
+        "descricao": "Detalhe 22",
+        "vigencia_inicio": "2020-01-01",
+        "vigencia_fim": "",
+    }
 
     notebook = json.loads((ROOT / "docs/tutoriais/01-validar-um-lote.ipynb").read_text())
     output = "".join(notebook["cells"][1]["outputs"][0]["data"]["text/plain"]).rstrip("\n")
