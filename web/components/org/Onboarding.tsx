@@ -28,7 +28,7 @@ import {
 import { abrirDeNovo, FalhaDoPedido, pedir } from "@/lib/org/cliente";
 import type { CatalogoDeOrgs, EstadoDaOrg, Subtipo } from "@/lib/org/tipos";
 import { sair } from "./OrgCasca";
-import { ROTULO_DO_TIPO } from "./secoes";
+import { hrefDaOrg, ROTULO_DO_TIPO } from "./secoes";
 
 type Campos = {
   destino: string;
@@ -142,7 +142,15 @@ function PapelDaOrg({
   );
 }
 
-export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs; podeVoltar: boolean }) {
+export function Onboarding({
+  catalogo,
+  podeVoltar,
+  orgInicial,
+}: {
+  catalogo: CatalogoDeOrgs;
+  podeVoltar: boolean;
+  orgInicial?: string;
+}) {
   const { token } = theme.useToken();
   const [form] = Form.useForm<Campos>();
   const [erro, setErro] = useState("");
@@ -152,6 +160,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
   const ultimaBusca = useRef("");
   const prontas = catalogo.organizations.filter((org) => org.tiss_org && org.terms.accepted);
   const aceitaveis = catalogo.organizations.filter((org) => org.is_admin && !(org.tiss_org && org.terms.accepted));
+  const inicial = aceitaveis.find((org) => org.id === orgInicial);
   const destino = Form.useWatch("destino", form) ?? NOVA;
   const subtipo = Form.useWatch("subtype", form);
   const tipo = catalogo.subtypes.find((item) => item.code === subtipo)?.type;
@@ -190,33 +199,23 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
     void buscar();
   }
 
-  async function abrir(org: EstadoDaOrg) {
-    try {
-      await pedir("/api/org/trocar", { method: "POST", body: { organization_id: org.id } });
-      abrirDeNovo();
-    } catch (motivo) {
-      setErro(motivo instanceof FalhaDoPedido ? motivo.message : "Não foi possível abrir a organização.");
-    }
-  }
-
   async function enviar(valores: Campos) {
     const nova = (valores.destino ?? NOVA) === NOVA;
     setEnviando(true);
     setErro("");
     setEmUso(null);
     try {
-      await pedir("tiss/organizations/", {
-        method: "POST",
-        body: {
-          ...(nova ? { name: valores.name } : { organization_id: valores.destino }),
-          subtype: valores.subtype,
-          cnpj: valores.cnpj,
-          ...(tipo === "pay" ? { registro_ans: valores.registro_ans } : {}),
-          ...(tipo !== "pay" && valores.cnes?.trim() ? { cnes: valores.cnes.trim() } : {}),
-          accept_terms_version: catalogo.terms_version,
-        },
-      });
-      abrirDeNovo();
+      const identidade = {
+        subtype: valores.subtype,
+        cnpj: valores.cnpj,
+        ...(tipo === "pay" ? { registro_ans: valores.registro_ans } : {}),
+        ...(tipo !== "pay" && valores.cnes?.trim() ? { cnes: valores.cnes.trim() } : {}),
+        accept_terms_version: catalogo.terms_version,
+      };
+      const org = nova
+        ? await pedir<EstadoDaOrg>("me/tiss/organizations/", { method: "POST", body: { name: valores.name, ...identidade } })
+        : await pedir<EstadoDaOrg>(`org/${valores.destino}/tiss/onboard/`, { method: "POST", body: identidade });
+      abrirDeNovo(hrefDaOrg(org.id, "visao"));
     } catch (motivo) {
       if (motivo instanceof FalhaDoPedido) {
         const nomes = new Set(["name", "subtype", "cnpj", "registro_ans", "cnes"]);
@@ -255,7 +254,7 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
                   <Typography.Text>
                     {org.name} · {ROTULO_DO_TIPO[org.type] ?? org.type_display}
                   </Typography.Text>
-                  <Button onClick={() => void abrir(org)}>Abrir</Button>
+                  <Button href={hrefDaOrg(org.id, "visao")}>Abrir</Button>
                 </Flex>
               ))}
             </Flex>
@@ -275,7 +274,13 @@ export function Onboarding({ catalogo, podeVoltar }: { catalogo: CatalogoDeOrgs;
           <Form<Campos>
             form={form}
             layout="vertical"
-            initialValues={{ destino: NOVA, aceite: false }}
+            initialValues={{
+              destino: inicial?.id ?? NOVA,
+              aceite: false,
+              cnpj: inicial?.cnpj || undefined,
+              registro_ans: inicial?.registro_ans || undefined,
+              subtype: inicial?.subtype || undefined,
+            }}
             onFinish={(valores) => void enviar(valores)}
           >
             {aceitaveis.length > 0 && (

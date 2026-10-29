@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { OrgApp } from "@/components/org/OrgApp";
-import { COOKIE_DA_ORG, lerPar, urlDoBackend } from "@/lib/org/credencial";
+import { COOKIE_DO_PAR, lerPar, urlDoBackend } from "@/lib/org/credencial";
 import { readRulePacks } from "@/lib/rule-packs";
 
 export const metadata: Metadata = {
@@ -16,9 +16,17 @@ type SearchParams = { secao?: string | string[]; painel?: string | string[]; nov
 
 const primeiro = (valor?: string | string[]) => (Array.isArray(valor) ? valor[0] : valor);
 
-export default async function OrgPage({ searchParams, secao }: { searchParams: Promise<SearchParams>; secao?: string }) {
+export default async function OrgPage({
+  orgId,
+  searchParams,
+  secao,
+}: {
+  orgId?: string;
+  searchParams: Promise<SearchParams>;
+  secao?: string;
+}) {
   const params = await searchParams;
-  const conectado = lerPar((await cookies()).get(COOKIE_DA_ORG)?.value) !== null;
+  const conectado = lerPar((await cookies()).get(COOKIE_DO_PAR)?.value) !== null;
   const pacotes = readRulePacks().map((pack) => ({
     registro: pack.mantenedor.registro_ans ?? pack.operadora,
     razaoSocial: pack.razaoSocial,
@@ -27,6 +35,8 @@ export default async function OrgPage({ searchParams, secao }: { searchParams: P
 
   return (
     <OrgApp
+      key={orgId ?? ""}
+      orgId={orgId}
       configurado={urlDoBackend() !== null}
       conectado={conectado}
       secao={secao ?? primeiro(params.secao)}

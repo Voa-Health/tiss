@@ -3,7 +3,7 @@ import type { NextRequest, NextResponse } from "next/server";
 /** Par de tokens Voa guardado no cookie httpOnly; o navegador nunca o lê. */
 export type ParDeTokens = { access: string; refresh: string };
 
-export const COOKIE_DA_ORG = "tiss_org";
+export const COOKIE_DO_PAR = "tiss_par_de_tokens";
 const VALIDADE_S = 7 * 24 * 60 * 60;
 
 export function urlDoBackend(): string | null {
@@ -24,11 +24,11 @@ export function lerPar(valor: string | undefined): ParDeTokens | null {
 }
 
 export function parDoPedido(pedido: NextRequest): ParDeTokens | null {
-  return lerPar(pedido.cookies.get(COOKIE_DA_ORG)?.value);
+  return lerPar(pedido.cookies.get(COOKIE_DO_PAR)?.value);
 }
 
 export function gravarPar(resposta: NextResponse, par: ParDeTokens): void {
-  resposta.cookies.set(COOKIE_DA_ORG, Buffer.from(JSON.stringify(par)).toString("base64url"), {
+  resposta.cookies.set(COOKIE_DO_PAR, Buffer.from(JSON.stringify(par)).toString("base64url"), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -38,7 +38,7 @@ export function gravarPar(resposta: NextResponse, par: ParDeTokens): void {
 }
 
 export function apagarPar(resposta: NextResponse): void {
-  resposta.cookies.delete(COOKIE_DA_ORG);
+  resposta.cookies.delete(COOKIE_DO_PAR);
 }
 
 /** O cadastro não guarda o nome; ele vai ao perfil na confirmação do e-mail. */

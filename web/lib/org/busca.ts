@@ -31,7 +31,7 @@ export function chaveDaBusca(tipo: string | undefined, cnpj: string | undefined,
 }
 
 export function caminhoDaBusca({ campo, valor }: ChaveDaBusca): string {
-  return `tiss/organizations/lookup/?${new URLSearchParams({ [campo]: valor })}`;
+  return `me/tiss/organizations/lookup/?${new URLSearchParams({ [campo]: valor })}`;
 }
 
 /** Resposta fora do contrato vira `indisponivel`: a busca nunca trava o cadastro. */

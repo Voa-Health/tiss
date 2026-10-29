@@ -2,11 +2,11 @@
 
 import { Alert, App, Button, Card, Checkbox, Empty, Flex, Form, Input, Popconfirm, Select, Skeleton, Table, Tag, Typography } from "antd";
 import type { TableColumnsType } from "antd";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { pedir, useRecurso } from "@/lib/org/cliente";
 import { brl, dataHora } from "@/lib/org/formato";
-import { CAMINHO_DO_MAPA, matrizDoMapa, rotuloDoPrestador } from "@/lib/org/mapa";
+import { caminhoDoMapa, matrizDoMapa, rotuloDoPrestador } from "@/lib/org/mapa";
 import type { CelulaDoMapa, LinhaDaMatriz, MapaDeRejeicao } from "@/lib/org/mapa";
 import type { EstadoDaOrg } from "@/lib/org/tipos";
 import { MapaGestao } from "./MapaGestao";
@@ -16,14 +16,15 @@ function Celula({ valor }: { valor?: CelulaDoMapa }) {
 }
 
 function MapaConteudo({ org }: { org: EstadoDaOrg }) {
-  const router = useRouter(), params = useSearchParams();
+  const router = useRouter(), pathname = usePathname(), params = useSearchParams();
+  const mapaDaOrg = caminhoDoMapa(org.id);
   const admin = org.is_admin || org.my_areas.includes("administration");
   const podeVer = org.rejection_map?.eligible && org.type === "pay" && (admin || org.my_areas.includes("auditoria"));
   const filtros = new URLSearchParams();
   for (const campo of ["prestador", "rule_id", "mes_de", "mes_ate"]) {
     const valor = params.get(campo); if (valor) filtros.set(campo, valor);
   }
-  const mapa = useRecurso<MapaDeRejeicao>(podeVer ? `${CAMINHO_DO_MAPA}?${filtros}` : null);
+  const mapa = useRecurso<MapaDeRejeicao>(podeVer ? `${mapaDaOrg}?${filtros}` : null);
   const [aceito, setAceito] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -31,7 +32,7 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
   async function ligar(ligada: boolean) {
     setOcupado(true); setErro(null);
     try {
-      await pedir(`${CAMINHO_DO_MAPA}${ligada ? "enable" : "disable"}/`, {
+      await pedir(`${mapaDaOrg}${ligada ? "enable" : "disable"}/`, {
         method: "POST",
         ...(ligada ? { body: { accept_terms: true, terms_version: mapa.dados?.terms.current_version } } : {}),
       });
@@ -49,7 +50,7 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
     for (const campo of ["prestador", "rule_id", "mes_de", "mes_ate"]) {
       novos.delete(campo); if (valores[campo]) novos.set(campo, valores[campo]);
     }
-    router.replace(`/org?${novos}`, { scroll: false });
+    router.replace(`${pathname}?${novos}`, { scroll: false });
   }
 
   if (!podeVer) return <Alert type="warning" title="Mapa indisponível para esta organização ou Área." />;
@@ -95,7 +96,7 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
       </Form>
       {matriz.linhas.length ? <Table rowKey={(linha) => linha.prestador.id} columns={colunas} dataSource={matriz.linhas} pagination={{ pageSize: 20 }} scroll={{ x: 260 + 190 * (matriz.meses.length + 1) }} /> : <Empty description="Nenhum achado para os filtros selecionados." />}
     </Card>
-    {admin && <MapaGestao key={String(dados.enabled)} ligada={dados.enabled} recarregar={mapa.recarregar} />}
+    {admin && <MapaGestao key={String(dados.enabled)} orgId={org.id} ligada={dados.enabled} recarregar={mapa.recarregar} />}
   </Flex>;
 }
 

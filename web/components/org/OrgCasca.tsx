@@ -1,13 +1,13 @@
 "use client";
 
 import { DownOutlined, LogoutOutlined, PlusOutlined, RobotOutlined, SwapOutlined } from "@ant-design/icons";
-import { App, Button, Drawer, Dropdown, Flex, Grid, Tag, theme, Typography } from "antd";
+import { Button, Drawer, Dropdown, Flex, Grid, Tag, theme, Typography } from "antd";
 import type { MenuProps } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { abrirDeNovo, FalhaDoPedido, pedir } from "@/lib/org/cliente";
+import { abrirDeNovo, pedir } from "@/lib/org/cliente";
 import type { EstadoDaOrg } from "@/lib/org/tipos";
 import { site } from "@/lib/site";
 import { PainelDoAssistente } from "./PainelDoAssistente";
@@ -23,16 +23,7 @@ export async function sair() {
 
 function SeletorDeOrg({ org, outras }: { org: EstadoDaOrg; outras: EstadoDaOrg[] }) {
   const { token } = theme.useToken();
-  const { message } = App.useApp();
-
-  async function trocar(id: string) {
-    try {
-      await pedir("/api/org/trocar", { method: "POST", body: { organization_id: id } });
-      abrirDeNovo();
-    } catch (erro) {
-      message.error(erro instanceof FalhaDoPedido ? erro.message : "Não foi possível trocar de organização.");
-    }
-  }
+  const router = useRouter();
 
   const items: MenuProps["items"] = [
     ...outras.map((item) => ({ key: item.id, label: item.name, icon: <SwapOutlined /> })),
@@ -45,10 +36,10 @@ function SeletorDeOrg({ org, outras }: { org: EstadoDaOrg; outras: EstadoDaOrg[]
       trigger={["click"]}
       menu={{
         items,
-        onClick: ({ key }) => (key === "nova" ? abrirDeNovo("/org?nova=1") : void trocar(key)),
+        onClick: ({ key }) => router.push(key === "nova" ? "/org?nova=1" : hrefDaOrg(key, "visao")),
       }}
     >
-      <Button aria-label={`Organização atual: ${org.name}. Trocar de organização`}>
+      <Button aria-label={`Organização atual: ${org.name}. Abrir outra organização`}>
         <Flex align="center" gap={token.marginXS} style={{ minWidth: 0 }}>
           <Typography.Text strong ellipsis style={{ maxWidth: 220 }}>{org.name}</Typography.Text>
           <Tag style={{ marginInlineEnd: 0 }}>{ROTULO_DO_TIPO[org.type] ?? org.type_display}</Tag>
@@ -79,7 +70,7 @@ export function OrgCasca({
   const painel = operadora && painelAberto;
   const secoes = secoesVisiveisDaOrg(org);
   const atual = secoes.find((item) => item.key === secao) ?? secoesDaOrg[0];
-  const alternarPainel = (aberto: boolean) => router.replace(hrefDaOrg(secao, aberto), { scroll: false });
+  const alternarPainel = (aberto: boolean) => router.replace(hrefDaOrg(org.id, secao, aberto), { scroll: false });
   const borda = `${token.lineWidth}px ${token.lineType} ${token.colorBorderSecondary}`;
 
   return (
@@ -135,7 +126,7 @@ export function OrgCasca({
             return (
               <Link
                 key={item.key}
-                href={hrefDaOrg(item.key, painel)}
+                href={hrefDaOrg(org.id, item.key, painel)}
                 aria-current={ativa ? "page" : undefined}
                 style={{
                   display: "inline-flex",
@@ -187,7 +178,7 @@ export function OrgCasca({
               borderInlineStart: borda,
             }}
           >
-            <PainelDoAssistente aoFechar={() => alternarPainel(false)} podeDecidir={org.my_areas.includes("auditoria")} />
+            <PainelDoAssistente orgId={org.id} aoFechar={() => alternarPainel(false)} podeDecidir={org.my_areas.includes("auditoria")} />
           </aside>
         )}
       </div>
@@ -201,7 +192,7 @@ export function OrgCasca({
           styles={{ body: { padding: 0 } }}
         >
           <div id="painel-do-assistente">
-            <PainelDoAssistente aoFechar={() => alternarPainel(false)} podeDecidir={org.my_areas.includes("auditoria")} />
+            <PainelDoAssistente orgId={org.id} aoFechar={() => alternarPainel(false)} podeDecidir={org.my_areas.includes("auditoria")} />
           </div>
         </Drawer>
       )}

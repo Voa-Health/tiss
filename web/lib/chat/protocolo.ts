@@ -18,29 +18,15 @@ export type AprovacaoPendente = {
   values: Record<string, unknown>;
 };
 
-export type QuadroDeResolucao = {
-  type: "hitl-resolve";
-  payload: {
-    chat_id: string;
-    correlation_id: string;
-    approved: boolean;
-    reason?: string;
-  };
-};
-
 const EVENTOS_TRATADOS = new Set([
   "response",
   "custom:tool-call-start",
   "custom:tool-call-end",
   "custom:turn-finalized",
   "error",
-  "run-accepted",
   "stream-start",
   "stream-end",
-  "reattach-ack",
-  "keepalive",
-  "pong",
-  "authenticated",
+  "stream-expired",
   "action:create-chat-messages",
   "custom:hitl-pending",
   "custom:hitl-resolved",
@@ -114,26 +100,46 @@ export function textoDaResposta(envelope: Envelope): string {
   return "";
 }
 
-export function quadroDeEnvio(chatId: string, texto: string, perfil: string) {
+export function turnoDeEnvio(texto: string) {
+  return { kind: "send" as const, message: texto };
+}
+
+export function turnoDeResolucao(aprovacao: AprovacaoPendente, aprovada: boolean, motivo?: string) {
   return {
-    type: "send" as const,
-    payload: { chat_id: chatId, message: texto, profile: perfil },
+    kind: "hitl-resolve" as const,
+    correlation_id: aprovacao.correlation_id,
+    approved: aprovada,
+    ...(motivo?.trim() ? { reason: motivo.trim() } : {}),
   };
 }
 
-export function quadroDeResolucao(
-  chatId: string,
-  aprovacao: AprovacaoPendente,
-  aprovada: boolean,
-  motivo?: string,
-): QuadroDeResolucao {
-  return {
-    type: "hitl-resolve",
-    payload: {
-      chat_id: chatId,
-      correlation_id: aprovacao.correlation_id,
-      approved: aprovada,
-      ...(motivo?.trim() ? { reason: motivo.trim() } : {}),
-    },
+export type EventoSse = { id: string | null; evento: string; dados: string };
+
+/** Leitor SSE incremental: recebe pedaços quaisquer e entrega cada evento completo. */
+export function leitorSse(aoEvento: (evento: EventoSse) => void): (pedaco: string) => void {
+  let resto = "";
+  let id: string | null = null;
+  let evento = "";
+  let dados: string[] = [];
+  const linha = (texto: string) => {
+    if (texto === "") {
+      if (dados.length) aoEvento({ id, evento: evento || "message", dados: dados.join("\n") });
+      evento = "";
+      dados = [];
+      return;
+    }
+    if (texto.startsWith(":")) return;
+    const separador = texto.indexOf(":");
+    const campo = separador === -1 ? texto : texto.slice(0, separador);
+    const valor = separador === -1 ? "" : texto.slice(separador + 1).replace(/^ /, "");
+    if (campo === "data") dados.push(valor);
+    else if (campo === "event") evento = valor;
+    else if (campo === "id") id = valor;
+  };
+  return (pedaco) => {
+    resto += pedaco;
+    const linhas = resto.split(/\r\n|\r|\n/);
+    resto = linhas.pop() ?? "";
+    linhas.forEach(linha);
   };
 }

@@ -3,16 +3,17 @@
 import { Alert, App, Button, Card, Flex, Popconfirm, Typography, Upload } from "antd";
 import { useState } from "react";
 import { pedir } from "@/lib/org/cliente";
-import { CAMINHO_DO_MAPA, lerCadastro, prepararCadastro } from "@/lib/org/mapa";
+import { caminhoDoMapa, lerCadastro, prepararCadastro } from "@/lib/org/mapa";
 
-export function MapaGestao({ ligada, recarregar }: { ligada: boolean; recarregar: () => void }) {
+export function MapaGestao({ orgId, ligada, recarregar }: { orgId: string; ligada: boolean; recarregar: () => void }) {
+  const mapaDaOrg = caminhoDoMapa(orgId);
   const { modal, message } = App.useApp();
   const [segredo, setSegredo] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
   async function buscarSegredo() {
-    const valor = await pedir<{ secret: string }>(`${CAMINHO_DO_MAPA}secret/`);
+    const valor = await pedir<{ secret: string }>(`${mapaDaOrg}secret/`);
     if (!/^[0-9a-f]{64}$/.test(valor.secret)) throw new Error("Segredo indisponível.");
     return valor.secret;
   }
@@ -34,7 +35,7 @@ export function MapaGestao({ ligada, recarregar }: { ligada: boolean; recarregar
         content: `${nomes.length} nomes serão gravados. Os nomes atuais serão substituídos.`,
         okText: "Substituir cadastro", cancelText: "Cancelar",
         onOk: () => executar(async () => {
-          await pedir(`${CAMINHO_DO_MAPA}providers/`, { method: "PUT", body: { items: nomes } });
+          await pedir(`${mapaDaOrg}providers/`, { method: "PUT", body: { items: nomes } });
           message.success("Cadastro atualizado."); recarregar();
         }),
       });
@@ -74,7 +75,7 @@ export function MapaGestao({ ligada, recarregar }: { ligada: boolean; recarregar
         <Popconfirm title="Apagar todos os dados do mapa?" description="Esta ação não pode ser desfeita."
           okText="Apagar tudo" cancelText="Cancelar" okButtonProps={{ danger: true }}
           onConfirm={() => executar(async () => {
-            await pedir(CAMINHO_DO_MAPA, { method: "DELETE" });
+            await pedir(mapaDaOrg, { method: "DELETE" });
             setSegredo(null); recarregar(); message.success("Dados do mapa apagados.");
           })}>
           <Button danger disabled={ocupado}>Apagar tudo</Button>

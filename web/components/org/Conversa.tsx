@@ -9,11 +9,13 @@ import {
   lerAprovacaoPendente,
   lerAprovacaoResolvida,
   textoDaResposta,
+  turnoDeEnvio,
+  turnoDeResolucao,
   type AprovacaoPendente,
   type Envelope,
   type FalaDoHistorico,
 } from "@/lib/chat/protocolo";
-import { ligarChat, type CredencialDoChat, type FalhaDoChat, type LigacaoDoChat } from "@/lib/chat/transporte";
+import { ligarChat, type FalhaDoChat, type LigacaoDoChat } from "@/lib/chat/transporte";
 import { CorpoDaConversa } from "./CorpoDaConversa";
 
 type RespostaInicial = {
@@ -35,7 +37,7 @@ async function lerResposta(resposta: Response): Promise<RespostaInicial> {
   return dados;
 }
 
-export function Conversa({ podeDecidir }: { podeDecidir: boolean }) {
+export function Conversa({ orgId, podeDecidir }: { orgId: string; podeDecidir: boolean }) {
   const { token } = theme.useToken();
   const ligacao = useRef<LigacaoDoChat | null>(null);
   const respostaEmCurso = useRef("");
@@ -66,6 +68,12 @@ export function Conversa({ podeDecidir }: { podeDecidir: boolean }) {
     setTrabalhando(false);
   }, [adicionarFala]);
 
+  const concluirAprovacao = useCallback((correlationId: string) => {
+    setAprovacao((atual) => atual?.correlation_id === correlationId ? null : atual);
+    setCarregandoDecisao(false);
+    window.dispatchEvent(new Event("tiss:regras-atualizadas"));
+  }, []);
+
   const receberEvento = useCallback((envelope: Envelope) => {
     const tipo = chaveDoEvento(envelope);
     if (tipo === "response") {
@@ -85,11 +93,11 @@ export function Conversa({ podeDecidir }: { podeDecidir: boolean }) {
       setAtividade("Consulta concluída.");
       return;
     }
-    if (tipo === "run-accepted" || tipo === "stream-start") {
+    if (tipo === "stream-start") {
       setTrabalhando(true);
       return;
     }
-    if (tipo === "custom:turn-finalized" || tipo === "stream-end") {
+    if (tipo === "custom:turn-finalized" || tipo === "stream-end" || tipo === "stream-expired") {
       finalizarResposta();
       setAtividade(null);
       return;
@@ -110,62 +118,41 @@ export function Conversa({ podeDecidir }: { podeDecidir: boolean }) {
     }
     if (tipo === "custom:hitl-resolved") {
       const resolvida = lerAprovacaoResolvida(envelope);
-      if (resolvida) {
-        setAprovacao((atual) => atual?.correlation_id === resolvida.correlation_id ? null : atual);
-        setCarregandoDecisao(false);
-        window.dispatchEvent(new Event("tiss:regras-atualizadas"));
-      }
+      if (resolvida) concluirAprovacao(resolvida.correlation_id);
       return;
     }
     if (!eventoTratado(envelope)) {
       setIgnorados((anteriores) => anteriores.includes(tipo) ? anteriores : [...anteriores, tipo]);
     }
-  }, [finalizarResposta]);
+  }, [concluirAprovacao, finalizarResposta]);
 
   useEffect(() => {
     let ativa = true;
+    const base = `/api/conversa/${orgId}`;
     const iniciar = async () => {
       try {
-        let inicial = await lerResposta(await fetch("/api/conversa?historico=1", { cache: "no-store" }));
-        if (!inicial.chat_id) {
-          const criada = await fetch("/api/conversa", { method: "POST", cache: "no-store" });
-          await lerResposta(criada);
-          inicial = await lerResposta(await fetch("/api/conversa?historico=1", { cache: "no-store" }));
-        }
-        if (!ativa || !inicial.chat_id) return;
-        setChatId(inicial.chat_id);
-        const historico = inicial.falas ?? [];
+        const inicial = await lerResposta(await fetch(base, { cache: "no-store" }));
+        const id = inicial.chat_id ?? (await lerResposta(await fetch(base, { method: "POST", cache: "no-store" }))).chat_id;
+        if (!ativa || !id) return;
+        setChatId(id);
+        const historico = inicial.chat_id ? inicial.falas ?? [] : [];
         setFalas(historico.map((fala, indice) => ({ ...fala, id: `historico-${indice}` })));
         proximoId.current = historico.length;
-        const conexao = ligarChat({
-          chatId: inicial.chat_id,
-          async carregarCredencial(signal): Promise<CredencialDoChat> {
-            const resposta = await fetch("/api/conversa", { cache: "no-store", signal });
-            const dados = await lerResposta(resposta) as RespostaInicial & CredencialDoChat;
-            if (!dados.token || !dados.socket || !dados.profile || dados.chat_id !== inicial.chat_id) {
-              throw new Error("Credencial de conversa inválida.");
-            }
-            return {
-              token: dados.token,
-              socket: dados.socket,
-              chat_id: dados.chat_id,
-              profile: dados.profile,
-            };
-          },
+        ligacao.current = ligarChat({
+          base: `${base}/${id}`,
           aoEvento: receberEvento,
           aoEstado: (valor) => ativa && setConectada(valor),
           aoFalha: (valor) => {
             if (ativa) setFalha(valor);
           },
         });
-        ligacao.current = conexao;
+        setConectada(true);
       } catch (erro) {
         if (!ativa) return;
         const motivo = erro instanceof Error ? erro : new Error("Não foi possível abrir o Assistente.");
         const codigo = "code" in motivo && typeof motivo.code === "string" ? motivo.code : "";
         setConfigAusente(codigo === "configuracao_ausente");
-        const proximaFalha = { codigo: codigo || "abertura_indisponivel", mensagem: motivo.message };
-        setFalha(proximaFalha);
+        setFalha({ codigo: codigo || "abertura_indisponivel", mensagem: motivo.message });
       } finally {
         if (ativa) setCarregando(false);
       }
@@ -176,19 +163,29 @@ export function Conversa({ podeDecidir }: { podeDecidir: boolean }) {
       ligacao.current?.fechar();
       ligacao.current = null;
     };
-  }, [receberEvento]);
+  }, [orgId, receberEvento]);
 
   function enviar(texto: string) {
-    setFalha(null);
     adicionarFala("pessoa", texto);
     setTrabalhando(true);
-    ligacao.current?.enviar(texto);
+    void ligacao.current?.turno(turnoDeEnvio(texto)).finally(() => {
+      finalizarResposta();
+      setAtividade(null);
+    });
   }
 
   function resolver(pendente: AprovacaoPendente, aprovada: boolean, motivo?: string) {
     if (!ligacao.current) return;
     setCarregandoDecisao(true);
-    ligacao.current.resolver(pendente, aprovada, motivo);
+    void ligacao.current
+      .turno(turnoDeResolucao(pendente, aprovada, motivo))
+      .then((corpo) => {
+        if (corpo?.resolved) concluirAprovacao(pendente.correlation_id);
+      })
+      .finally(() => {
+        setCarregandoDecisao(false);
+        finalizarResposta();
+      });
   }
 
   if (carregando) return <Skeleton active paragraph={{ rows: 4 }} />;

@@ -11,7 +11,7 @@ export type MapaDeRejeicao = {
 export type NomeDoPrestador = { prestador: string; nome: string };
 export type CelulaDoMapa = { guias: number; centavos: number };
 export type LinhaDaMatriz = { prestador: PrestadorDoMapa; meses: Record<string, CelulaDoMapa>; total: CelulaDoMapa };
-export const CAMINHO_DO_MAPA = "tiss/org/rejection-map/";
+export const caminhoDoMapa = (orgId: string) => `org/${orgId}/tiss/rejection-map/`;
 
 export function rotuloDoPrestador(prestador: PrestadorDoMapa): string {
   if (prestador.nome) return prestador.nome;

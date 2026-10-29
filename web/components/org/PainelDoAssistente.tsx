@@ -5,9 +5,11 @@ import { Button, Flex, theme, Typography } from "antd";
 import { Conversa } from "./Conversa";
 
 export function PainelDoAssistente({
+  orgId,
   aoFechar,
   podeDecidir,
 }: {
+  orgId: string;
   aoFechar: () => void;
   podeDecidir: boolean;
 }) {
@@ -32,7 +34,7 @@ export function PainelDoAssistente({
         />
       </Flex>
       <Flex flex={1} vertical style={{ minHeight: 0 }}>
-        <Conversa podeDecidir={podeDecidir} />
+        <Conversa orgId={orgId} podeDecidir={podeDecidir} />
       </Flex>
     </Flex>
   );

@@ -16,12 +16,12 @@ function prestador(item: ItemDeAuditoria): string {
 export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const lista = useRecurso<ListaDeAuditoria>("tiss/org/audit/?status=all");
+  const lista = useRecurso<ListaDeAuditoria>(`org/${org.id}/tiss/audit/?status=all`);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [justificativa, setJustificativa] = useState("");
   const itens = lista.dados?.items ?? [];
   const escolhido = itens.find((item) => item.id === selecionado) ?? itens.find((item) => item.status === "open") ?? itens[0] ?? null;
-  const detalhe = useRecurso<ItemDeAuditoria>(escolhido ? `tiss/org/audit/${escolhido.id}/` : null);
+  const detalhe = useRecurso<ItemDeAuditoria>(escolhido ? `org/${org.id}/tiss/audit/${escolhido.id}/` : null);
   const item = detalhe.dados ?? escolhido;
   const podeDecidir = org.my_areas.includes("auditoria");
 
@@ -31,7 +31,7 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
       return;
     }
     try {
-      await pedir(`tiss/org/audit/${item.id}/${decisao}/`, {
+      await pedir(`org/${org.id}/tiss/audit/${item.id}/${decisao}/`, {
         method: "POST",
         body: { justificativa: justificativa.trim() },
       });

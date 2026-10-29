@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "node:test";
-import { chamarBackend, postarSemToken, trocarOrganizacao } from "../lib/org/backend.ts";
+import { chamarBackend, postarSemToken } from "../lib/org/backend.ts";
 import { cabecalhosDoCliente, ipDoCliente } from "../lib/org/ip.ts";
 
 type Chamada = { url: string; headers: Record<string, string> };
@@ -71,16 +71,10 @@ describe("repasse do IP ao backend", () => {
       Response.json({ access: "novo", refresh: "r2" }),
       Response.json({ status: "ausente", nome_oficial: "" }),
     ];
-    const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/api/v1/tiss/organizations/lookup/?cnpj=1", { method: "GET" }, extras);
+    const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/api/v2/me/tiss/organizations/lookup/?cnpj=1", { method: "GET" }, extras);
     assert.equal(resultado.status, 200);
     assert.deepEqual(chamadas.map((chamada) => chamada.headers["x-voa-client-ip"]), ["198.51.100.23", "198.51.100.23", "198.51.100.23"]);
     assert.equal(chamadas[2].headers.authorization, "Bearer novo");
-  });
-
-  it("troca de organização leva o IP", async () => {
-    respostas = [Response.json({ access: "a", refresh: "r" })];
-    await trocarOrganizacao({ access: "x", refresh: "y" }, "org-1", extras);
-    assert.equal(chamadas[0].headers["x-voa-client-ip"], "198.51.100.23");
   });
 
   it("o cabeçalho de autenticação não pode ser sobrescrito pelos extras", async () => {
