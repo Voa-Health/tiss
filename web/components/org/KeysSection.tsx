@@ -1,7 +1,7 @@
 "use client";
 
 import { PlusOutlined } from "@ant-design/icons";
-import { Alert, App, Button, Card, Flex, Form, Input, Modal, Popconfirm, Result, Segmented, Table, Tag, theme, Typography } from "antd";
+import { Alert, App, Button, Card, Flex, Form, Input, Modal, Popconfirm, Result, Table, theme, Typography } from "antd";
 import type { TableColumnsType } from "antd";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -10,12 +10,7 @@ import { dataHora, inteiro } from "@/lib/org/formato";
 import type { Chave, ChaveCriada } from "@/lib/org/tipos";
 import { docsPageUrl } from "@/lib/site";
 
-type NovaChave = { name: string; environment: Chave["environment"] };
-
-const AMBIENTES = [
-  { value: "production", label: "Produção" },
-  { value: "sandbox", label: "Sandbox" },
-] as const;
+type NovaChave = { name: string };
 
 function SegredoUmaVez({ chave, aoFechar }: { chave: ChaveCriada | null; aoFechar: () => void }) {
   const { token } = theme.useToken();
@@ -84,16 +79,6 @@ export function KeysSection({ podeGerenciar }: { podeGerenciar: boolean }) {
       dataIndex: "key_tip",
       key: "key_tip",
       render: (dica: string, chave) => <Typography.Text code style={{ whiteSpace: "nowrap" }}>{dica || `${chave.prefix}…`}</Typography.Text>,
-    },
-    {
-      title: "Ambiente",
-      dataIndex: "environment",
-      key: "environment",
-      render: (valor: Chave["environment"]) => (
-        <Tag color={valor === "production" ? "processing" : "default"}>
-          {AMBIENTES.find((item) => item.value === valor)?.label ?? valor}
-        </Tag>
-      ),
     },
     { title: "Usos", dataIndex: "usage_count", key: "usage_count", align: "right", render: (valor: number) => inteiro(valor) },
     {
@@ -189,12 +174,9 @@ export function KeysSection({ podeGerenciar }: { podeGerenciar: boolean }) {
         onCancel={() => setCriando(false)}
         destroyOnHidden
       >
-        <Form<NovaChave> form={form} layout="vertical" initialValues={{ environment: "production" }} onFinish={(valores) => void criar(valores)}>
+        <Form<NovaChave> form={form} layout="vertical" onFinish={(valores) => void criar(valores)}>
           <Form.Item name="name" label="Nome" rules={[{ required: true, whitespace: true, message: "Dê um nome à chave." }]}>
             <Input placeholder="Ex.: integração do faturamento" maxLength={255} />
-          </Form.Item>
-          <Form.Item name="environment" label="Ambiente">
-            <Segmented options={AMBIENTES.map((item) => ({ value: item.value, label: item.label }))} />
           </Form.Item>
         </Form>
       </Modal>

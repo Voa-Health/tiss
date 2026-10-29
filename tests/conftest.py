@@ -56,7 +56,6 @@ class FakeService:
             "key_id": "id-" + key.split("_", 2)[2],
             "organization": {"id": "org-1", "name": "Clínica Exemplo"},
             "scopes": list(scopes or [f"tiss:{scope}" for scope in TISS_SCOPES]),
-            "environment": "production",
             "tier": tier,
             "terms_accepted": True,
         }

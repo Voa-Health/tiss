@@ -67,7 +67,6 @@ export type Chave = {
   prefix: string;
   key_tip: string;
   scopes: string[];
-  environment: "production" | "sandbox";
   usage_count: number;
   last_used_at: string | null;
   created_at: string;
