@@ -14,7 +14,7 @@ attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
-certifi==2026.10.23
+certifi==2026.10.19
     # via
     #   httpcore
     #   httpx
@@ -89,7 +89,7 @@ rpds-py==2026.9.1 ; python_full_version >= '3.11'
     # via
     #   jsonschema
     #   referencing
-sse-starlette==3.5.1
+sse-starlette==3.5.0
     # via mcp
 starlette==1.7.0 ; python_full_version < '3.11'
     # via
