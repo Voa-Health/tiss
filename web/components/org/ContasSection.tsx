@@ -28,7 +28,7 @@ export function ContasSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const permitidas = ["auditoria", "administration", "finance"];
   const podeVer = org.is_admin || org.my_areas.some((area) => permitidas.includes(area));
-  const contas = useRecurso<ListaDeContas>(podeVer ? `org/${org.id}/tiss/accounts/` : null);
+  const contas = useRecurso<ListaDeContas>(podeVer ? `org/${org.id}/tiss/account/` : null);
 
   if (!podeVer) {
     return <Alert type="warning" showIcon title="Acesso restrito" description="Contas está disponível para as Áreas Auditoria, Administração e Financeiro." />;
@@ -37,7 +37,7 @@ export function ContasSection({ org }: { org: EstadoDaOrg }) {
   if (contas.erro) {
     return <Alert type="error" showIcon title="Não foi possível carregar as contas." description={contas.erro.message} />;
   }
-  const itens = contas.dados?.items ?? [];
+  const itens = contas.dados?.results ?? [];
 
   return (
     <Flex vertical gap={token.margin}>
