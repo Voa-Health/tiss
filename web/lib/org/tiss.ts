@@ -1,3 +1,5 @@
+import type { Pagina } from "@/lib/org/tipos";
+
 export type RegraTiss = {
   id?: string;
   nome?: string;
@@ -45,7 +47,7 @@ export type EstadoDasRegras = {
   diff: DiffTiss | null;
 };
 
-export type VersoesDasRegras = { items: PacoteTiss[] };
+export type VersoesDasRegras = Pagina<PacoteTiss>;
 
 export type PayloadDoLinkOficial = {
   repository: string;
@@ -65,10 +67,9 @@ export type ItemDeAuditoria = {
   kind_display: string;
   status: string;
   numero_guia: string;
-  tipo: string;
   prestador: string | Record<string, unknown>;
   reason: string;
-  itens: { codigo_glosa?: string; motivo?: string; valor?: number | string; [campo: string]: unknown }[];
+  items: { codigo_glosa?: string; reason?: string; valor_glosa?: number | string; [campo: string]: unknown }[];
   claim_response_id: string | null;
   opened_at: string | null;
   resolution: Record<string, unknown>;
@@ -81,8 +82,8 @@ export type ContaTiss = {
   claim_id: string | null;
   status: string;
   outcome: string;
-  tipo: string;
-  decisao: string;
+  kind: string;
+  decision: string;
   review_required: boolean;
   numero_guia: string;
   prestador: Record<string, unknown>;
@@ -92,8 +93,8 @@ export type ContaTiss = {
   adjudication: Record<string, unknown> | null;
   auditoria: { decision?: string; [campo: string]: unknown } | null;
   created: string | null;
-  itens?: Record<string, unknown>[];
+  claim_items?: Record<string, unknown>[];
 };
 
-export type ListaDeAuditoria = { items: ItemDeAuditoria[] };
-export type ListaDeContas = { items: ContaTiss[] };
+export type ListaDeAuditoria = Pagina<ItemDeAuditoria>;
+export type ListaDeContas = Pagina<ContaTiss>;
