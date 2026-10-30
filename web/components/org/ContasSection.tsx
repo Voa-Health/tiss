@@ -58,7 +58,7 @@ export function ContasSection({ org }: { org: EstadoDaOrg }) {
                 <Card title={`Guia ${conta.numero_guia || "sem número"}`} size="small" style={{ height: "100%" }}>
                   <Flex vertical gap={token.marginXS}>
                     <Typography.Text strong>{prestador}</Typography.Text>
-                    <Typography.Text type="secondary">{conta.tipo || "Conta TISS"}</Typography.Text>
+                    <Typography.Text type="secondary">{conta.kind || "Conta TISS"}</Typography.Text>
                     <Typography.Text>{valorDaConta(conta.total)}</Typography.Text>
                     <Flex wrap gap={token.marginXS} align="center">
                       <Tag color={conta.status === "active" ? "green" : conta.status === "draft" ? "gold" : undefined}>

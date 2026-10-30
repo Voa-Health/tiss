@@ -67,10 +67,9 @@ export type ItemDeAuditoria = {
   kind_display: string;
   status: string;
   numero_guia: string;
-  tipo: string;
   prestador: string | Record<string, unknown>;
   reason: string;
-  items: { codigo_glosa?: string; motivo?: string; valor_glosa?: number | string; [campo: string]: unknown }[];
+  items: { codigo_glosa?: string; reason?: string; valor_glosa?: number | string; [campo: string]: unknown }[];
   claim_response_id: string | null;
   opened_at: string | null;
   resolution: Record<string, unknown>;
@@ -83,8 +82,8 @@ export type ContaTiss = {
   claim_id: string | null;
   status: string;
   outcome: string;
-  tipo: string;
-  decisao: string;
+  kind: string;
+  decision: string;
   review_required: boolean;
   numero_guia: string;
   prestador: Record<string, unknown>;

@@ -75,7 +75,7 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
                 >
                   <List.Item.Meta
                     title={<Typography.Text strong>Guia {linha.numero_guia || "sem número"}</Typography.Text>}
-                    description={`${prestador(linha)} · ${linha.kind_display || linha.tipo || "Análise"}`}
+                    description={`${prestador(linha)} · ${linha.kind_display || "Análise"}`}
                   />
                   <Tag color={linha.status === "open" ? "processing" : undefined}>
                     {linha.status === "open" ? "Em aberto" : "Resolvida"}
@@ -88,7 +88,7 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
             <Card title={`Detalhe da guia ${item.numero_guia || "sem número"}`} loading={detalhe.carregando}>
               <Flex vertical gap={token.margin}>
                 <Typography.Text type="secondary">
-                  {item.kind_display || item.tipo || "Análise"} · {prestador(item)}
+                  {item.kind_display || "Análise"} · {prestador(item)}
                 </Typography.Text>
                 <Typography.Paragraph style={{ margin: 0 }}>{item.reason || "Motivo não informado."}</Typography.Paragraph>
                 {(item.items ?? []).length > 0 && (
@@ -99,7 +99,7 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
                       <List.Item>
                         <Flex vertical style={{ width: "100%" }}>
                           <Typography.Text strong>{linha.codigo_glosa || "Código não informado"}</Typography.Text>
-                          <Typography.Text>{linha.motivo || "Motivo não informado"}</Typography.Text>
+                          <Typography.Text>{linha.reason || "Motivo não informado"}</Typography.Text>
                           {linha.valor_glosa !== undefined && linha.valor_glosa !== null && (
                             <Typography.Text type="secondary">{brl(linha.valor_glosa)}</Typography.Text>
                           )}
