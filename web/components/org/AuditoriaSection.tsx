@@ -33,7 +33,7 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
     try {
       await pedir(`org/${org.id}/tiss/audit/${item.id}/${decisao}/`, {
         method: "POST",
-        body: { justificativa: justificativa.trim() },
+        body: { justification: justificativa.trim() },
       });
       message.success(decisao === "approve" ? "Pendência aprovada." : "Pendência rejeitada.");
       setJustificativa("");
