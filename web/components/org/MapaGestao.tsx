@@ -35,7 +35,7 @@ export function MapaGestao({ orgId, ligada, recarregar }: { orgId: string; ligad
         content: `${nomes.length} nomes serão gravados. Os nomes atuais serão substituídos.`,
         okText: "Substituir cadastro", cancelText: "Cancelar",
         onOk: () => executar(async () => {
-          await pedir(`${mapaDaOrg}providers/`, { method: "PUT", body: { items: nomes } });
+          await pedir(`${mapaDaOrg}provider/`, { method: "PUT", body: { items: nomes } });
           message.success("Cadastro atualizado."); recarregar();
         }),
       });
