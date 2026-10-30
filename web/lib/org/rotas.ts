@@ -19,7 +19,7 @@ const ROTAS = ([
   [`${ORG}tiss/rejection-map/`, ["GET", "DELETE"]],
   [`${ORG}tiss/rejection-map/(?:enable|disable)/`, ["POST"]],
   [`${ORG}tiss/rejection-map/secret/`, ["GET"]],
-  [`${ORG}tiss/rejection-map/providers/`, ["PUT"]],
+  [`${ORG}tiss/rejection-map/provider/`, ["PUT"]],
   [`${ORG}product-keys/`, ["GET", "POST"]],
   [`${ORG}product-keys/${ID}`, ["DELETE"]],
   [`${ORG}usage/`, ["GET"]],

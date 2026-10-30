@@ -349,7 +349,7 @@ assert.equal(visivel({...org,my_areas:["administration"]}), true);
 const base = "org/org-1/tiss/rejection-map/";
 for (const [path, methods] of [
   [base,["GET","DELETE"]], [base+"enable/",["POST"]], [base+"disable/",["POST"]],
-  [base+"secret/",["GET"]], [base+"providers/",["PUT"]],
+  [base+"secret/",["GET"]], [base+"provider/",["PUT"]],
 ]) {
   for (const method of ["GET","POST","PUT","DELETE","PATCH"]) {
     assert.equal(rotaPermitida(path, method), methods.includes(method));
