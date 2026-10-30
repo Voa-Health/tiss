@@ -19,7 +19,7 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
   const lista = useRecurso<ListaDeAuditoria>(`org/${org.id}/tiss/audit/?status=all`);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [justificativa, setJustificativa] = useState("");
-  const itens = lista.dados?.items ?? [];
+  const itens = lista.dados?.results ?? [];
   const escolhido = itens.find((item) => item.id === selecionado) ?? itens.find((item) => item.status === "open") ?? itens[0] ?? null;
   const detalhe = useRecurso<ItemDeAuditoria>(escolhido ? `org/${org.id}/tiss/audit/${escolhido.id}/` : null);
   const item = detalhe.dados ?? escolhido;
@@ -91,17 +91,17 @@ export function AuditoriaSection({ org }: { org: EstadoDaOrg }) {
                   {item.kind_display || item.tipo || "Análise"} · {prestador(item)}
                 </Typography.Text>
                 <Typography.Paragraph style={{ margin: 0 }}>{item.reason || "Motivo não informado."}</Typography.Paragraph>
-                {(item.itens ?? []).length > 0 && (
+                {(item.items ?? []).length > 0 && (
                   <List
                     size="small"
-                    dataSource={item.itens}
+                    dataSource={item.items}
                     renderItem={(linha) => (
                       <List.Item>
                         <Flex vertical style={{ width: "100%" }}>
                           <Typography.Text strong>{linha.codigo_glosa || "Código não informado"}</Typography.Text>
                           <Typography.Text>{linha.motivo || "Motivo não informado"}</Typography.Text>
-                          {linha.valor !== undefined && linha.valor !== null && (
-                            <Typography.Text type="secondary">{brl(linha.valor)}</Typography.Text>
+                          {linha.valor_glosa !== undefined && linha.valor_glosa !== null && (
+                            <Typography.Text type="secondary">{brl(linha.valor_glosa)}</Typography.Text>
                           )}
                         </Flex>
                       </List.Item>
