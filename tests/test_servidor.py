@@ -1409,23 +1409,23 @@ def _check_map_routes(client, service, value):
     count = len(service.map_requests)
     for extra in (
         {**value, "guia": {}},
-        {**value, "prestadores": [{**value["prestadores"][0], "guia": {}}]},
+        {**value, "providers": [{**value["providers"][0], "guia": {}}]},
         {
             **value,
-            "linhas": [
+            "rows": [
                 {
-                    "prestador": "codigo:SINTETICO",
-                    "mes": None,
-                    "codigo": "TEST",
+                    "provider": "codigo:SINTETICO",
+                    "month": None,
+                    "code": "TEST",
                     "glosa": None,
                     "rule_id": None,
                     "guias": 1,
-                    "valor_afetado": "0.00",
+                    "affected_amount": "0.00",
                     "guia": {},
                 }
             ],
         },
-        {**value, "linhas": [{"prestador": "cpf:00000000000"}]},
+        {**value, "rows": [{"provider": "cpf:00000000000"}]},
     ):
         response = client.post("/v1/rejection-map/submit", json=extra, headers=_bearer())
         assert response.status_code == 400

@@ -1,20 +1,20 @@
-export type PrestadorDoMapa = { id: string; nome: string | null; nome_origem: "cadastro" | "cnes" | "contas" | null };
+export type PrestadorDoMapa = { id: string; name: string | null; name_source: "registry" | "cnes" | "claims" | null };
 export type LinhaDoMapa = {
-  prestador: PrestadorDoMapa; mes: string | null; codigo: string;
-  glosa: string | null; rule_id: string | null; guias: number; valor_afetado: string;
+  provider: PrestadorDoMapa; month: string | null; code: string;
+  glosa: string | null; rule_id: string | null; guias: number; affected_amount: string;
 };
 export type MapaDeRejeicao = {
   eligible: boolean; enabled: boolean;
   terms: { current_version: string; url: string; version: string; accepted_at: string | null; accepted_by: string | null };
-  linhas: LinhaDoMapa[]; prestadores: PrestadorDoMapa[]; rule_ids: (string | null)[]; codigos: string[];
+  rows: LinhaDoMapa[]; providers: PrestadorDoMapa[]; rule_ids: (string | null)[]; codes: string[];
 };
-export type NomeDoPrestador = { prestador: string; nome: string };
+export type NomeDoPrestador = { provider: string; name: string };
 export type CelulaDoMapa = { guias: number; centavos: number };
 export type LinhaDaMatriz = { prestador: PrestadorDoMapa; meses: Record<string, CelulaDoMapa>; total: CelulaDoMapa };
 export const caminhoDoMapa = (orgId: string) => `org/${orgId}/tiss/rejection-map/`;
 
 export function rotuloDoPrestador(prestador: PrestadorDoMapa): string {
-  if (prestador.nome) return prestador.nome;
+  if (prestador.name) return prestador.name;
   if (prestador.id.startsWith("codigo:")) return `Código ${prestador.id.slice(7)}`;
   if (prestador.id.startsWith("cpf:hmac:")) return `CPF pseudonimizado …${prestador.id.slice(-4)}`;
   const cnpj = prestador.id.slice(5);
@@ -25,21 +25,21 @@ export function rotuloDoPrestador(prestador: PrestadorDoMapa): string {
 }
 
 export function matrizDoMapa(linhas: LinhaDoMapa[]) {
-  const meses = [...new Set(linhas.map((linha) => linha.mes ?? "sem mês"))].sort();
+  const meses = [...new Set(linhas.map((linha) => linha.month ?? "sem mês"))].sort();
   const prestadores = new Map<string, LinhaDaMatriz>();
   for (const linha of linhas) {
-    const atual = prestadores.get(linha.prestador.id) ?? {
-      prestador: linha.prestador, meses: {}, total: { guias: 0, centavos: 0 },
+    const atual = prestadores.get(linha.provider.id) ?? {
+      prestador: linha.provider, meses: {}, total: { guias: 0, centavos: 0 },
     };
-    const mes = linha.mes ?? "sem mês";
+    const mes = linha.month ?? "sem mês";
     const celula = atual.meses[mes] ?? { guias: 0, centavos: 0 };
-    const centavos = Math.round(Number(linha.valor_afetado) * 100);
+    const centavos = Math.round(Number(linha.affected_amount) * 100);
     celula.guias += linha.guias;
     celula.centavos += centavos;
     atual.meses[mes] = celula;
     atual.total.guias += linha.guias;
     atual.total.centavos += centavos;
-    prestadores.set(linha.prestador.id, atual);
+    prestadores.set(linha.provider.id, atual);
   }
   return { meses, linhas: [...prestadores.values()] };
 }
@@ -69,20 +69,20 @@ export function lerCadastro(texto: string, json: boolean): NomeDoPrestador[] {
   if (json) itens = JSON.parse(conteudo);
   else {
     const [cabecalho, ...linhas] = linhasCsv(conteudo);
-    if (cabecalho?.join(",") !== "prestador,nome" || linhas.some((linha) => linha.length !== 2)) {
-      throw new Error("Use o cabeçalho prestador,nome e duas colunas.");
+    if (cabecalho?.join(",") !== "provider,name" || linhas.some((linha) => linha.length !== 2)) {
+      throw new Error("Use o cabeçalho provider,name e duas colunas.");
     }
-    itens = linhas.map(([prestador, nome]) => ({ prestador, nome }));
+    itens = linhas.map(([provider, name]) => ({ provider, name }));
   }
   if (!Array.isArray(itens) || itens.length > 5000) throw new Error("Envie uma lista com até 5000 nomes.");
   return itens.map((item: unknown) => {
     if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error("Cadastro inválido.");
     const campos = item as Record<string, unknown>;
-    if (Object.keys(campos).sort().join(",") !== "nome,prestador" || typeof campos.prestador !== "string" ||
-        typeof campos.nome !== "string" || !campos.nome.trim() || campos.nome.trim().length > 200) {
+    if (Object.keys(campos).sort().join(",") !== "name,provider" || typeof campos.provider !== "string" ||
+        typeof campos.name !== "string" || !campos.name.trim() || campos.name.trim().length > 200) {
       throw new Error("Cada item deve conter apenas prestador e nome (até 200 caracteres).");
     }
-    return { prestador: campos.prestador.trim(), nome: campos.nome.trim() };
+    return { provider: campos.provider.trim(), name: campos.name.trim() };
   });
 }
 
@@ -113,10 +113,10 @@ export async function prepararCadastro(itens: NomeDoPrestador[], segredo: () => 
   const resultado: NomeDoPrestador[] = [], vistos = new Set<string>();
   let segredoPendente: Promise<string> | undefined;
   for (const item of itens) {
-    const prestador = await identificarPrestador(item.prestador, () => segredoPendente ??= segredo());
+    const prestador = await identificarPrestador(item.provider, () => segredoPendente ??= segredo());
     if (vistos.has(prestador)) throw new Error("Há prestadores repetidos no arquivo.");
     vistos.add(prestador);
-    resultado.push({ prestador, nome: item.nome });
+    resultado.push({ provider: prestador, name: item.name });
   }
   return resultado;
 }

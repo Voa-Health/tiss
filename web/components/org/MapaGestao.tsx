@@ -48,7 +48,7 @@ export function MapaGestao({ orgId, ligada, recarregar }: { orgId: string; ligad
         {erro && <Alert type="error" showIcon title={erro} />}
         <Typography.Text strong>Cadastro de nomes</Typography.Text>
         <Typography.Paragraph style={{ margin: 0 }}>
-          CSV com cabeçalho <Typography.Text code>prestador,nome</Typography.Text> ou JSON
+          CSV com cabeçalho <Typography.Text code>provider,name</Typography.Text> ou JSON
           com uma lista de objetos com esses campos. Cadastre nomes para código na operadora
           (codigo:…) e CPF; opcionalmente, informe CNPJ com ou sem máscara para sobrescrever
           o nome oficial do CNES. O CPF é pseudonimizado neste navegador antes do envio. Até 5000 nomes.
