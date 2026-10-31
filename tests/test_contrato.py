@@ -289,7 +289,7 @@ def _check_browser_map_contract():
         lote = tiss.parse_lote(examples.load("lote-valido"))
         lote["prestador"] = {"cpf": cpf}
         value = tiss.rejection_map([lote], segredo_pseudonimo=secret)
-        vectors.append([cpf, secret, value["prestadores"][0]["prestador"]])
+        vectors.append([cpf, secret, value["providers"][0]["provider"]])
     script = r"""
 import assert from "node:assert/strict";
 import {
@@ -301,34 +301,35 @@ for (const [cpf, secret, expected] of JSON.parse(process.argv[1])) {
   assert.equal(await identificarPrestador(cpf, async () => secret), expected);
 }
 const segredo = async () => "a".repeat(64);
-const csv = 'prestador,nome\n000.000.000-00,"Clínica, Sintética"\n' +
+const csv = 'provider,name\n000.000.000-00,"Clínica, Sintética"\n' +
   '00.000.000/0000-00,Hospital\ncodigo: A,Centro';
 const itens = await prepararCadastro(lerCadastro(csv, false), segredo);
-assert.match(itens[0].prestador, /^cpf:hmac:[0-9a-f]{64}$/);
-assert.equal(itens[0].nome, "Clínica, Sintética");
-assert.equal(itens[1].prestador, "cnpj:00000000000000");
-assert.equal(itens[2].prestador, "codigo:A");
+assert.match(itens[0].provider, /^cpf:hmac:[0-9a-f]{64}$/);
+assert.equal(itens[0].name, "Clínica, Sintética");
+assert.equal(itens[1].provider, "cnpj:00000000000000");
+assert.equal(itens[2].provider, "codigo:A");
 assert.deepEqual(lerCadastro("[]", true), []);
 assert.deepEqual(await prepararCadastro([], segredo), []);
 for (const body of [
-  '[{"prestador":"A","nome":"X","extra":1}]', '[{"prestador":"A","nome":""}]', '{}',
+  '[{"provider":"A","name":"X","extra":1}]', '[{"provider":"A","name":""}]', '{}',
 ]) {
   assert.throws(() => lerCadastro(body, true));
 }
-assert.throws(() => lerCadastro('prestador,nome\n"incompleto', false));
-assert.throws(() => lerCadastro('nome,prestador\nA,X', false));
-await assert.rejects(() => prepararCadastro([{prestador:"cpf:abc",nome:"X"}], segredo));
+assert.throws(() => lerCadastro('provider,name\n"incompleto', false));
+assert.throws(() => lerCadastro('name,provider\nA,X', false));
+await assert.rejects(() => prepararCadastro([{provider:"cpf:abc",name:"X"}], segredo));
 await assert.rejects(() => prepararCadastro(
-  [{prestador:"00000000000",nome:"X"}], async () => {throw Error("indisponível")},
+  [{provider:"00000000000",name:"X"}], async () => {throw Error("indisponível")},
 ));
 await assert.rejects(() => prepararCadastro(
-  [{prestador:"A",nome:"X"},{prestador:"codigo:A",nome:"Y"}], segredo,
+  [{provider:"A",name:"X"},{provider:"codigo:A",name:"Y"}], segredo,
 ));
-const prestador = {id:"codigo:A",nome:null,nome_origem:null};
+const prestador = {id:"codigo:A",name:null,name_source:null};
 const linha = {
-  prestador, mes:"2026-10", codigo:"X", glosa:null, rule_id:null, guias:2, valor_afetado:"0.10",
+  provider:prestador, month:"2026-10", code:"X", glosa:null, rule_id:null,
+  guias:2, affected_amount:"0.10",
 };
-const matriz = matrizDoMapa([linha,{...linha,valor_afetado:"0.20"},{...linha,mes:null}]);
+const matriz = matrizDoMapa([linha,{...linha,affected_amount:"0.20"},{...linha,month:null}]);
 assert.deepEqual(matriz.meses, ["2026-10","sem mês"]);
 assert.deepEqual(matriz.linhas[0].total, {guias:6,centavos:40});
 assert.deepEqual(matrizDoMapa([]), {meses:[],linhas:[]});

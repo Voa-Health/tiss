@@ -1,5 +1,10 @@
 # Registro de alterações
 
+## Unreleased
+
+- **Breaking:** o contrato JSON do mapa de rejeição passa a usar chaves em inglês
+  e `version: "2"`; consumidores devem atualizar e não há aliases para a versão 1.
+
 ## 0.5.0
 
 - Regras `padrao` usam RE2 com casamento `fullmatch` em tempo linear e rejeitam

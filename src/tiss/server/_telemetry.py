@@ -142,9 +142,9 @@ def operation_event(
         if isinstance(item, dict) and item.get("code")
     }
     codes.update(
-        str(item["codigo"])
-        for item in result.get("linhas", [])
-        if isinstance(item, dict) and item.get("codigo")
+        str(item["code"])
+        for item in result.get("rows", [])
+        if isinstance(item, dict) and item.get("code")
     )
     properties = {
         "operacao": operation,

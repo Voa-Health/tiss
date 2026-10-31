@@ -317,6 +317,11 @@ podem ler para enviar uma chave de acesso.
 
 O mapa de rejeição hospedado é uma coleta separada, opt-in e desligada por padrão.
 Quando habilitado no `/org`, envia somente agregados por prestador, código, regra e mês.
+O payload do mapa usa a versão `"2"` e chaves em inglês; aceite apenas `version: "2"`.
+Essa quebra evita compatibilidade ambígua entre os contratos antigos e novos.
+O payload contém `version`, `lotes`, `guias`, `ignored`, `providers` e `rows`;
+as linhas usam `provider`, `month`, `code`, `glosa`, `rule_id`, `guias` e
+`affected_amount`. Os resumos usam `guias_with_finding` e `total_amount`.
 O CPF é pseudonimizado com HMAC e segredo próprio da organização antes de sair do cliente;
 o CNPJ permanece em claro, e o código do prestador na operadora tem preferência.
 A retenção é de 24 meses, e a organização pode desligar a coleta e apagar tudo no `/org`.
