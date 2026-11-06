@@ -91,7 +91,7 @@ function EscolhaDeOrg({ orgs }: { orgs: EstadoDaOrg[] }) {
 
 function SemOrgNaUrl({ nova }: { nova: boolean }) {
   const router = useRouter();
-  const catalogo = useRecurso<CatalogoDeOrgs>("me/tiss/organizations/");
+  const catalogo = useRecurso<CatalogoDeOrgs>("me/tiss/organization/");
   const prontas = catalogo.dados?.organizations.filter(pronta) ?? [];
   const unica = !nova && prontas.length === 1 ? prontas[0].id : null;
 
@@ -107,7 +107,7 @@ function SemOrgNaUrl({ nova }: { nova: boolean }) {
 }
 
 function NaOrg({ orgId, secao: pedida, painel, pacotes }: { orgId: string; secao?: string; painel: boolean; pacotes: PacoteDeRegras[] }) {
-  const catalogo = useRecurso<CatalogoDeOrgs>("me/tiss/organizations/");
+  const catalogo = useRecurso<CatalogoDeOrgs>("me/tiss/organization/");
   const atual = useRecurso<EstadoDaOrg>(`org/${orgId}/tiss/`);
 
   if (catalogo.erro?.status === 401 || atual.erro?.status === 401) return <OrgLogin aviso="Entre novamente." />;

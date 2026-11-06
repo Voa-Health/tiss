@@ -17,8 +17,8 @@ function nomeDaRegra(regra: RegraTiss): string {
 export function RulesSection({ org }: { org: EstadoDaOrg }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const estado = useRecurso<EstadoDasRegras>(`org/${org.id}/tiss/rules/`);
-  const versoes = useRecurso<VersoesDasRegras>(`org/${org.id}/tiss/rules/versions/`);
+  const estado = useRecurso<EstadoDasRegras>(`org/${org.id}/tiss/rule/`);
+  const versoes = useRecurso<VersoesDasRegras>(`org/${org.id}/tiss/rule/version/`);
   const [publicando, setPublicando] = useState(false);
   const [buscandoLink, setBuscandoLink] = useState(false);
   const [link, setLink] = useState<ReturnType<typeof montarLinkOficial> | null>(null);
@@ -41,7 +41,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
   async function publicar() {
     setPublicando(true);
     try {
-      await pedir(`org/${org.id}/tiss/rules/publish/`, { method: "POST" });
+      await pedir(`org/${org.id}/tiss/rule/publish/`, { method: "POST" });
       message.success("Versão publicada.");
       estado.recarregar();
       versoes.recarregar();
@@ -57,7 +57,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
     setBuscandoLink(true);
     try {
       const dados = await pedir<PayloadDoLinkOficial>(
-        `org/${org.id}/tiss/rules/official-pr/?version=${pacote.published.version}`,
+        `org/${org.id}/tiss/rule/official-pr/?version=${pacote.published.version}`,
       );
       setLink(montarLinkOficial(dados));
     } catch (erro) {
@@ -190,7 +190,7 @@ export function RulesSection({ org }: { org: EstadoDaOrg }) {
 
         <Card title="Versões publicadas">
           <List
-            dataSource={versoes.dados?.items ?? []}
+            dataSource={versoes.dados?.results ?? []}
             locale={{ emptyText: "Nenhuma versão publicada." }}
             renderItem={(versao) => (
               <List.Item key={versao.id}>

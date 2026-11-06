@@ -213,7 +213,7 @@ export function Onboarding({
         accept_terms_version: catalogo.terms_version,
       };
       const org = nova
-        ? await pedir<EstadoDaOrg>("me/tiss/organizations/", { method: "POST", body: { name: valores.name, ...identidade } })
+        ? await pedir<EstadoDaOrg>("me/tiss/organization/", { method: "POST", body: { name: valores.name, ...identidade } })
         : await pedir<EstadoDaOrg>(`org/${valores.destino}/tiss/onboard/`, { method: "POST", body: identidade });
       abrirDeNovo(hrefDaOrg(org.id, "visao"));
     } catch (motivo) {

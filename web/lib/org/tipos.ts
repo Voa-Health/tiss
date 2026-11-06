@@ -8,6 +8,9 @@ export type Cobranca = {
   billing_url: string;
 };
 
+/** Uma página de lista do backend (`results`, `count`, `next`, `previous`). */
+export type Pagina<T> = { count: number; next: string | null; previous: string | null; results: T[] };
+
 export type Fatura = {
   id: string | null;
   number: string | null;
