@@ -1,3 +1,5 @@
+"""Resolve o acesso OAuth a dados abertos pelo backend Voa."""
+
 from __future__ import annotations
 
 import hashlib

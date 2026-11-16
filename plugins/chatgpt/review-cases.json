@@ -22,13 +22,13 @@
       },
       {
         "description": "Consulta pública de rede hospitalar.",
-        "prompt": "Consulte a rede hospitalar de São Paulo, SP.",
-        "tools_triggered": "tiss_rede",
-        "expected_behavior": "Apresenta os estabelecimentos públicos retornados e limitações de cobertura."
+        "prompt": "Encontre uma operadora com sede em Porto Alegre e liste a rede hospitalar dela no RS.",
+        "tools_triggered": "operadora_lookup, operadora_rede",
+        "expected_behavior": "Busca operadoras com sede em Porto Alegre, escolhe uma identificada pelo cadastro público e consulta seus estabelecimentos no RS, informando qual operadora foi escolhida e as limitações de cobertura."
       },
       {
         "description": "Valores estatísticos por código TUSS.",
-        "prompt": "Consulte a referência D-TISS para o código TUSS 10101012.",
+        "prompt": "Consulte a referência D-TISS para o código TUSS 10101012 em SP.",
         "tools_triggered": "tiss_referencia",
         "expected_behavior": "Informa os valores de referência e recortes disponíveis, sem tratá-los como preço contratado."
       }

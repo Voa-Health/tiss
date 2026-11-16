@@ -20,7 +20,7 @@ Use apenas estas ferramentas:
 - `operadora_lookup`: buscar cadastro público de operadoras.
 - `operadora_perfil`: consultar perfil e indicadores públicos da operadora.
 - `operadora_rede`: consultar rede hospitalar da operadora.
-- `tiss_rede`: consultar rede hospitalar por localização.
+- `tiss_rede`: consultar operadoras vinculadas ao CNPJ ou CNES de um estabelecimento.
 - `tiss_referencia`: consultar valores D-TISS de referência por código TUSS.
 - `buscar_docs`: consultar documentação e regras publicadas.
 
