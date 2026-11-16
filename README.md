@@ -118,7 +118,7 @@ que foi cobrado. Para testar sem operadora real, use a
   auditoria, demonstrativos, TUSS, operadoras, rede hospitalar e referência D-TISS.
 - **[API HTTP](#api-http)**: as mesmas operações em
   `https://tiss-api.voa.health`, com [OpenAPI](https://tiss-api.voa.health/openapi.json).
-- **[MCP remoto](#conectar-agentes)**: 25 ferramentas e 3 prompts para agentes,
+- **[MCP remoto](#conectar-agentes)**: 26 ferramentas e 3 prompts para agentes,
   no [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss).
 - **[Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)**: envie
   lotes e receba protocolo, demonstrativo e glosas sem tocar em produção.
@@ -210,6 +210,19 @@ Para usar o serviço remoto:
 ```
 
 </details>
+
+### ChatGPT: dados abertos
+
+No ChatGPT, conecte `https://tiss-api.voa.health/mcp/open-data` e autorize
+o acesso com sua conta Voa via OAuth (escopo `voa:tiss`).
+O pacote está em [plugins/chatgpt](plugins/chatgpt).
+
+Esse endpoint oferece apenas 11 ferramentas: `tuss_lookup`, `tuss_search`,
+`tiss_dominio`, `glosa_explain`, `tiss_sadt_catalog`, `operadora_lookup`,
+`operadora_perfil`, `operadora_rede`, `tiss_rede`, `tiss_referencia` e
+`buscar_docs`. Não recebe dados de beneficiário nem valida guias reais.
+Valores D-TISS são referências estatísticas, não preços contratados.
+O endpoint `/mcp` oferece as 26 ferramentas e 3 prompts.
 
 ### Privacidade
 

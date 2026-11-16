@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "tiss": {
+      "type": "streamable-http",
+      "url": "https://tiss-api.voa.health/mcp/open-data",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "oauth",
+            "client": {"mode": "cimd"},
+            "baseScopes": ["voa:tiss"]
+          }
+        }
+      }
+    }
+  }
+}
