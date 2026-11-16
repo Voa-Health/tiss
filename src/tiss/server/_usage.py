@@ -27,7 +27,7 @@ _worker: threading.Thread | None = None
 def record(access: Access, operation: str, kind: str, occurred_at: dt.datetime) -> None:
     """Enfileire o evento da chamada; o envio acontece fora da resposta."""
     global _worker  # noqa: PLW0603
-    if not configured():
+    if not access.key_id or not configured():
         return
     event: dict[str, object] = {
         "source_event_id": uuid.uuid4().hex,

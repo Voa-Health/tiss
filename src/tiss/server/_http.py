@@ -5,10 +5,11 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import re
 import time
 from collections.abc import AsyncIterator, Callable
-from contextlib import AbstractAsyncContextManager, asynccontextmanager
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -20,11 +21,13 @@ from starlette.types import Receive, Scope, Send
 import tiss
 
 from ._context import CURRENT_CONTEXT, CallContext
-from ._keys import KEYS_URL, LIMITS, authenticate, bearer_key
+from ._keys import KEY_PREFIXES, KEYS_URL, LIMITS, authenticate, bearer_key
 from ._mcp import create_mcp
+from ._oauth import resolve as resolve_oauth
 from ._ops import OPS, call
 from ._quota import seconds_until_reset
 from ._rejection_map_http import register_rejection_map
+from ._service import ServiceError, configured
 from ._waitlist import register_waitlist
 
 _logger = logging.getLogger("tiss.server")
@@ -51,10 +54,12 @@ class _MCPApp:
         await self.manager.handle_request(scope, receive, send)
 
 
-def _lifespan(manager: Any) -> Callable[[FastAPI], AbstractAsyncContextManager[None]]:
+def _lifespan(*managers: Any) -> Callable[[FastAPI], AbstractAsyncContextManager[None]]:
     @asynccontextmanager
     async def run(_: FastAPI) -> AsyncIterator[None]:
-        async with manager.run():
+        async with AsyncExitStack() as stack:
+            for manager in managers:
+                await stack.enter_async_context(manager.run())
             yield
 
     return run
@@ -112,9 +117,25 @@ def _client_ip(request: Request) -> str:
 async def _request_context(request: Request, call_next: Any) -> Any:
     header = request.headers.get("authorization")
     status, access = await asyncio.to_thread(authenticate, header)
+    open_data = request.url.path == "/mcp/open-data"
+    if open_data and configured() and not bearer_key(header).startswith(KEY_PREFIXES):
+        try:
+            access = await asyncio.to_thread(resolve_oauth, bearer_key(header))
+            status = 200 if access is not None else _HTTP_UNAUTHORIZED
+        except ServiceError:
+            status = _HTTP_SERVICE_UNAVAILABLE
     if status == _HTTP_UNAUTHORIZED:
         _logger.info("op=auth status=401 ms=0.0")
-        return JSONResponse(_INVALID_KEY, status_code=status)
+        headers = None
+        if open_data:
+            metadata = (
+                os.environ["TISS_BACKEND_URL"].rstrip("/")
+                + "/.well-known/oauth-protected-resource/tiss"
+            )
+            headers = {
+                "WWW-Authenticate": f'Bearer resource_metadata="{metadata}", scope="voa:tiss"'
+            }
+        return JSONResponse(_INVALID_KEY, status_code=status, headers=headers)
     if status == _HTTP_SERVICE_UNAVAILABLE:
         _logger.info("op=auth status=503 ms=0.0")
         return JSONResponse(_KEYS_UNAVAILABLE, status_code=status, headers={"Retry-After": "1"})
@@ -261,11 +282,12 @@ def create_app() -> FastAPI:
     """Crie a aplicação HTTP e MCP."""
     _quiet_external_loggers()
     mcp_manager, _ = create_mcp()
+    open_data_manager, _ = create_mcp(open_data=True)
     app = FastAPI(
         title="tiss",
         description="API HTTP e MCP para documentos TISS.",
         version=tiss.__version__,
-        lifespan=_lifespan(mcp_manager),
+        lifespan=_lifespan(mcp_manager, open_data_manager),
     )
     app.middleware("http")(_request_context)
     _register_ops(app)
@@ -273,6 +295,9 @@ def create_app() -> FastAPI:
     register_rejection_map(app)
     app.add_api_route("/v1/limits", _limits, methods=["GET"], name="limits")
     app.router.routes.append(Route("/mcp", _MCPApp(mcp_manager), methods=["GET", "POST", "DELETE"]))
+    app.router.routes.append(
+        Route("/mcp/open-data", _MCPApp(open_data_manager), methods=["GET", "POST", "DELETE"])
+    )
     return app
 
 

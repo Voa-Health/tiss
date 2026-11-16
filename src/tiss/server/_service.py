@@ -13,6 +13,7 @@ from .._requisicao_segura import abrir
 
 Transport = Callable[[str, dict[str, Any]], Any]
 _transport: Transport | None = None
+_get_transport: Callable[[str, str], Any] | None = None
 _HTTP_UNAVAILABLE = 503
 
 
@@ -55,4 +56,34 @@ def post(path: str, body: dict[str, Any]) -> Any:
         raise ServiceError(_HTTP_UNAVAILABLE) from None
 
 
-__all__ = ["ServiceError", "Transport", "configured", "post", "set_transport"]
+def set_get_transport(transport: Callable[[str, str], Any] | None) -> None:
+    global _get_transport  # noqa: PLW0603
+    _get_transport = transport
+
+
+def get(path: str, token: str) -> Any:
+    if _get_transport is not None:
+        return _get_transport(path, token)
+    request = urllib.request.Request(
+        f"{os.environ['TISS_BACKEND_URL'].rstrip('/')}{path}",
+        headers={"Accept": "application/json", "Authorization": f"Bearer {token}"},
+        method="GET",
+    )
+    try:
+        with abrir(request, timeout=3) as response:
+            return json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        raise ServiceError(exc.code) from None
+    except (OSError, ValueError, KeyError):
+        raise ServiceError(_HTTP_UNAVAILABLE) from None
+
+
+__all__ = [
+    "ServiceError",
+    "Transport",
+    "configured",
+    "get",
+    "post",
+    "set_get_transport",
+    "set_transport",
+]
