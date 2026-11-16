@@ -127,11 +127,9 @@ async def _request_context(request: Request, call_next: Any) -> Any:
     if status == _HTTP_UNAUTHORIZED:
         _logger.info("op=auth status=401 ms=0.0")
         headers = None
-        if open_data:
-            metadata = (
-                os.environ["TISS_BACKEND_URL"].rstrip("/")
-                + "/.well-known/oauth-protected-resource/tiss"
-            )
+        backend_url = os.environ.get("TISS_BACKEND_URL")
+        if open_data and backend_url:
+            metadata = backend_url.rstrip("/") + "/.well-known/oauth-protected-resource/tiss"
             headers = {
                 "WWW-Authenticate": f'Bearer resource_metadata="{metadata}", scope="voa:tiss"'
             }

@@ -1048,6 +1048,13 @@ def _assert_redirect_handler_rejects_other_origins():
 
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
     """Verifica chaves, escopos, uso, níveis, telemetria e privacidade dos logs."""
+    with monkeypatch.context() as context:
+        context.delenv("TISS_BACKEND_URL", raising=False)
+        context.setattr("tiss.server._http.authenticate", lambda header: (HTTP_UNAUTHORIZED, None))
+        with TestClient(create_app()) as client:
+            response = client.post("/mcp/open-data")
+            assert response.status_code == HTTP_UNAUTHORIZED
+            assert "www-authenticate" not in response.headers
     for path in ["/mcp", "/mcp/open-data"]:
         with monkeypatch.context() as context:
             _check_open_data_contract(path, context)
