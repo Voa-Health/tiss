@@ -1055,6 +1055,10 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
             response = client.post("/mcp/open-data")
             assert response.status_code == HTTP_UNAUTHORIZED
             assert "www-authenticate" not in response.headers
+            challenge = client.get("/.well-known/openai-apps-challenge")
+            assert challenge.status_code == HTTP_OK
+            assert challenge.text == "xYqs1EKAzE2JZx4ugObYkpi3vkRByO8SgrMWHzoSj1c"
+            assert challenge.headers["content-type"] == "text/plain; charset=utf-8"
     for path in ["/mcp", "/mcp/open-data"]:
         with monkeypatch.context() as context:
             _check_open_data_contract(path, context)

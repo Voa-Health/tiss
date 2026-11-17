@@ -43,19 +43,81 @@ from tiss.codes import CODES
 
 def _check_chatgpt_package() -> None:
     package = ROOT / "plugins/chatgpt"
-    cases = json.loads((package / "review-cases.json").read_text())
-    assert cases["commerce"] is False
-    assert cases["demo_recording_url"] == ""
+    manifest = json.loads((package / "plugin.json").read_text())
+    openai = manifest["extensions"]["com.openai"]
+    review = openai["review"]
+    assert set(review) == {"commerce", "test_cases"}
+    assert review["commerce"] is False
+    cases = review["test_cases"]
     for kind, count in [("positive", 5), ("negative", 3)]:
-        assert len(cases["test_cases"][kind]) == count
-        for case in cases["test_cases"][kind]:
+        assert len(cases[kind]) == count
+        for case in cases[kind]:
             assert set(case) == {"description", "prompt", "tools_triggered", "expected_behavior"}
             assert all(isinstance(value, str) for value in case.values())
+            assert case["description"] and case["prompt"] and case["expected_behavior"]
+            if kind == "positive":
+                assert case["tools_triggered"]
     text = json.dumps(cases, ensure_ascii=False)
     assert not re.search(r"(?<!\d)(?:\d{11}|\d{15})(?!\d)", text)
     assert not re.search(r"\b(?:CPF|CNS|carteirinha)\b", text, re.IGNORECASE)
-    manifest = json.loads((package / "plugin.json").read_text())
     assert manifest["version"] == tiss.__version__
+    interface = openai["interface"]
+    assert interface["developerName"] == "Voa Health"
+    assert interface["category"] == "Healthcare"
+    assert interface["capabilities"] == []
+    assert interface["displayName"] == "Voa TISS"
+    assert interface["shortDescription"] == "Brazilian ANS open data"
+    assert interface["shortDescription"].isascii()
+    assert len(interface["displayName"]) <= 30
+    assert len(interface["shortDescription"]) <= 30
+    assert interface["longDescription"] == (
+        "Look up Brazilian ANS open data and the TUSS terminology: procedure codes, TISS domain "
+        "tables, Table 38 denial (glosa) codes, health plan operator registry, "
+        "profile and hospital network, and D-TISS reference values. For providers, "
+        "billing staff, health plans and public managers. Read-only and public data "
+        "only: it does not receive beneficiary data or validate claims. D-TISS values "
+        "are statistical references, not contracted prices."
+    )
+    assert interface["longDescription"].isascii()
+    assert len(interface["longDescription"]) <= 4000
+    assert interface["defaultPrompt"] == [
+        "Explique o código de glosa 1801 da Tabela 38.",
+        "Busque o código TUSS de ecocardiograma transtorácico.",
+        "Mostre o perfil público de uma operadora pelo registro ANS.",
+    ]
+    assert len(interface["defaultPrompt"]) <= 3
+    assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
+    assert {
+        key: interface[key]
+        for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+    } == {
+        "websiteURL": "https://tiss-api.voa.health",
+        "supportURL": "https://tiss-api.voa.health",
+        "privacyPolicyURL": "https://app.voa.health/legal/privacidade",
+        "termsOfServiceURL": "https://app.voa.health/legal/termos",
+    }
+    assert all(
+        interface[key].startswith("https://")
+        for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+    )
+    translation = openai["publication"]["translations"]["pt-BR"]
+    assert translation == {
+        "subtitle": "Dados abertos da ANS e TUSS",
+        "description": (
+            "Consulta dados abertos da ANS e a TUSS: códigos de procedimento, tabelas de domínio "
+            "TISS, códigos de glosa da Tabela 38, cadastro, perfil e rede hospitalar de operadoras "
+            "e valores de referência D-TISS. Para prestadores, faturistas, operadoras e gestores. "
+            "Só leitura e só dados públicos: não recebe dados de beneficiário nem valida guias. "
+            "Valores D-TISS são referências estatísticas, não preços contratados."
+        ),
+    }
+    assert len(translation["subtitle"]) <= 30
+    assert "\n" not in translation["subtitle"] and "\r" not in translation["subtitle"]
+    assert len(translation["description"]) <= 4000
+    assert all(
+        (package / interface[key].removeprefix("./")).is_file()
+        for key in ("logo", "logoDark", "composerIcon", "composerIconDark")
+    )
     mcp_config = json.loads((package / "mcp.json").read_text())
     assert list(mcp_config) == ["$schema", "mcpServers"]
     assert mcp_config["$schema"] == "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"

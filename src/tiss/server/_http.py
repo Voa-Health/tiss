@@ -28,6 +28,7 @@ from ._ops import OPS, call
 from ._quota import seconds_until_reset
 from ._rejection_map_http import register_rejection_map
 from ._service import ServiceError, configured
+from ._verification import openai_domain_challenge
 from ._waitlist import register_waitlist
 
 _logger = logging.getLogger("tiss.server")
@@ -115,6 +116,8 @@ def _client_ip(request: Request) -> str:
 
 
 async def _request_context(request: Request, call_next: Any) -> Any:
+    if request.url.path == "/.well-known/openai-apps-challenge" and request.method == "GET":
+        return await call_next(request)
     header = request.headers.get("authorization")
     status, access = await asyncio.to_thread(authenticate, header)
     open_data = request.url.path == "/mcp/open-data"
@@ -295,6 +298,13 @@ def create_app() -> FastAPI:
     app.router.routes.append(Route("/mcp", _MCPApp(mcp_manager), methods=["GET", "POST", "DELETE"]))
     app.router.routes.append(
         Route("/mcp/open-data", _MCPApp(open_data_manager), methods=["GET", "POST", "DELETE"])
+    )
+    app.router.routes.append(
+        Route(
+            "/.well-known/openai-apps-challenge",
+            openai_domain_challenge,
+            methods=["GET"],
+        )
     )
     return app
 
