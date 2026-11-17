@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { formatLaunchPrice, launchPriceLabel, launchPrices, moduleContent, type ModuleSlug } from "@/lib/modules";
 import { FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
 import { brl, dataCompleta } from "@/lib/org/formato";
 import type { Cobranca, Fatura, Uso } from "@/lib/org/tipos";
+import { PrecosDosProdutos, useTabelasDePrecos } from "./PrecosDosProdutos";
 import { hrefDaOrg } from "./secoes";
 
 const SITUACOES: Record<string, string> = {
@@ -20,18 +20,6 @@ const SITUACOES: Record<string, string> = {
   uncollectible: "Incobrável",
 };
 
-const COLUNAS_DE_PRECO = [
-  { title: "Módulo", dataIndex: "modulo" },
-  { title: "Preço", dataIndex: "preco" },
-  { title: "Condições", dataIndex: "nota" },
-];
-
-const PRECOS = (Object.keys(launchPrices) as ModuleSlug[]).map((chave) => ({
-  modulo: moduleContent[chave].label,
-  preco: formatLaunchPrice(launchPrices[chave]),
-  nota: launchPrices[chave].note ?? "—",
-}));
-
 export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: string; podeVer: boolean; rotuloFinanceiro: string }) {
   const { token } = theme.useToken();
   const retorno = useSearchParams().get("setup");
@@ -39,10 +27,11 @@ export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: st
   const faturas = useRecurso<Fatura[]>(podeVer ? `org/${orgId}/billing/invoices/` : null);
   const dias = new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", day: "numeric" }).format(new Date());
   const uso = useRecurso<Uso>(podeVer ? `org/${orgId}/usage/?days=${dias}` : null);
+  const tabelas = useTabelasDePrecos();
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<FalhaDoPedido | null>(null);
   const erros = [cobranca.erro, faturas.erro, erro];
-  const indisponivel = cobranca.dados?.enabled === false || erros.some((item) => item?.status === 503 && item.code === "billing_disabled");
+  const indisponivel = cobranca.dados?.enabled === false || erros.some((item) => item?.status === 503 && item.code === "BILLING_DISABLED");
 
   const cadastrar = async () => {
     setEnviando(true);
@@ -175,15 +164,7 @@ export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: st
           )}
         </Card>
       )}
-      <Card title={launchPriceLabel}>
-        <Table
-          rowKey="modulo"
-          pagination={false}
-          columns={COLUNAS_DE_PRECO}
-          scroll={{ x: 600 }}
-          dataSource={PRECOS}
-        />
-      </Card>
+      <PrecosDosProdutos tabelas={tabelas} />
     </Flex>
   );
 }
