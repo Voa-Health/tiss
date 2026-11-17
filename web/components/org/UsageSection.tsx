@@ -4,7 +4,7 @@ import { Alert, Button, Card, Col, Flex, Result, Row, Skeleton, Statistic, Table
 import type { TableColumnsType } from "antd";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useRecurso } from "@/lib/org/cliente";
-import { brl, dia, inteiro } from "@/lib/org/formato";
+import { brl, brlUnitario, dia, inteiro } from "@/lib/org/formato";
 import { NOMES_DOS_PRODUTOS, usoPorProduto, type UsoDoProduto } from "@/lib/org/produtos";
 import type { Uso } from "@/lib/org/tipos";
 import { tabelasCarregadas, useTabelasDePrecos } from "./PrecosDosProdutos";
@@ -141,7 +141,7 @@ export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: stri
     { title: "Operação", dataIndex: "label", key: "label" },
     { title: "Quantidade", dataIndex: "quantity", key: "quantity", align: "right", render: inteiro },
     { title: "Na franquia", dataIndex: "free_quantity", key: "free_quantity", align: "right", render: inteiro },
-    { title: "Preço unitário", dataIndex: "unit_price_brl", key: "unit_price_brl", align: "right", render: brl },
+    { title: "Preço unitário", dataIndex: "unit_price_brl", key: "unit_price_brl", align: "right", render: brlUnitario },
     { title: "Custo estimado", dataIndex: "estimated_cost_brl", key: "estimated_cost_brl", align: "right", render: brl },
   ];
   const colunasDeProduto: TableColumnsType<LinhaDoProduto> = [

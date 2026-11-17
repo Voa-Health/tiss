@@ -3,7 +3,7 @@
 import { Alert, Button, Card, Flex, Skeleton, Table, Tag, theme, Typography } from "antd";
 import type { TableColumnsType } from "antd";
 import { useRecurso, type Recurso } from "@/lib/org/cliente";
-import { brl, inteiro } from "@/lib/org/formato";
+import { brlUnitario, inteiro } from "@/lib/org/formato";
 import { caminhoDosPrecos, ehPago, NOMES_DOS_PRODUTOS, PRODUTOS, type ItemDePreco, type Produto, type TabelaDePrecos } from "@/lib/org/produtos";
 
 export function useTabelasDePrecos(): Record<Produto, Recurso<TabelaDePrecos>> {
@@ -24,7 +24,7 @@ const COLUNAS: TableColumnsType<ItemDePreco> = [
   {
     title: "Preço",
     key: "preco",
-    render: (_, item) => (ehPago(item) ? `${brl(item.unit_amount)} por ${item.unit}` : <Tag>Grátis</Tag>),
+    render: (_, item) => (ehPago(item) ? `${brlUnitario(item.unit_amount)} por ${item.unit}` : <Tag>Grátis</Tag>),
   },
   {
     title: "Franquia mensal",
