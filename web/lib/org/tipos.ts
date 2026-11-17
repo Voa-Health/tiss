@@ -61,13 +61,23 @@ export type CatalogoDeOrgs = {
   subtypes: Subtipo[];
 };
 
+export type Pagina<T> = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  current_page: number;
+  next_page: number | null;
+  previous_page: number | null;
+  num_pages: number;
+  results: T[];
+};
+
 export type Chave = {
   id: string;
   name: string;
   prefix: string;
   key_tip: string;
   scopes: string[];
-  environment: "production" | "sandbox";
   usage_count: number;
   last_used_at: string | null;
   created_at: string;
