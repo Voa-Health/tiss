@@ -68,7 +68,7 @@ describe("repasse do IP ao backend", () => {
   it("chamada autenticada e renovação do token levam o mesmo IP", async () => {
     respostas = [
       new Response(null, { status: 401 }),
-      Response.json({ access: "novo", refresh: "r2" }),
+      Response.json({ access_token: "novo", token_type: "Bearer", expires_in: 900, refresh_token: "r2" }),
       Response.json({ status: "ausente", nome_oficial: "" }),
     ];
     const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/api/v2/me/tiss/organizations/lookup/?cnpj=1", { method: "GET" }, extras);
