@@ -3,10 +3,11 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Alert, App, Button, Card, Flex, Form, Input, Modal, Popconfirm, Result, Table, theme, Typography } from "antd";
 import type { TableColumnsType } from "antd";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
 import { dataHora, inteiro } from "@/lib/org/formato";
+import { carregarTodosOsResultados } from "@/lib/org/paginacao";
 import type { Chave, ChaveCriada, Pagina } from "@/lib/org/tipos";
 import { docsPageUrl } from "@/lib/site";
 
@@ -41,7 +42,11 @@ function SegredoUmaVez({ chave, aoFechar }: { chave: ChaveCriada | null; aoFecha
 export function KeysSection({ orgId, podeGerenciar }: { orgId: string; podeGerenciar: boolean }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const chaves = useRecurso<Pagina<Chave>>(`org/${orgId}/product-key/`);
+  const carregarChaves = useCallback(
+    (caminho: string) => carregarTodosOsResultados<Chave>(caminho, (proximo) => pedir<Pagina<Chave>>(proximo)),
+    [],
+  );
+  const chaves = useRecurso<Chave[]>(`org/${orgId}/product-key/`, carregarChaves);
   const [form] = Form.useForm<NovaChave>();
   const [criando, setCriando] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -129,7 +134,7 @@ export function KeysSection({ orgId, podeGerenciar }: { orgId: string; podeGeren
       <Result status="error" title="Não foi possível carregar as chaves." subTitle={chaves.erro.message}
         extra={<Button onClick={chaves.recarregar}>Tentar de novo</Button>} />
     );
-  } else if (!chaves.carregando && chaves.dados?.results.length === 0) {
+  } else if (!chaves.carregando && chaves.dados?.length === 0) {
     conteudo = (
       <EmptyState
         title="Nenhuma chave ativa"
@@ -143,7 +148,7 @@ export function KeysSection({ orgId, podeGerenciar }: { orgId: string; podeGeren
         aria-label="Chaves da organização"
         rowKey="id"
         columns={colunas}
-        dataSource={chaves.dados?.results ?? []}
+        dataSource={chaves.dados ?? []}
         loading={chaves.carregando}
         pagination={false}
         scroll={{ x: 820 }}
@@ -154,7 +159,7 @@ export function KeysSection({ orgId, podeGerenciar }: { orgId: string; podeGeren
   return (
     <Card
       title="Chaves de acesso"
-      extra={chaves.dados?.results.length ? botaoCriar : null}
+      extra={chaves.dados?.length ? botaoCriar : null}
       styles={{ body: { display: "flex", flexDirection: "column", gap: token.margin } }}
     >
       {!podeGerenciar && (
