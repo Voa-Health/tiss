@@ -45,7 +45,7 @@ export type EstadoDasRegras = {
   diff: DiffTiss | null;
 };
 
-export type VersoesDasRegras = { items: PacoteTiss[] };
+export type VersoesDasRegras = { results: PacoteTiss[] };
 
 export type PayloadDoLinkOficial = {
   repository: string;
@@ -96,4 +96,4 @@ export type ContaTiss = {
 };
 
 export type ListaDeAuditoria = { items: ItemDeAuditoria[] };
-export type ListaDeContas = { items: ContaTiss[] };
+export type ListaDeContas = { results: ContaTiss[] };

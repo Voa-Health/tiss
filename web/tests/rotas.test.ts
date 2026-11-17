@@ -7,10 +7,23 @@ describe("rotaPermitida", () => {
     assert.equal(rotaPermitida("me/tiss/organization/", "GET"), true);
     assert.equal(rotaPermitida("me/tiss/organization/", "POST"), true);
     assert.equal(rotaPermitida("org/org-1/tiss/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/tiss/account/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/tiss/rule/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/tiss/rule/version/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/tiss/rule/publish/", "POST"), true);
+    assert.equal(rotaPermitida("org/org-1/tiss/rule/official-pr/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/billing/invoice/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/member/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/member/area/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/member/member-1/", "PATCH"), true);
+    assert.equal(rotaPermitida("org/org-1/member/member-1/", "DELETE"), true);
+    assert.equal(rotaPermitida("org/org-1/invite/", "GET"), true);
+    assert.equal(rotaPermitida("org/org-1/invite/", "POST"), true);
+    assert.equal(rotaPermitida("org/org-1/invite/invite-1/", "DELETE"), true);
+    assert.equal(rotaPermitida("org/org-1/invite/invite-1/resend/", "POST"), true);
     assert.equal(rotaPermitida("org/org-1/product-key/", "GET"), true);
     assert.equal(rotaPermitida("org/org-1/product-key/", "POST"), true);
     assert.equal(rotaPermitida("org/org-1/product-key/chave-1/", "DELETE"), true);
-    assert.equal(rotaPermitida("org/org-1/invites/convite-1/resend/", "POST"), true);
   });
 
   it("aceita o catálogo de preços dos quatro produtos só para leitura", () => {
@@ -26,6 +39,16 @@ describe("rotaPermitida", () => {
     assert.equal(rotaPermitida("me/tiss/organizations/", "GET"), false);
     assert.equal(rotaPermitida("me/tiss/organization/lookup/", "GET"), false);
     assert.equal(rotaPermitida("org/org-1/product-keys/", "GET"), false);
+    for (const path of [
+      "org/org-1/billing/invoices/",
+      "org/org-1/members/",
+      "org/org-1/members/member-1/",
+      "org/org-1/invites/",
+      "org/org-1/tiss/accounts/",
+      "org/org-1/tiss/rules/",
+    ]) {
+      assert.equal(rotaPermitida(path, "GET"), false, path);
+    }
   });
 
   it("recusa método fora da lista e caminho sem org", () => {
