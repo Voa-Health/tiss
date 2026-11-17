@@ -56,6 +56,37 @@ def _check_chatgpt_package() -> None:
     assert not re.search(r"\b(?:CPF|CNS|carteirinha)\b", text, re.IGNORECASE)
     manifest = json.loads((package / "plugin.json").read_text())
     assert manifest["version"] == tiss.__version__
+    interface = manifest["extensions"]["com.openai"]["interface"]
+    assert interface["developerName"] == "Voa Health"
+    assert interface["category"] == "Healthcare"
+    assert interface["capabilities"] == []
+    assert len(interface["displayName"]) <= 30
+    assert len(interface["shortDescription"]) <= 30
+    assert len(interface["longDescription"]) <= 4000
+    assert interface["defaultPrompt"] == [
+        "Explique o código de glosa 1801 da Tabela 38.",
+        "Busque o código TUSS de ecocardiograma transtorácico.",
+        "Mostre o perfil público de uma operadora pelo registro ANS.",
+    ]
+    assert len(interface["defaultPrompt"]) <= 3
+    assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
+    assert {
+        key: interface[key]
+        for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+    } == {
+        "websiteURL": "https://tiss-api.voa.health",
+        "supportURL": "https://tiss-api.voa.health",
+        "privacyPolicyURL": "https://app.voa.health/legal/privacidade",
+        "termsOfServiceURL": "https://app.voa.health/legal/termos",
+    }
+    assert all(
+        interface[key].startswith("https://")
+        for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+    )
+    assert all(
+        (package / interface[key].removeprefix("./")).is_file()
+        for key in ("logo", "logoDark", "composerIcon", "composerIconDark")
+    )
     mcp_config = json.loads((package / "mcp.json").read_text())
     assert list(mcp_config) == ["$schema", "mcpServers"]
     assert mcp_config["$schema"] == "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"

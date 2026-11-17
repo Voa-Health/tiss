@@ -11,12 +11,27 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "tiss",
+        "displayName": "Voa TISS",
         "shortDescription": "Dados abertos da ANS e TUSS",
+        "longDescription": "Consulta dados abertos da ANS e a TUSS: códigos de procedimento, tabelas de domínio TISS, códigos de glosa da Tabela 38, cadastro, perfil e rede hospitalar de operadoras e valores de referência D-TISS. Para prestadores, faturistas, operadoras e gestores. Só leitura e só dados públicos: não recebe dados de beneficiário nem valida guias. Valores D-TISS são referências estatísticas, não preços contratados.",
         "developerName": "Voa Health",
-        "category": "Developer tools",
+        "category": "Healthcare",
+        "capabilities": [],
         "websiteURL": "https://tiss-api.voa.health",
-        "defaultPrompt": "Consulte TUSS, domínios TISS, glosas da Tabela 38, operadoras, rede hospitalar e valores D-TISS de referência. Use somente dados públicos, sem dados de beneficiário."
+        "supportURL": "https://tiss-api.voa.health",
+        "privacyPolicyURL": "https://app.voa.health/legal/privacidade",
+        "termsOfServiceURL": "https://app.voa.health/legal/termos",
+        "defaultPrompt": [
+          "Explique o código de glosa 1801 da Tabela 38.",
+          "Busque o código TUSS de ecocardiograma transtorácico.",
+          "Mostre o perfil público de uma operadora pelo registro ANS."
+        ],
+        "brandColor": "#8236FF",
+        "brandColorDark": "#A06AFF",
+        "logo": "./assets/voa-icon.png",
+        "logoDark": "./assets/voa-icon-dark.png",
+        "composerIcon": "./assets/voa-icon.png",
+        "composerIconDark": "./assets/voa-icon-dark.png"
       }
     }
   }
