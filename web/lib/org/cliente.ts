@@ -59,8 +59,13 @@ export type Recurso<T> = {
 };
 
 type Resultado<T> = { chave: string; dados: T | null; erro: FalhaDoPedido | null };
+type Carregador<T> = (caminho: string) => Promise<T>;
 
-export function useRecurso<T>(caminho: string | null): Recurso<T> {
+function carregarComPedida<T>(caminho: string): Promise<T> {
+  return pedir<T>(caminho);
+}
+
+export function useRecurso<T>(caminho: string | null, carregar: Carregador<T> = carregarComPedida<T>): Recurso<T> {
   const [versao, setVersao] = useState(0);
   const [resultado, setResultado] = useState<Resultado<T>>({ chave: "", dados: null, erro: null });
   const chave = caminho ? `${caminho}#${versao}` : "";
@@ -68,7 +73,7 @@ export function useRecurso<T>(caminho: string | null): Recurso<T> {
   useEffect(() => {
     if (!caminho) return;
     let vivo = true;
-    pedir<T>(caminho)
+    carregar(caminho)
       .then((dados) => vivo && setResultado({ chave, dados, erro: null }))
       .catch((motivo: unknown) => {
         if (!vivo) return;
@@ -78,7 +83,7 @@ export function useRecurso<T>(caminho: string | null): Recurso<T> {
     return () => {
       vivo = false;
     };
-  }, [caminho, chave]);
+  }, [caminho, chave, carregar]);
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
   const carregando = Boolean(caminho) && resultado.chave !== chave;
