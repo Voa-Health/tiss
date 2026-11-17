@@ -22,6 +22,7 @@ from mcp.types import (
     ResourceTemplate,
     TextContent,
     Tool,
+    ToolAnnotations,
 )
 from pydantic import AnyUrl
 
@@ -54,6 +55,11 @@ OPEN_DATA_TOOLS = frozenset(
         "tiss_referencia",
         "buscar_docs",
     }
+)
+_READ_ONLY_ANNOTATIONS = ToolAnnotations(
+    readOnlyHint=True,
+    destructiveHint=False,
+    openWorldHint=False,
 )
 OPEN_DATA_RESOURCES = frozenset(
     {
@@ -252,6 +258,9 @@ def create_server(
                     description=op.description,
                     inputSchema=op.input_schema,
                     outputSchema=op.output_schema,
+                    annotations=(
+                        _READ_ONLY_ANNOTATIONS if op.tool_name in OPEN_DATA_TOOLS else None
+                    ),
                 )
             )
         return tools
