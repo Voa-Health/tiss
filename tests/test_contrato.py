@@ -56,7 +56,10 @@ def _check_chatgpt_package() -> None:
     assert not re.search(r"\b(?:CPF|CNS|carteirinha)\b", text, re.IGNORECASE)
     manifest = json.loads((package / "plugin.json").read_text())
     assert manifest["version"] == tiss.__version__
-    server = json.loads((package / "mcp.json").read_text())["mcpServers"]["tiss"]
+    mcp_config = json.loads((package / "mcp.json").read_text())
+    assert list(mcp_config) == ["$schema", "mcpServers"]
+    assert mcp_config["$schema"] == "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+    server = mcp_config["mcpServers"]["tiss"]
     assert server["url"] == "https://tiss-api.voa.health/mcp/open-data"
     assert server["extensions"]["com.openai"]["auth"] == {
         "type": "oauth",
