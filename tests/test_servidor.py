@@ -1171,6 +1171,8 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
             response = client.post(route, json=body, headers=headers)
             assert response.status_code == status, (headers, route, used)
             assert (status == HTTP_TOO_MANY) == ("retry-after" in response.headers)
+            if status == HTTP_TOO_MANY:
+                assert response.json()["erro"]["link"] == "https://tiss-api.voa.health/org"
         requests: list[Any] = []
 
         def redis(request: Any, timeout: float) -> io.BytesIO:
@@ -1806,11 +1808,16 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         "cloud_free_remaining": 0,
     }
     payment_required = {
-        "code": "payment_required",
-        "detail": "Cadastre uma forma de pagamento para usar este módulo.",
-        "billing_url": billing["billing_url"],
+        "code": 10190002,
+        "error_name": "PAYMENT_REQUIRED",
+        "error": "Cadastre uma forma de pagamento para usar este módulo.",
+        "status": HTTP_PAYMENT_REQUIRED,
+        "metadata": {"billing_url": billing["billing_url"]},
     }
-    default_url = {**payment_required, "billing_url": _keys.BILLING_URL}
+    default_url = {
+        **payment_required,
+        "metadata": {"billing_url": "https://tiss-api.voa.health/org"},
+    }
     assert {
         "tiss_cloud_guia",
         "tiss_extractor",
@@ -1818,6 +1825,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         "tiss_accounts_review",
         "tiss_authorization",
     } == PAID_KINDS
+    assert {op.usage_kind for op in OPS} <= PAID_KINDS | {_usage.API_CALL}
     cases = [
         ("tiss_extractor", billing, HTTP_PAYMENT_REQUIRED, payment_required),
         ("tiss_appeal", {**billing, "billing_url": None}, HTTP_PAYMENT_REQUIRED, default_url),

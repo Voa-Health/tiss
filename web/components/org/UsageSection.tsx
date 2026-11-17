@@ -5,12 +5,15 @@ import type { TableColumnsType } from "antd";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useRecurso } from "@/lib/org/cliente";
 import { brl, dia, inteiro } from "@/lib/org/formato";
+import { NOMES_DOS_PRODUTOS, usoPorProduto, type UsoDoProduto } from "@/lib/org/produtos";
 import type { Uso } from "@/lib/org/tipos";
+import { tabelasCarregadas, useTabelasDePrecos } from "./PrecosDosProdutos";
 
 const DIAS = 30;
 const GRATIS = "__gratis";
 
 type Serie = { chave: string; rotulo: string; cor: string };
+type LinhaDoProduto = { chave: string; nome: string; quantidade: number; custo: string | number; children?: LinhaDoProduto[] };
 type LinhaDaChave = { key_id: string; name: string; prefix: string; revoked: boolean; cobradas: number; gratis: number };
 
 function diasDoPeriodo(fim: string | null): string[] {
@@ -85,9 +88,25 @@ function linhasPorChave(uso: Uso): LinhaDaChave[] {
   return [...linhas.values()].sort((a, b) => b.cobradas + b.gratis - (a.cobradas + a.gratis));
 }
 
+function linhasPorProduto(grupos: UsoDoProduto[]): LinhaDoProduto[] {
+  return grupos.map((grupo) => ({
+    chave: grupo.produto,
+    nome: NOMES_DOS_PRODUTOS[grupo.produto],
+    quantidade: grupo.quantidade,
+    custo: grupo.custo,
+    children: grupo.kinds.map((item) => ({
+      chave: `${grupo.produto}:${item.kind}`,
+      nome: item.label,
+      quantidade: item.quantity,
+      custo: item.estimated_cost_brl,
+    })),
+  }));
+}
+
 export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: string; podeVer: boolean; rotuloFinanceiro: string }) {
   const { token } = theme.useToken();
   const uso = useRecurso<Uso>(podeVer ? `org/${orgId}/usage/?days=${DIAS}` : null);
+  const tabelas = useTabelasDePrecos();
 
   if (!podeVer) {
     return (
@@ -114,7 +133,8 @@ export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: stri
     { chave: GRATIS, rotulo: "Operações grátis", cor: token.colorTextQuaternary },
   ];
   const cobradas = dados.by_operation.reduce((soma, item) => soma + item.quantity, 0);
-  const guiasGratis = dados.by_operation.reduce((soma, item) => soma + item.free_quantity, 0);
+  const naFranquia = dados.by_operation.reduce((soma, item) => soma + item.free_quantity, 0);
+  const porProduto = linhasPorProduto(usoPorProduto(dados.by_operation, tabelasCarregadas(tabelas)));
   const vazio = cobradas === 0 && dados.free_calls.total === 0;
 
   const colunasDeOperacao: TableColumnsType<Uso["by_operation"][number]> = [
@@ -123,6 +143,11 @@ export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: stri
     { title: "Na franquia", dataIndex: "free_quantity", key: "free_quantity", align: "right", render: inteiro },
     { title: "Preço unitário", dataIndex: "unit_price_brl", key: "unit_price_brl", align: "right", render: brl },
     { title: "Custo estimado", dataIndex: "estimated_cost_brl", key: "estimated_cost_brl", align: "right", render: brl },
+  ];
+  const colunasDeProduto: TableColumnsType<LinhaDoProduto> = [
+    { title: "Produto", dataIndex: "nome", key: "nome" },
+    { title: "Quantidade", dataIndex: "quantidade", key: "quantidade", align: "right", render: inteiro },
+    { title: "Custo estimado", dataIndex: "custo", key: "custo", align: "right", render: brl },
   ];
   const colunasGratis: TableColumnsType<Uso["free_calls"]["by_operation"][number]> = [
     { title: "Operação", dataIndex: "operation", key: "operation", render: (valor: string) => <Typography.Text code>{valor}</Typography.Text> },
@@ -150,7 +175,7 @@ export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: stri
         {[
           { titulo: `Custo estimado (${DIAS} dias)`, valor: brl(dados.estimated_total_brl) },
           { titulo: "Chamadas cobradas", valor: inteiro(cobradas) },
-          { titulo: "Guias na franquia", valor: inteiro(guiasGratis) },
+          { titulo: "Na franquia", valor: inteiro(naFranquia) },
           { titulo: "Operações grátis", valor: inteiro(dados.free_calls.total) },
         ].map((item) => (
           <Col key={item.titulo} xs={24} sm={12} xl={6}>
@@ -161,13 +186,17 @@ export function UsageSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: stri
       <Alert
         type="info"
         showIcon
-        title="O custo usa os preços de lançamento e as 1.000 guias grátis do cloud por mês. Validar, montar, hash e sandbox não são cobrados."
+        title="O custo estimado usa a tabela de preços e a franquia mensal de cada produto. Chamadas de API sem item pago não são cobradas."
       />
       {vazio ? (
         <Card><EmptyState title="Sem uso no período" description="As chamadas feitas com as chaves da organização aparecem aqui." /></Card>
       ) : (
         <>
           <GraficoPorDia uso={dados} series={series} />
+          <Card title="Por produto">
+            <Table rowKey="chave" columns={colunasDeProduto} dataSource={porProduto} pagination={false} scroll={{ x: 480 }}
+              expandable={{ defaultExpandAllRows: true }} locale={{ emptyText: "Nenhum item cobrado no período." }} />
+          </Card>
           <Card title="Por operação" styles={{ body: { display: "flex", flexDirection: "column", gap: token.margin } }}>
             <Table rowKey="kind" columns={colunasDeOperacao} dataSource={dados.by_operation} pagination={false} scroll={{ x: 640 }}
               locale={{ emptyText: "Nenhuma operação cobrada no período." }} />
