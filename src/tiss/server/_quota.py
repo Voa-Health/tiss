@@ -12,7 +12,7 @@ from typing import Any
 
 from .._requisicao_segura import abrir
 from ._context import CallContext
-from ._keys import ANONYMOUS_LIMIT, ENTERPRISE_URL, KEYS_URL, TIER_LIMITS, Access
+from ._keys import ANONYMOUS_LIMIT, KEYS_URL, TIER_LIMITS, Access
 from ._ops_schemas import Op
 from ._service import configured
 
@@ -20,6 +20,7 @@ Counter = Callable[[str, int], int]
 _counter: Counter | None = None
 _ANONYMOUS_OPERATIONS = ("sandbox_", "lista_de_espera")
 _CLOUD_GUIA = "tiss_cloud_guia"
+_PAYMENT_REQUIRED_CODE = 10190002
 
 
 def _redis(key: str, ttl: int) -> int:
@@ -77,15 +78,18 @@ def admit(
     if counter is None:
         return None
     if access is None:
-        subject, limit, link = f"ip:{ctx.client_ip}", ANONYMOUS_LIMIT, KEYS_URL
+        subject, limit = f"ip:{ctx.client_ip}", ANONYMOUS_LIMIT
     else:
-        subject, limit, link = f"org:{access.org}", TIER_LIMITS[access.tier], ENTERPRISE_URL
+        subject, limit = f"org:{access.org}", TIER_LIMITS[access.tier]
     try:
         used = counter(_key(subject), seconds_until_reset())
     except (OSError, ValueError, LookupError, TypeError):
-        return _denied(503, "cota_indisponivel", "Contagem diária indisponível.", link)
+        return _denied(503, "cota_indisponivel", "Contagem diária indisponível.", KEYS_URL)
     if used > limit:
-        return _denied(429, "limite_diario", f"Limite de {limit} chamadas por dia atingido.", link)
+        message = (
+            f"Limite de {limit} chamadas por dia atingido. Veja o uso e a cobrança no console."
+        )
+        return _denied(429, "limite_diario", message, KEYS_URL)
     return None
 
 
@@ -101,9 +105,11 @@ def payment_required(op: Op, access: Access | None) -> tuple[int, dict[str, Any]
     ):
         return None
     return 402, {
-        "code": "payment_required",
-        "detail": "Cadastre uma forma de pagamento para usar este módulo.",
-        "billing_url": billing.billing_url,
+        "code": _PAYMENT_REQUIRED_CODE,
+        "error_name": "PAYMENT_REQUIRED",
+        "error": "Cadastre uma forma de pagamento para usar este módulo.",
+        "status": 402,
+        "metadata": {"billing_url": billing.billing_url},
     }
 
 

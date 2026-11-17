@@ -4,6 +4,7 @@ const ID = String.raw`[\w-]+\/`;
 /** Caminhos de `/api/v2/` que o painel pode chamar, com os métodos de cada um. */
 const ROTAS = ([
   ["me/tiss/organization/", ["GET", "POST"]],
+  [String.raw`product\/(?:tiss|terminology|rnds|sncr)\/pricing\/`, ["GET"]],
   [`${ORG}tiss/`, ["GET"]],
   [`${ORG}tiss/onboard/`, ["POST"]],
   [`${ORG}tiss/settings/`, ["GET", "PATCH"]],

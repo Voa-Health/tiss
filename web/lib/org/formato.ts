@@ -27,9 +27,17 @@ export function dataCompleta(valor: string | null): string {
 
 const reais = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
+const reaisPorUnidade = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 4 });
+
 export function brl(valor: string | number): string {
   const numero = typeof valor === "number" ? valor : Number(valor);
   return Number.isFinite(numero) ? reais.format(numero) : String(valor);
+}
+
+/** Preço unitário com frações de centavo, como 0,005 por item. */
+export function brlUnitario(valor: string | number): string {
+  const numero = typeof valor === "number" ? valor : Number(valor);
+  return Number.isFinite(numero) ? reaisPorUnidade.format(numero) : String(valor);
 }
 
 export function inteiro(valor: number): string {

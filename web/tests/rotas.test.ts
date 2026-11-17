@@ -13,6 +13,15 @@ describe("rotaPermitida", () => {
     assert.equal(rotaPermitida("org/org-1/invites/convite-1/resend/", "POST"), true);
   });
 
+  it("aceita o catálogo de preços dos quatro produtos só para leitura", () => {
+    for (const produto of ["tiss", "terminology", "rnds", "sncr"]) {
+      assert.equal(rotaPermitida(`product/${produto}/pricing/`, "GET"), true);
+      assert.equal(rotaPermitida(`product/${produto}/pricing/`, "POST"), false);
+    }
+    assert.equal(rotaPermitida("product/outro/pricing/", "GET"), false);
+    assert.equal(rotaPermitida("product/tiss/", "GET"), false);
+  });
+
   it("recusa os nomes retirados e a busca que o backend não serve", () => {
     assert.equal(rotaPermitida("me/tiss/organizations/", "GET"), false);
     assert.equal(rotaPermitida("me/tiss/organization/lookup/", "GET"), false);

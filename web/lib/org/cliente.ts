@@ -20,19 +20,28 @@ function primeiraMensagem(valor: unknown): string {
   return "";
 }
 
+const CAMPOS_DO_ERRO = new Set(["detail", "code", "error", "error_name", "status", "metadata"]);
+
+function nomeDoErro(corpo: unknown): string | undefined {
+  if (typeof corpo !== "object" || corpo === null) return undefined;
+  if ("error_name" in corpo && typeof corpo.error_name === "string") return corpo.error_name;
+  return "code" in corpo && typeof corpo.code === "string" ? corpo.code : undefined;
+}
+
 function falha(status: number, corpo: unknown): FalhaDoPedido {
   const campos: Record<string, string> = {};
   let detalhe = "";
   if (typeof corpo === "object" && corpo !== null) {
     for (const [campo, valor] of Object.entries(corpo)) {
-      if (campo === "detail" || campo === "code") continue;
+      if (CAMPOS_DO_ERRO.has(campo)) continue;
       const mensagem = primeiraMensagem(valor);
       if (mensagem) campos[campo] = mensagem;
     }
     if ("detail" in corpo) detalhe = primeiraMensagem(corpo.detail);
+    if (!detalhe && "error" in corpo) detalhe = primeiraMensagem(corpo.error);
   }
   const mensagem = detalhe || Object.values(campos)[0] || "Não foi possível concluir. Tente de novo.";
-  const code = typeof corpo === "object" && corpo !== null && "code" in corpo && typeof corpo.code === "string" ? corpo.code : undefined;
+  const code = nomeDoErro(corpo);
   return new FalhaDoPedido(status, mensagem, campos, code);
 }
 
