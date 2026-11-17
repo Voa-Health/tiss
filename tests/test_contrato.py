@@ -7,6 +7,7 @@ import hashlib
 import http.server
 import json
 import os
+import re
 import shutil
 import socket
 import struct
@@ -38,6 +39,30 @@ from tiss._schema import (
     verify_schema_bundle,
 )
 from tiss.codes import CODES
+
+
+def _check_chatgpt_package() -> None:
+    package = ROOT / "plugins/chatgpt"
+    cases = json.loads((package / "review-cases.json").read_text())
+    assert cases["commerce"] is False
+    assert cases["demo_recording_url"] == ""
+    for kind, count in [("positive", 5), ("negative", 3)]:
+        assert len(cases["test_cases"][kind]) == count
+        for case in cases["test_cases"][kind]:
+            assert set(case) == {"description", "prompt", "tools_triggered", "expected_behavior"}
+            assert all(isinstance(value, str) for value in case.values())
+    text = json.dumps(cases, ensure_ascii=False)
+    assert not re.search(r"(?<!\d)(?:\d{11}|\d{15})(?!\d)", text)
+    assert not re.search(r"\b(?:CPF|CNS|carteirinha)\b", text, re.IGNORECASE)
+    manifest = json.loads((package / "plugin.json").read_text())
+    assert manifest["version"] == tiss.__version__
+    server = json.loads((package / "mcp.json").read_text())["mcpServers"]["tiss"]
+    assert server["url"] == "https://tiss-api.voa.health/mcp/open-data"
+    assert server["extensions"]["com.openai"]["auth"] == {
+        "type": "oauth",
+        "client": {"mode": "cimd"},
+        "baseScopes": ["voa:tiss"],
+    }
 
 
 @pytest.mark.parametrize(
@@ -207,6 +232,7 @@ def test_example_reports(name, expected, tmp_path, capsys):
 
 
 def test_public_api_and_example_contract():
+    _check_chatgpt_package()
     _check_browser_map_contract()
     assert set(tiss.__all__) == {
         "AuditContext",

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "tiss",
+  "version": "0.5.0",
+  "description": "Consultas a dados abertos da ANS e TUSS, domínios, glosas, operadoras e rede hospitalar.",
+  "author": {"name": "Voa Health", "url": "https://voa.health"},
+  "homepage": "https://tiss-api.voa.health",
+  "repository": "https://github.com/Voa-Health/tiss",
+  "license": "Apache-2.0",
+  "keywords": ["TISS", "TUSS", "glosa", "ANS"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "tiss",
+        "shortDescription": "Dados abertos da ANS e TUSS",
+        "developerName": "Voa Health",
+        "category": "Developer tools",
+        "websiteURL": "https://tiss-api.voa.health",
+        "defaultPrompt": "Consulte TUSS, domínios TISS, glosas da Tabela 38, operadoras, rede hospitalar e valores D-TISS de referência. Use somente dados públicos, sem dados de beneficiário."
+      }
+    }
+  }
+}
