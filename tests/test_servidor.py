@@ -102,6 +102,15 @@ def _check_open_data_contract(path: str, monkeypatch: pytest.MonkeyPatch) -> Non
             assert tools == json.loads((ROOT / "schemas/mcp-tools.json").read_text())
         else:
             assert {tool["name"] for tool in tools} == OPEN_DATA_TOOLS
+            assert all(
+                tool["annotations"]
+                == {
+                    "readOnlyHint": True,
+                    "destructiveHint": False,
+                    "openWorldHint": False,
+                }
+                for tool in tools
+            )
             assert request("prompts/list")["prompts"] == []
             resources = request("resources/list")["resources"]
             templates = request("resources/templates/list")["resourceTemplates"]
@@ -767,7 +776,11 @@ def test_http_mcp_parity_and_token_budgets(
             (ROOT / "schemas" / "mcp-tools.json").read_text(encoding="utf-8")
         )
         listed_tools = [
-            {key: tool[key] for key in ("name", "description", "inputSchema", "outputSchema")}
+            {
+                key: tool[key]
+                for key in ("name", "description", "inputSchema", "outputSchema", "annotations")
+                if key in tool
+            }
             for tool in tool_definitions
         ]
         assert listed_tools == tool_snapshot
