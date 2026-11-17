@@ -6,7 +6,7 @@ import type { TableColumnsType } from "antd";
 import { useState } from "react";
 import { FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
 import { dataHora } from "@/lib/org/formato";
-import type { AreaDisponivel, Convite, Membro, Membros } from "@/lib/org/tipos";
+import type { AreaDisponivel, Convite, Membro, Pagina } from "@/lib/org/tipos";
 
 const DESCRICAO_DA_AREA: Record<string, string> = {
   attendance: "Atendimento a pacientes e beneficiários.",
@@ -46,7 +46,7 @@ function EditorDeAreas({
   async function salvar() {
     setSalvando(true);
     try {
-      await pedir(`org/${orgId}/members/${membro.id}/`, { method: "PATCH", body: { areas } });
+      await pedir(`org/${orgId}/member/${membro.id}/`, { method: "PATCH", body: { areas } });
       message.success(`${membro.name || membro.email} atualizado(a).`);
       aoSalvar();
     } catch (erro) {
@@ -95,13 +95,14 @@ function EditorDeAreas({
 function ListaDeMembros({ orgId, podeGerenciar, areasDaOrg }: { orgId: string; podeGerenciar: boolean; areasDaOrg: AreaDisponivel[] }) {
   const { token } = theme.useToken();
   const { message } = App.useApp();
-  const membros = useRecurso<Membros>(`org/${orgId}/members/`);
+  const membros = useRecurso<Pagina<Membro>>(`org/${orgId}/member/`);
+  const areasDisponiveis = useRecurso<AreaDisponivel[]>(`org/${orgId}/member/area/`);
   const [editando, setEditando] = useState<Membro | null>(null);
-  const disponiveis = membros.dados?.available_areas ?? areasDaOrg;
+  const disponiveis = areasDisponiveis.dados ?? areasDaOrg;
 
   async function remover(membro: Membro) {
     try {
-      await pedir(`org/${orgId}/members/${membro.id}/`, { method: "DELETE" });
+      await pedir(`org/${orgId}/member/${membro.id}/`, { method: "DELETE" });
       message.success(`${membro.name || membro.email} removido(a).`);
       membros.recarregar();
     } catch (erro) {
@@ -167,7 +168,7 @@ function ListaDeMembros({ orgId, podeGerenciar, areasDaOrg }: { orgId: string; p
         aria-label="Membros da organização"
         rowKey="id"
         columns={colunas}
-        dataSource={membros.dados?.members ?? []}
+        dataSource={membros.dados?.results ?? []}
         loading={membros.carregando}
         pagination={false}
         scroll={{ x: 560 }}
@@ -192,11 +193,15 @@ function ListaDeMembros({ orgId, podeGerenciar, areasDaOrg }: { orgId: string; p
 
 function ListaDeConvites({ orgId, versao }: { orgId: string; versao: number }) {
   const { message } = App.useApp();
-  const convites = useRecurso<{ invites: Convite[] }>(`org/${orgId}/invites/?v=${versao}`);
+  const convites = useRecurso<Pagina<Convite>>(`org/${orgId}/invite/?v=${versao}`);
 
   async function agir(convite: Convite, acao: "resend" | "cancel") {
     try {
-      await pedir(`org/${orgId}/invites/${convite.id}/${acao}/`, { method: "POST", body: {} });
+      if (acao === "resend") {
+        await pedir(`org/${orgId}/invite/${convite.id}/resend/`, { method: "POST", body: {} });
+      } else {
+        await pedir(`org/${orgId}/invite/${convite.id}/`, { method: "DELETE" });
+      }
       message.success(acao === "resend" ? "Convite reenviado." : "Convite cancelado.");
       convites.recarregar();
     } catch (erro) {
@@ -236,7 +241,7 @@ function ListaDeConvites({ orgId, versao }: { orgId: string; versao: number }) {
       aria-label="Convites enviados"
       rowKey="id"
       columns={colunas}
-      dataSource={convites.dados?.invites ?? []}
+      dataSource={convites.dados?.results ?? []}
       loading={convites.carregando}
       pagination={false}
       scroll={{ x: 760 }}
@@ -255,7 +260,7 @@ function ConvidarMembros({ orgId, aberto, aoFechar, aoConvidar }: { orgId: strin
     if (!emails.length) return;
     setEnviando(true);
     try {
-      const resultado = await pedir<{ invites: Convite[]; already_member: string[] }>(`org/${orgId}/invites/`, {
+      const resultado = await pedir<{ invites: Convite[]; already_member: string[] }>(`org/${orgId}/invite/`, {
         method: "POST",
         body: { emails },
       });

@@ -129,8 +129,6 @@ export type Membro = {
   removable: { removable: boolean; reason: string | null };
 };
 
-export type Membros = { members: Membro[]; available_areas: AreaDisponivel[] };
-
 export type Convite = {
   id: string;
   email: string;

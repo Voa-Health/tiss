@@ -8,7 +8,7 @@ import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
 import { brl, dataCompleta } from "@/lib/org/formato";
-import type { Cobranca, Fatura, Uso } from "@/lib/org/tipos";
+import type { Cobranca, Fatura, Pagina, Uso } from "@/lib/org/tipos";
 import { PrecosDosProdutos, useTabelasDePrecos } from "./PrecosDosProdutos";
 import { hrefDaOrg } from "./secoes";
 
@@ -24,7 +24,7 @@ export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: st
   const { token } = theme.useToken();
   const retorno = useSearchParams().get("setup");
   const cobranca = useRecurso<Cobranca>(podeVer ? `org/${orgId}/billing/` : null);
-  const faturas = useRecurso<Fatura[]>(podeVer ? `org/${orgId}/billing/invoices/` : null);
+  const faturas = useRecurso<Pagina<Fatura>>(podeVer ? `org/${orgId}/billing/invoice/` : null);
   const dias = new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", day: "numeric" }).format(new Date());
   const uso = useRecurso<Uso>(podeVer ? `org/${orgId}/usage/?days=${dias}` : null);
   const tabelas = useTabelasDePrecos();
@@ -60,7 +60,7 @@ export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: st
   const descricaoDoCartao = cartao
     ? `${cartao.brand} •••• ${cartao.last4} · Validade ${String(cartao.exp_month).padStart(2, "0")}/${cartao.exp_year}`
     : "Nenhum cartão cadastrado";
-  const chaveDaFatura = (item: Fatura) => item.id ?? String(faturas.dados?.indexOf(item));
+  const chaveDaFatura = (item: Fatura) => item.id ?? String(faturas.dados?.results.indexOf(item));
   const colunasDeFatura: TableColumnsType<Fatura> = [
     { title: "Data", dataIndex: "created", render: dataCompleta },
     {
@@ -153,7 +153,7 @@ export function BillingSection({ orgId, podeVer, rotuloFinanceiro }: { orgId: st
             <Table
               rowKey={chaveDaFatura}
               columns={colunasDeFatura}
-              dataSource={faturas.dados ?? []}
+              dataSource={faturas.dados?.results ?? []}
               loading={faturas.carregando}
               scroll={{ x: 480 }}
               pagination={{ pageSize: 10 }}
