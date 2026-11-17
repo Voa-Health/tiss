@@ -18,6 +18,7 @@
     }
   },
   "rewrites": [
+    { "source": "/.well-known/openai-apps-challenge", "destination": { "service": "api" } },
     { "source": "/v1/(.*)", "destination": { "service": "api" } },
     { "source": "/mcp", "destination": { "service": "api" } },
     { "source": "/mcp/(.*)", "destination": { "service": "api" } },
