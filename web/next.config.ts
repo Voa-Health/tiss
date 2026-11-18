@@ -17,8 +17,8 @@ const nextConfig: NextConfig = {
       },
       { source: "/docs/codigos", destination: docsPageUrl("codigos"), permanent: true },
       { source: "/docs/:slug", destination: site.docsUrl, permanent: true },
-      { source: "/chaves", destination: "/org", permanent: true },
-      { source: "/entrar", destination: "/org", permanent: false },
+      { source: "/chaves", destination: "https://console.voa.health", permanent: true },
+      { source: "/entrar", destination: "https://console.voa.health", permanent: true },
     ];
   },
   ...(process.env.NODE_ENV === "development" && localApi

@@ -304,7 +304,7 @@ Consulte o [OpenAPI](https://tiss-api.voa.health/openapi.json) e o
 
 Sem chave, só as operações do sandbox respondem. Para as demais, crie a chave
 `sk_voa_` da organização, que vale para os produtos da Voa, no
-[painel da organização](https://tiss-api.voa.health/org) e envie-a em
+[console da Voa](https://console.voa.health) e envie-a em
 `Authorization: Bearer`. Não há limite diário.
 
 ```sh
@@ -329,7 +329,8 @@ nunca envia telemetria. `TISS_API_KEY` é a variável que clientes HTTP locais
 podem ler para enviar uma chave de acesso.
 
 O mapa de rejeição hospedado é uma coleta separada, opt-in e desligada por padrão.
-Quando habilitado no `/org`, envia somente agregados por prestador, código, regra e mês.
+Quando habilitado no [console da Voa](https://console.voa.health), envia somente
+agregados por prestador, código, regra e mês.
 O payload do mapa usa a versão `"2"` e chaves em inglês; aceite apenas `version: "2"`.
 Essa quebra evita compatibilidade ambígua entre os contratos antigos e novos.
 O payload contém `version`, `lotes`, `guias`, `ignored`, `providers` e `rows`;
@@ -337,7 +338,8 @@ as linhas usam `provider`, `month`, `code`, `glosa`, `rule_id`, `guias` e
 `affected_amount`. Os resumos usam `guias_with_finding` e `total_amount`.
 O CPF é pseudonimizado com HMAC e segredo próprio da organização antes de sair do cliente;
 o CNPJ permanece em claro, e o código do prestador na operadora tem preferência.
-A retenção é de 24 meses, e a organização pode desligar a coleta e apagar tudo no `/org`.
+A retenção é de 24 meses, e a organização pode desligar a coleta e apagar tudo
+no [console da Voa](https://console.voa.health).
 A telemetria anônima permanece independente e não muda com esse aceite.
 
 Na CLI, `mapa --enviar` usa `TISS_KEY` e envia ao servidor público.
