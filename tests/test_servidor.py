@@ -1172,7 +1172,7 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
             assert response.status_code == status, (headers, route, used)
             assert (status == HTTP_TOO_MANY) == ("retry-after" in response.headers)
             if status == HTTP_TOO_MANY:
-                assert response.json()["erro"]["link"] == "https://tiss-api.voa.health/org"
+                assert response.json()["erro"]["link"] == "https://console.voa.health"
         requests: list[Any] = []
 
         def redis(request: Any, timeout: float) -> io.BytesIO:
@@ -1816,7 +1816,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
     }
     default_url = {
         **payment_required,
-        "metadata": {"billing_url": "https://tiss-api.voa.health/org"},
+        "metadata": {"billing_url": "https://console.voa.health"},
     }
     assert {
         "tiss_cloud_guia",

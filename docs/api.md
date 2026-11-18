@@ -35,7 +35,7 @@ Orçamento aproximado: `ceil(tamanho UTF-8 do JSON / 4)` tokens.
 
 Sem chave, respondem `sandbox_*` e a lista de espera. As demais exigem uma chave
 `sk_voa_` da organização, que vale para os produtos da Voa, em
-`Authorization: Bearer`, criada no painel `/org`. Chaves `sk_tiss_`
+`Authorization: Bearer`, criada no [console](https://console.voa.health). Chaves `sk_tiss_`
 continuam válidas. Não há limite diário.
 Chave inválida ou revogada retorna `401`; a revogação vale em até 60 s.
 Chave sem o escopo da operação retorna `403`. Cada chamada com chave entra
