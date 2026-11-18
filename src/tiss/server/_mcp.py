@@ -95,7 +95,7 @@ _REMOTE_INSTRUCTIONS = (
     "X-Voa-Telemetry: off desativa a coleta. "
     "Sem chave, só as tools tiss_sandbox_*. As demais exigem a chave sk_voa_ da organização, "
     "que vale para os produtos da Voa, em "
-    "Authorization: Bearer, criada em https://tiss-api.voa.health/org. "
+    "Authorization: Bearer, criada em https://console.voa.health. "
     "Não há limite diário."
 )
 
