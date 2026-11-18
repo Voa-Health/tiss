@@ -20,19 +20,28 @@ function primeiraMensagem(valor: unknown): string {
   return "";
 }
 
+const CAMPOS_DO_ERRO = new Set(["detail", "code", "error", "error_name", "status", "metadata"]);
+
+function nomeDoErro(corpo: unknown): string | undefined {
+  if (typeof corpo !== "object" || corpo === null) return undefined;
+  if ("error_name" in corpo && typeof corpo.error_name === "string") return corpo.error_name;
+  return "code" in corpo && typeof corpo.code === "string" ? corpo.code : undefined;
+}
+
 function falha(status: number, corpo: unknown): FalhaDoPedido {
   const campos: Record<string, string> = {};
   let detalhe = "";
   if (typeof corpo === "object" && corpo !== null) {
     for (const [campo, valor] of Object.entries(corpo)) {
-      if (campo === "detail" || campo === "code") continue;
+      if (CAMPOS_DO_ERRO.has(campo)) continue;
       const mensagem = primeiraMensagem(valor);
       if (mensagem) campos[campo] = mensagem;
     }
     if ("detail" in corpo) detalhe = primeiraMensagem(corpo.detail);
+    if (!detalhe && "error" in corpo) detalhe = primeiraMensagem(corpo.error);
   }
   const mensagem = detalhe || Object.values(campos)[0] || "Não foi possível concluir. Tente de novo.";
-  const code = typeof corpo === "object" && corpo !== null && "code" in corpo && typeof corpo.code === "string" ? corpo.code : undefined;
+  const code = nomeDoErro(corpo);
   return new FalhaDoPedido(status, mensagem, campos, code);
 }
 
@@ -59,8 +68,13 @@ export type Recurso<T> = {
 };
 
 type Resultado<T> = { chave: string; dados: T | null; erro: FalhaDoPedido | null };
+type Carregador<T> = (caminho: string) => Promise<T>;
 
-export function useRecurso<T>(caminho: string | null): Recurso<T> {
+function carregarComPedida<T>(caminho: string): Promise<T> {
+  return pedir<T>(caminho);
+}
+
+export function useRecurso<T>(caminho: string | null, carregar: Carregador<T> = carregarComPedida<T>): Recurso<T> {
   const [versao, setVersao] = useState(0);
   const [resultado, setResultado] = useState<Resultado<T>>({ chave: "", dados: null, erro: null });
   const chave = caminho ? `${caminho}#${versao}` : "";
@@ -68,7 +82,7 @@ export function useRecurso<T>(caminho: string | null): Recurso<T> {
   useEffect(() => {
     if (!caminho) return;
     let vivo = true;
-    pedir<T>(caminho)
+    carregar(caminho)
       .then((dados) => vivo && setResultado({ chave, dados, erro: null }))
       .catch((motivo: unknown) => {
         if (!vivo) return;
@@ -78,7 +92,7 @@ export function useRecurso<T>(caminho: string | null): Recurso<T> {
     return () => {
       vivo = false;
     };
-  }, [caminho, chave]);
+  }, [caminho, chave, carregar]);
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
   const carregando = Boolean(caminho) && resultado.chave !== chave;

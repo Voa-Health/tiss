@@ -8,9 +8,6 @@ export type Cobranca = {
   billing_url: string;
 };
 
-/** Uma página de lista do backend (`results`, `count`, `next`, `previous`). */
-export type Pagina<T> = { count: number; next: string | null; previous: string | null; results: T[] };
-
 export type Fatura = {
   id: string | null;
   number: string | null;
@@ -64,13 +61,23 @@ export type CatalogoDeOrgs = {
   subtypes: Subtipo[];
 };
 
+export type Pagina<T> = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  current_page: number;
+  next_page: number | null;
+  previous_page: number | null;
+  num_pages: number;
+  results: T[];
+};
+
 export type Chave = {
   id: string;
   name: string;
   prefix: string;
   key_tip: string;
   scopes: string[];
-  environment: "production" | "sandbox";
   usage_count: number;
   last_used_at: string | null;
   created_at: string;
@@ -121,8 +128,6 @@ export type Membro = {
   editable: Record<"occupation" | "clinical_access" | "areas", { editable: boolean; reason: string }>;
   removable: { removable: boolean; reason: string | null };
 };
-
-export type Membros = { members: Membro[]; available_areas: AreaDisponivel[] };
 
 export type Convite = {
   id: string;

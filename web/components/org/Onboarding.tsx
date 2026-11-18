@@ -11,20 +11,10 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Alert, AutoComplete, Button, Card, Checkbox, Col, Flex, Form, Input, Row, Select, theme, Typography } from "antd";
+import { Alert, Button, Card, Checkbox, Col, Flex, Form, Input, Row, Select, theme, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { type ReactNode, useRef, useState } from "react";
-import {
-  caminhoDaBusca,
-  chaveDaBusca,
-  lerResposta,
-  nomeSugerido,
-  rotuloDaUnidade,
-  situacaoDaBusca,
-  type ChaveDaBusca,
-  type Situacao,
-} from "@/lib/org/busca";
+import { type ReactNode, useState } from "react";
 import { abrirDeNovo, FalhaDoPedido, pedir } from "@/lib/org/cliente";
 import type { CatalogoDeOrgs, EstadoDaOrg, Subtipo } from "@/lib/org/tipos";
 import { sair } from "./OrgCasca";
@@ -43,21 +33,6 @@ type Campos = {
 const NOVA = "nova";
 
 const EM_USO = /pertence a outra organização/i;
-
-const textoDaChave = (chave: ChaveDaBusca | null) => (chave ? `${chave.campo}:${chave.valor}` : "");
-
-function AvisoDaBusca({ situacao, nomeAtual, aoUsarNome }: { situacao: Situacao; nomeAtual?: string; aoUsarNome?: (nome: string) => void }) {
-  const podeTrocarNome = aoUsarNome && situacao.nomeOficial && situacao.nomeOficial !== nomeAtual?.trim();
-  return (
-    <Alert
-      type={situacao.alerta}
-      showIcon
-      title={situacao.mensagem}
-      action={podeTrocarNome ? <Button size="small" onClick={() => aoUsarNome(situacao.nomeOficial)}>Usar nome oficial</Button> : undefined}
-      style={{ marginBottom: "var(--ant-margin)" }}
-    />
-  );
-}
 
 const ICONE_DO_SUBTIPO: Record<string, ReactNode> = {
   hospital: <MedicineBoxOutlined />,
@@ -156,37 +131,17 @@ export function Onboarding({
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [emUso, setEmUso] = useState<{ chave: string; mensagem: string } | null>(null);
-  const [busca, setBusca] = useState<{ chave: string; situacao: Situacao } | null>(null);
-  const ultimaBusca = useRef("");
   const prontas = catalogo.organizations.filter((org) => org.tiss_org && org.terms.accepted);
   const aceitaveis = catalogo.organizations.filter((org) => org.is_admin && !(org.tiss_org && org.terms.accepted));
   const inicial = aceitaveis.find((org) => org.id === orgInicial);
   const destino = Form.useWatch("destino", form) ?? NOVA;
   const subtipo = Form.useWatch("subtype", form);
   const tipo = catalogo.subtypes.find((item) => item.code === subtipo)?.type;
-  const chaveAtual = textoDaChave(chaveDaBusca(tipo, Form.useWatch("cnpj", form), Form.useWatch("registro_ans", form)));
-  const situacao = busca && busca.chave === chaveAtual ? busca.situacao : null;
-
-  async function buscar() {
-    const tipoAtual = catalogo.subtypes.find((item) => item.code === form.getFieldValue("subtype"))?.type;
-    const chave = chaveDaBusca(tipoAtual, form.getFieldValue("cnpj"), form.getFieldValue("registro_ans"));
-    const texto = textoDaChave(chave);
-    if (!chave || texto === ultimaBusca.current) return;
-    ultimaBusca.current = texto;
-    let resposta;
-    try {
-      resposta = lerResposta(await pedir(caminhoDaBusca(chave)));
-    } catch (motivo) {
-      if (motivo instanceof FalhaDoPedido && motivo.status === 400) return;
-      resposta = lerResposta(null);
-    }
-    if (ultimaBusca.current !== texto) return;
-    setBusca({ chave: texto, situacao: situacaoDaBusca(resposta, chave.campo) });
-    if ((form.getFieldValue("destino") ?? NOVA) === NOVA) {
-      const nome = nomeSugerido(form.getFieldValue("name"), resposta);
-      if (nome) form.setFieldValue("name", nome);
-    }
-  }
+  const chaveAtual = [
+    subtipo ?? "",
+    Form.useWatch("cnpj", form) ?? "",
+    Form.useWatch("registro_ans", form) ?? "",
+  ].join(":");
 
   function preencher(id: string) {
     const org = aceitaveis.find((item) => item.id === id);
@@ -196,7 +151,6 @@ export function Onboarding({
       registro_ans: org.registro_ans || undefined,
       subtype: org.subtype || undefined,
     });
-    void buscar();
   }
 
   async function enviar(valores: Campos) {
@@ -213,7 +167,7 @@ export function Onboarding({
         accept_terms_version: catalogo.terms_version,
       };
       const org = nova
-        ? await pedir<EstadoDaOrg>("me/tiss/organization/", { method: "POST", body: { name: valores.name, ...identidade } })
+        ? await pedir<{ id: string }>("me/tiss/organization/", { method: "POST", body: { name: valores.name, ...identidade } })
         : await pedir<EstadoDaOrg>(`org/${valores.destino}/tiss/onboard/`, { method: "POST", body: identidade });
       abrirDeNovo(hrefDaOrg(org.id, "visao"));
     } catch (motivo) {
@@ -301,18 +255,13 @@ export function Onboarding({
               {tipo !== "pay" && (
                 <Col xs={24} sm={10}>
                   <Form.Item name="cnes" label="CNES (opcional)">
-                    <AutoComplete
-                      popupMatchSelectWidth={false}
-                      options={situacao?.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
-                    >
-                      <Input allowClear inputMode="numeric" placeholder="0000000" />
-                    </AutoComplete>
+                    <Input allowClear inputMode="numeric" placeholder="0000000" />
                   </Form.Item>
                 </Col>
               )}
               <Col xs={24} sm={14}>
                 <Form.Item name="cnpj" label="CNPJ" rules={[{ required: true, whitespace: true, message: "Informe o CNPJ." }]}>
-                  <Input inputMode="numeric" placeholder="00.000.000/0000-00" onBlur={() => void buscar()} />
+                  <Input inputMode="numeric" placeholder="00.000.000/0000-00" />
                 </Form.Item>
               </Col>
               {tipo === "pay" && (
@@ -322,18 +271,12 @@ export function Onboarding({
                     label="Registro ANS"
                     rules={[{ required: true, whitespace: true, message: "Informe o registro ANS." }]}
                   >
-                    <Input inputMode="numeric" placeholder="000000" onBlur={() => void buscar()} />
+                    <Input inputMode="numeric" placeholder="000000" />
                   </Form.Item>
                 </Col>
               )}
             </Row>
-            {situacao?.mensagem && (
-              <AvisoDaBusca
-                situacao={situacao}
-                nomeAtual={form.getFieldValue("name")}
-                aoUsarNome={destino === NOVA ? (nome) => form.setFieldValue("name", nome) : undefined}
-              />
-            )}
+            <Alert type="info" showIcon title="A busca automática está indisponível; informe os dados manualmente." />
             {destino === NOVA && (
               <Form.Item name="name" label="Nome" rules={[{ required: true, whitespace: true, message: "Informe o nome." }]}>
                 <Input autoComplete="organization" />

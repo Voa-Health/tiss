@@ -560,6 +560,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Busca um código TUSS exato. Quando usar: para consultar código ou vigência. Quando não usar: para buscar por descrição.",
     "inputSchema": {
       "additionalProperties": false,
@@ -603,6 +608,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Busca códigos TUSS por texto. Quando usar: para localizar procedimentos por descrição. Quando não usar: para validar XML.",
     "inputSchema": {
       "additionalProperties": false,
@@ -685,6 +695,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Retorna o catálogo SP/SADT. Quando usar: para conhecer campos e domínios. Quando não usar: para preencher uma guia sem dados.",
     "inputSchema": {
       "additionalProperties": false,
@@ -699,6 +714,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Consulta as operadoras vinculadas a um CNPJ ou CNES. Quando usar: para identificar vínculos de um estabelecimento. Quando não usar: para buscar o cadastro geral; use operadora_lookup.",
     "inputSchema": {
       "additionalProperties": false,
@@ -811,6 +831,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Consulta os estabelecimentos vinculados a uma operadora. Quando usar: para identificar unidades da rede por UF. Quando não usar: para buscar o cadastro geral; use operadora_lookup.",
     "inputSchema": {
       "additionalProperties": false,
@@ -952,6 +977,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Consulta o cadastro e a série semestral de glosa e pagamento de uma operadora na ANS. Quando usar: para conhecer uma operadora pelo registro ANS. Quando não usar: para buscar operadoras por nome.",
     "inputSchema": {
       "additionalProperties": false,
@@ -1611,18 +1641,70 @@
           "minimum": 0,
           "type": "integer"
         },
-        "ignorados": {
+        "ignored": {
           "items": {
             "minimum": 0,
             "type": "integer"
           },
           "type": "array"
         },
-        "linhas": {
+        "lotes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "providers": {
           "items": {
             "additionalProperties": false,
             "properties": {
-              "codigo": {
+              "affected_amount": {
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              },
+              "guias": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "guias_with_finding": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "month": {
+                "pattern": "^\\d{4}-\\d{2}$",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "provider": {
+                "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
+                "type": "string"
+              },
+              "total_amount": {
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "provider",
+              "month",
+              "guias",
+              "guias_with_finding",
+              "total_amount",
+              "affected_amount"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "rows": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "affected_amount": {
+                "pattern": "^-?\\d+\\.\\d{2}$",
+                "type": "string"
+              },
+              "code": {
                 "type": "string"
               },
               "glosa": {
@@ -1635,14 +1717,14 @@
                 "minimum": 0,
                 "type": "integer"
               },
-              "mes": {
+              "month": {
                 "pattern": "^\\d{4}-\\d{2}$",
                 "type": [
                   "string",
                   "null"
                 ]
               },
-              "prestador": {
+              "provider": {
                 "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
                 "type": "string"
               },
@@ -1651,84 +1733,32 @@
                   "string",
                   "null"
                 ]
-              },
-              "valor_afetado": {
-                "pattern": "^-?\\d+\\.\\d{2}$",
-                "type": "string"
               }
             },
             "required": [
-              "prestador",
-              "mes",
-              "codigo",
+              "provider",
+              "month",
+              "code",
               "glosa",
               "rule_id",
               "guias",
-              "valor_afetado"
+              "affected_amount"
             ],
             "type": "object"
           },
           "type": "array"
         },
-        "lotes": {
-          "minimum": 0,
-          "type": "integer"
-        },
-        "prestadores": {
-          "items": {
-            "additionalProperties": false,
-            "properties": {
-              "guias": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "guias_com_achado": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "mes": {
-                "pattern": "^\\d{4}-\\d{2}$",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "prestador": {
-                "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$",
-                "type": "string"
-              },
-              "valor_afetado": {
-                "pattern": "^-?\\d+\\.\\d{2}$",
-                "type": "string"
-              },
-              "valor_total": {
-                "pattern": "^-?\\d+\\.\\d{2}$",
-                "type": "string"
-              }
-            },
-            "required": [
-              "prestador",
-              "mes",
-              "guias",
-              "guias_com_achado",
-              "valor_total",
-              "valor_afetado"
-            ],
-            "type": "object"
-          },
-          "type": "array"
-        },
-        "versao": {
-          "const": "1"
+        "version": {
+          "const": "2"
         }
       },
       "required": [
-        "versao",
+        "version",
         "lotes",
         "guias",
-        "ignorados",
-        "prestadores",
-        "linhas"
+        "ignored",
+        "providers",
+        "rows"
       ],
       "type": "object"
     }
@@ -1784,6 +1814,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Explica um código da Tabela 38 da ANS. Quando usar: ao interpretar uma glosa recebida. Quando não usar: para validar ou corrigir o lote.",
     "inputSchema": {
       "additionalProperties": false,
@@ -1859,6 +1894,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Consulta tabelas e códigos de domínio TISS. Quando usar: para localizar um código ou termo de domínio. Quando não usar: para buscar procedimentos TUSS; use tuss_search.",
     "inputSchema": {
       "additionalProperties": false,
@@ -1924,6 +1964,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Busca operadoras ativas pelo nome, registro, CNPJ ou localidade. Quando usar: para localizar uma operadora na base pública. Quando não usar: para consultar vínculos hospitalares; use tiss_rede.",
     "inputSchema": {
       "additionalProperties": false,
@@ -1963,6 +2008,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Consulta valores unitários de referência D-TISS da ANS por procedimento TUSS. Quando usar: para comparar valores informados por UF, modalidade, porte e semestre. Quando não usar: para glosa ou preço contratado de uma operadora; use as ferramentas de operadoras.",
     "inputSchema": {
       "additionalProperties": false,
@@ -2167,6 +2217,11 @@
     }
   },
   {
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
     "description": "Busca trechos da documentação local da biblioteca. Quando usar: para encontrar instruções e referências da API. Quando não usar: para consultar dados clínicos ou códigos específicos.",
     "inputSchema": {
       "additionalProperties": false,

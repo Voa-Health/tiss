@@ -75,7 +75,7 @@ def _collect(entrada: dict[str, Any], key: str) -> None:
             segredo_pseudonimo=org_secret,
             at=entrada.get("data"),
         )
-        if value["ignorados"]:
+        if value["ignored"]:
             return
         send(key, "server", value)
     except Exception:

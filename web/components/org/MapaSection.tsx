@@ -21,7 +21,7 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
   const admin = org.is_admin || org.my_areas.includes("administration");
   const podeVer = org.rejection_map?.eligible && org.type === "pay" && (admin || org.my_areas.includes("auditoria"));
   const filtros = new URLSearchParams();
-  for (const campo of ["prestador", "rule_id", "mes_de", "mes_ate"]) {
+  for (const campo of ["provider", "rule_id", "month_from", "month_to"]) {
     const valor = params.get(campo); if (valor) filtros.set(campo, valor);
   }
   const mapa = useRecurso<MapaDeRejeicao>(podeVer ? `${mapaDaOrg}?${filtros}` : null);
@@ -42,12 +42,12 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
   }
 
   function filtrar(valores: Record<string, string | undefined>) {
-    if (valores.mes_de && valores.mes_ate && valores.mes_de > valores.mes_ate) {
+    if (valores.month_from && valores.month_to && valores.month_from > valores.month_to) {
       setErro("O mês inicial deve ser anterior ou igual ao mês final."); return;
     }
     setErro(null);
     const novos = new URLSearchParams(params.toString());
-    for (const campo of ["prestador", "rule_id", "mes_de", "mes_ate"]) {
+    for (const campo of ["provider", "rule_id", "month_from", "month_to"]) {
       novos.delete(campo); if (valores[campo]) novos.set(campo, valores[campo]);
     }
     router.replace(`${pathname}?${novos}`, { scroll: false });
@@ -58,11 +58,11 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
   if (mapa.erro || !mapa.dados) return <Alert type="error" showIcon title="Não foi possível carregar o mapa."
     description={mapa.erro?.message} action={<Button onClick={mapa.recarregar}>Tentar de novo</Button>} />;
   const dados = mapa.dados;
-  const matriz = matrizDoMapa(dados.linhas);
+  const matriz = matrizDoMapa(dados.rows);
   const colunas: TableColumnsType<LinhaDaMatriz> = [
     { title: "Prestador", key: "prestador", fixed: "left", width: 260, render: (_, linha) => <Flex vertical>
       <Typography.Text strong>{rotuloDoPrestador(linha.prestador)}</Typography.Text>
-      {linha.prestador.nome_origem && <Typography.Text type="secondary" style={{ fontSize: 12 }}>Nome: {linha.prestador.nome_origem === "cnes" ? "CNES" : linha.prestador.nome_origem}</Typography.Text>}
+      {linha.prestador.name_source && <Typography.Text type="secondary" style={{ fontSize: 12 }}>Nome: {{ registry: "cadastro", cnes: "CNES", claims: "contas" }[linha.prestador.name_source]}</Typography.Text>}
     </Flex> },
     ...matriz.meses.map((mes) => ({ title: mes, key: mes, width: 190, render: (_: unknown, linha: LinhaDaMatriz) => <Celula valor={linha.meses[mes]} /> })),
     { title: "Total", key: "total", width: 190, render: (_, linha) => <Celula valor={linha.total} /> },
@@ -86,10 +86,10 @@ function MapaConteudo({ org }: { org: EstadoDaOrg }) {
     <Card title="Achados por prestador e mês">
       <Form layout="vertical" onFinish={filtrar} initialValues={Object.fromEntries(filtros)} key={filtros.toString()}>
         <Flex gap="middle" wrap align="end">
-          <Form.Item name="prestador" label="Prestador" style={{ minWidth: 240 }}><Select allowClear placeholder="Todos os prestadores" options={dados.prestadores.map((prestador) => ({ value: prestador.id, label: rotuloDoPrestador(prestador) }))} /></Form.Item>
+          <Form.Item name="provider" label="Prestador" style={{ minWidth: 240 }}><Select allowClear placeholder="Todos os prestadores" options={dados.providers.map((prestador) => ({ value: prestador.id, label: rotuloDoPrestador(prestador) }))} /></Form.Item>
           <Form.Item name="rule_id" label="Regra" style={{ minWidth: 180 }}><Select allowClear placeholder="Todas as regras" options={dados.rule_ids.filter((id): id is string => id !== null).map((id) => ({ value: id, label: id }))} /></Form.Item>
-          <Form.Item name="mes_de" label="Mês inicial"><Input type="month" /></Form.Item>
-          <Form.Item name="mes_ate" label="Mês final"><Input type="month" /></Form.Item>
+          <Form.Item name="month_from" label="Mês inicial"><Input type="month" /></Form.Item>
+          <Form.Item name="month_to" label="Mês final"><Input type="month" /></Form.Item>
           <Form.Item><Button htmlType="submit">Aplicar filtros</Button></Form.Item>
           <Form.Item><Button onClick={() => filtrar({})}>Limpar filtros</Button></Form.Item>
         </Flex>

@@ -40,11 +40,22 @@ from tiss.__main__ import _org_secret, _send_map
 from tiss._glosa import glosa
 from tiss._requisicao_segura import RedirecionamentoMesmaOrigem, RedirecionamentoRecusado
 from tiss.sandbox import _GLOSAS, SandboxError, demonstrativo, enviar_lote
-from tiss.server import _docs, _keys, _ops, _published_rules, _quota, _rejection_map, _usage
+from tiss.server import (
+    _docs,
+    _keys,
+    _oauth,
+    _ops,
+    _published_rules,
+    _quota,
+    _rejection_map,
+    _service,
+    _usage,
+)
 from tiss.server._context import CallContext
 from tiss.server._docs import search_docs
 from tiss.server._http import create_app
 from tiss.server._keys import ANONYMOUS_LIMIT, LIMITS
+from tiss.server._mcp import OPEN_DATA_RESOURCES, OPEN_DATA_TOOLS
 from tiss.server._ops import OPS, _docs_corpus, call, token_estimate
 from tiss.server._ops_schemas import PAID_KINDS, Op, _object
 from tiss.server._prompts import PROMPTS
@@ -65,6 +76,140 @@ HTTP_TOO_MANY = 429
 HTTP_UNPROCESSABLE = 422
 HTTP_UNAVAILABLE = 503
 PROTOCOL_NUMBER_LENGTH = 12
+
+
+def _check_open_data_contract(path: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("TISS_BACKEND_URL", raising=False)
+    headers = {"Accept": "application/json, text/event-stream"}
+    with TestClient(create_app()) as client:
+
+        def request(method: str, params: dict[str, Any] | None = None) -> Any:
+            response = client.post(
+                path,
+                headers=headers,
+                json={
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": method,
+                    "params": params or {},
+                },
+            )
+            assert response.status_code == HTTP_OK
+            return response.json()["result"]
+
+        tools = request("tools/list")["tools"]
+        if path == "/mcp":
+            assert tools == json.loads((ROOT / "schemas/mcp-tools.json").read_text())
+        else:
+            assert {tool["name"] for tool in tools} == OPEN_DATA_TOOLS
+            assert all(
+                tool["annotations"]
+                == {
+                    "readOnlyHint": True,
+                    "destructiveHint": False,
+                    "openWorldHint": False,
+                }
+                for tool in tools
+            )
+            assert request("prompts/list")["prompts"] == []
+            resources = request("resources/list")["resources"]
+            templates = request("resources/templates/list")["resourceTemplates"]
+            assert {item["name"] for item in resources + templates} == OPEN_DATA_RESOURCES
+            result = request("tools/call", {"name": "tiss_validate", "arguments": {}})
+            assert result["isError"]
+            assert "Tool desconhecida" in result["content"][0]["text"]
+            for uri in ["tiss://docs/readme", "tiss://docs/api", "tiss://schemas/lote"]:
+                response = client.post(
+                    path,
+                    headers=headers,
+                    json={
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "method": "resources/read",
+                        "params": {"uri": uri},
+                    },
+                )
+                assert "error" in response.json()
+
+
+def _check_open_data_auth(token: str | None, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(_oauth, "_cache", {})
+
+    monkeypatch.setenv("TISS_BACKEND_URL", "https://backend.example")
+    monkeypatch.setenv("TISS_SERVICE_SECRET", "synthetic-service")
+    seen: list[str] = []
+
+    def identity(path: str, bearer: str) -> Any:
+        assert path == "/oauth/tiss/identity"
+        seen.append(bearer)
+        if bearer == "oauth-test-revoked":
+            raise ServiceError(HTTP_UNAUTHORIZED)
+        return {"organization": {"id": "synthetic-org"}, "tier": "login"}
+
+    _keys.clear_cache()
+    _service.set_get_transport(identity)
+    set_transport(
+        lambda path, body: {
+            "active": True,
+            "key_id": "synthetic-key",
+            "organization": {"id": "synthetic-org"},
+            "tier": "login",
+            "scopes": ["tiss:validate"],
+        }
+    )
+    headers = {"Accept": "application/json, text/event-stream"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    try:
+        with TestClient(create_app()) as client:
+            for _ in range(2):
+                response = client.post(
+                    "/mcp/open-data",
+                    headers=headers,
+                    json={
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "method": "tools/list",
+                        "params": {},
+                    },
+                )
+                expected = (
+                    HTTP_OK
+                    if token in {"oauth-test-active", "sk_voa_subset"}
+                    else HTTP_UNAUTHORIZED
+                )
+                assert response.status_code == expected
+                if expected == HTTP_UNAUTHORIZED:
+                    assert response.headers["www-authenticate"] == (
+                        'Bearer resource_metadata="https://backend.example/.well-known/'
+                        'oauth-protected-resource/tiss", scope="voa:tiss"'
+                    )
+            if token and not token.startswith("sk_"):
+                assert client.post("/mcp", headers=headers).status_code == HTTP_UNAUTHORIZED
+                assert seen == [token]
+            if token == "oauth-test-active":
+                counter_calls: list[str] = []
+                monkeypatch.setattr(
+                    _quota, "_counter", lambda key, ttl: counter_calls.append(key) or 1
+                )
+                monkeypatch.setattr(_usage, "post", lambda *args: pytest.fail("OAuth usage event"))
+                response = client.post(
+                    "/mcp/open-data",
+                    headers=headers,
+                    json={
+                        "jsonrpc": "2.0",
+                        "id": 2,
+                        "method": "tools/call",
+                        "params": {"name": "tiss_sadt_catalog", "arguments": {}},
+                    },
+                )
+                assert not response.json()["result"]["isError"]
+                assert len(counter_calls) == 1
+    finally:
+        _service.set_get_transport(None)
+        set_transport(None)
+        _keys.clear_cache()
+
 
 _CONS_HEADER = (
     "ID_EVENTO_ATENCAO_SAUDE",
@@ -631,7 +776,11 @@ def test_http_mcp_parity_and_token_budgets(
             (ROOT / "schemas" / "mcp-tools.json").read_text(encoding="utf-8")
         )
         listed_tools = [
-            {key: tool[key] for key in ("name", "description", "inputSchema", "outputSchema")}
+            {
+                key: tool[key]
+                for key in ("name", "description", "inputSchema", "outputSchema", "annotations")
+                if key in tool
+            }
             for tool in tool_definitions
         ]
         assert listed_tools == tool_snapshot
@@ -912,6 +1061,23 @@ def _assert_redirect_handler_rejects_other_origins():
 
 def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_service):
     """Verifica chaves, escopos, uso, níveis, telemetria e privacidade dos logs."""
+    with monkeypatch.context() as context:
+        context.delenv("TISS_BACKEND_URL", raising=False)
+        context.setattr("tiss.server._http.authenticate", lambda header: (HTTP_UNAUTHORIZED, None))
+        with TestClient(create_app()) as client:
+            response = client.post("/mcp/open-data")
+            assert response.status_code == HTTP_UNAUTHORIZED
+            assert "www-authenticate" not in response.headers
+            challenge = client.get("/.well-known/openai-apps-challenge")
+            assert challenge.status_code == HTTP_OK
+            assert challenge.text == "xYqs1EKAzE2JZx4ugObYkpi3vkRByO8SgrMWHzoSj1c"
+            assert challenge.headers["content-type"] == "text/plain; charset=utf-8"
+    for path in ["/mcp", "/mcp/open-data"]:
+        with monkeypatch.context() as context:
+            _check_open_data_contract(path, context)
+    for token in [None, "oauth-test-active", "oauth-test-revoked", "sk_voa_subset"]:
+        with monkeypatch.context() as context:
+            _check_open_data_auth(token, context)
     set_transport(None)
     for caller in _REDIRECT_CALLERS.values():
         with monkeypatch.context() as patch:
@@ -1005,6 +1171,8 @@ def test_keys_usage_tiers_telemetry_and_privacy(monkeypatch, caplog, tiss_servic
             response = client.post(route, json=body, headers=headers)
             assert response.status_code == status, (headers, route, used)
             assert (status == HTTP_TOO_MANY) == ("retry-after" in response.headers)
+            if status == HTTP_TOO_MANY:
+                assert response.json()["erro"]["link"] == "https://tiss-api.voa.health/org"
         requests: list[Any] = []
 
         def redis(request: Any, timeout: float) -> io.BytesIO:
@@ -1409,23 +1577,23 @@ def _check_map_routes(client, service, value):
     count = len(service.map_requests)
     for extra in (
         {**value, "guia": {}},
-        {**value, "prestadores": [{**value["prestadores"][0], "guia": {}}]},
+        {**value, "providers": [{**value["providers"][0], "guia": {}}]},
         {
             **value,
-            "linhas": [
+            "rows": [
                 {
-                    "prestador": "codigo:SINTETICO",
-                    "mes": None,
-                    "codigo": "TEST",
+                    "provider": "codigo:SINTETICO",
+                    "month": None,
+                    "code": "TEST",
                     "glosa": None,
                     "rule_id": None,
                     "guias": 1,
-                    "valor_afetado": "0.00",
+                    "affected_amount": "0.00",
                     "guia": {},
                 }
             ],
         },
-        {**value, "linhas": [{"prestador": "cpf:00000000000"}]},
+        {**value, "rows": [{"provider": "cpf:00000000000"}]},
     ):
         response = client.post("/v1/rejection-map/submit", json=extra, headers=_bearer())
         assert response.status_code == 400
@@ -1640,11 +1808,16 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         "cloud_free_remaining": 0,
     }
     payment_required = {
-        "code": "payment_required",
-        "detail": "Cadastre uma forma de pagamento para usar este módulo.",
-        "billing_url": billing["billing_url"],
+        "code": 10190002,
+        "error_name": "PAYMENT_REQUIRED",
+        "error": "Cadastre uma forma de pagamento para usar este módulo.",
+        "status": HTTP_PAYMENT_REQUIRED,
+        "metadata": {"billing_url": billing["billing_url"]},
     }
-    default_url = {**payment_required, "billing_url": _keys.BILLING_URL}
+    default_url = {
+        **payment_required,
+        "metadata": {"billing_url": "https://tiss-api.voa.health/org"},
+    }
     assert {
         "tiss_cloud_guia",
         "tiss_extractor",
@@ -1652,6 +1825,7 @@ def _check_published_rules_and_paid_modules(monkeypatch, caplog, tiss_service):
         "tiss_accounts_review",
         "tiss_authorization",
     } == PAID_KINDS
+    assert {op.usage_kind for op in OPS} <= PAID_KINDS | {_usage.API_CALL}
     cases = [
         ("tiss_extractor", billing, HTTP_PAYMENT_REQUIRED, payment_required),
         ("tiss_appeal", {**billing, "billing_url": None}, HTTP_PAYMENT_REQUIRED, default_url),

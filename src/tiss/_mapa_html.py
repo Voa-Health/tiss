@@ -26,31 +26,31 @@ def _table(headers: list[str], rows: list[str]) -> str:
 
 def render_rejection_map_html(mapa: dict[str, Any]) -> str:
     """Renderiza um mapa agregado em uma página HTML sem dependências."""
-    providers = mapa.get("prestadores", [])
-    lines = mapa.get("linhas", [])
+    providers = mapa.get("providers", [])
+    lines = mapa.get("rows", [])
     providers = providers if isinstance(providers, list) else []
     lines = lines if isinstance(lines, list) else []
     summary = (
         f"<p>Lotes: <strong>{_text(mapa.get('lotes', 0))}</strong> · "
         f"Guias: <strong>{_text(mapa.get('guias', 0))}</strong> · "
-        f"Ignorados: <strong>{_text(len(mapa.get('ignorados', [])))}</strong></p>"
+        f"Ignorados: <strong>{_text(len(mapa.get('ignored', [])))}</strong></p>"
     )
 
     ranked_providers = sorted(
         providers,
         key=lambda item: (
-            -int(item.get("guias_com_achado", 0)),
-            -_value(item.get("valor_afetado", "0.00")),
-            str(item.get("prestador", "")),
-            str(item.get("mes") or ""),
+            -int(item.get("guias_with_finding", 0)),
+            -_value(item.get("affected_amount", "0.00")),
+            str(item.get("provider", "")),
+            str(item.get("month") or ""),
         ),
     )[:10]
     provider_rows = [
         "<tr>"
-        f"<td>{_text(item.get('prestador'))}</td>"
+        f"<td>{_text(item.get('provider'))}</td>"
         f"<td>{_text(item.get('mes'))}</td>"
-        f"<td>{_text(item.get('guias_com_achado', 0))}</td>"
-        f"<td>{_text(item.get('valor_afetado', '0.00'))}</td>"
+        f"<td>{_text(item.get('guias_with_finding', 0))}</td>"
+        f"<td>{_text(item.get('affected_amount', '0.00'))}</td>"
         "</tr>"
         for item in ranked_providers
     ]
@@ -58,15 +58,15 @@ def render_rejection_map_html(mapa: dict[str, Any]) -> str:
     rules: dict[tuple[str, str | None, str | None], int] = {}
     matrix: dict[tuple[str, str], dict[str, Any]] = {}
     for item in lines:
-        code = str(item.get("codigo", ""))
+        code = str(item.get("code", ""))
         glosa = item.get("glosa")
         rule_id = item.get("rule_id")
         rule_key = (code, glosa, rule_id)
         rules[rule_key] = rules.get(rule_key, 0) + int(item.get("guias", 0))
-        cell_key = (str(item.get("prestador", "")), code)
+        cell_key = (str(item.get("provider", "")), code)
         cell = matrix.setdefault(cell_key, {"guias": 0, "valor": Decimal("0.00")})
         cell["guias"] += int(item.get("guias", 0))
-        cell["valor"] += _value(item.get("valor_afetado", "0.00"))
+        cell["valor"] += _value(item.get("affected_amount", "0.00"))
 
     ranked_rules = sorted(
         rules.items(),

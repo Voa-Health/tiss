@@ -1,9 +1,8 @@
 "use client";
 
-import { Alert, App, Button, Card, Flex, Form, Input, InputNumber, Result, Select, Skeleton, theme, Typography } from "antd";
+import { Alert, App, Button, Card, Flex, Form, Input, InputNumber, Result, Skeleton, theme, Typography } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { caminhoDaBusca, chaveDaBusca, lerResposta, rotuloDaUnidade, situacaoDaBusca, type Situacao } from "@/lib/org/busca";
 import { abrirDeNovo, FalhaDoPedido, pedir, useRecurso } from "@/lib/org/cliente";
 import type { ConfiguracoesTiss, EstadoDaOrg } from "@/lib/org/tipos";
 import { hrefDaOrg, type PacoteDeRegras } from "./secoes";
@@ -38,26 +37,12 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
   const [form] = Form.useForm<Campos>();
   const configuracoes = useRecurso<ConfiguracoesTiss>(`org/${org.id}/tiss/settings/`);
   const [salvando, setSalvando] = useState(false);
-  const [unidades, setUnidades] = useState<{ buscando: boolean; situacao: Situacao | null }>({ buscando: false, situacao: null });
   const operadora = org.type === "pay";
   const podeEditar = org.is_admin;
 
   useEffect(() => {
     if (configuracoes.dados) form.setFieldsValue(configuracoes.dados);
   }, [configuracoes.dados, form]);
-
-  async function buscarUnidades() {
-    const chave = chaveDaBusca(org.type, org.cnpj, undefined);
-    if (!chave) return;
-    setUnidades({ buscando: true, situacao: null });
-    let resposta;
-    try {
-      resposta = lerResposta(await pedir(caminhoDaBusca(chave)));
-    } catch {
-      resposta = lerResposta(null);
-    }
-    setUnidades({ buscando: false, situacao: situacaoDaBusca(resposta, chave.campo) });
-  }
 
   async function salvar(valores: Campos) {
     const atual = configuracoes.dados;
@@ -99,27 +84,12 @@ export function TissSection({ org, pacotes }: { org: EstadoDaOrg; pacotes: Pacot
         )}
         {!operadora && (
           <>
-            {unidades.situacao?.mensagem && <Alert type={unidades.situacao.alerta} showIcon title={unidades.situacao.mensagem} style={{ marginBottom: token.margin }} />}
             <Form.Item
               name="cnes"
               label="CNES"
             >
-              {unidades.situacao?.unidades.length ? (
-                <Select
-                  allowClear
-                  showSearch={{ optionFilterProp: "label" }}
-                  placeholder="Escolha a unidade"
-                  options={unidades.situacao.unidades.map((unidade) => ({ value: unidade.cnes, label: rotuloDaUnidade(unidade) }))}
-                />
-              ) : (
-                <Input inputMode="numeric" placeholder="0000000" />
-              )}
+              <Input inputMode="numeric" placeholder="0000000" />
             </Form.Item>
-            {podeEditar && org.cnpj && !unidades.situacao?.unidades.length && (
-              <Button onClick={() => void buscarUnidades()} loading={unidades.buscando} style={{ marginBottom: token.margin }}>
-                Buscar unidades do CNPJ
-              </Button>
-            )}
           </>
         )}
         <Form.Item name="padrao" label="Padrão TISS" extra="Versão usada quando o lote não declara a sua.">

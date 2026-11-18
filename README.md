@@ -118,7 +118,7 @@ que foi cobrado. Para testar sem operadora real, use a
   auditoria, demonstrativos, TUSS, operadoras, rede hospitalar e referência D-TISS.
 - **[API HTTP](#api-http)**: as mesmas operações em
   `https://tiss-api.voa.health`, com [OpenAPI](https://tiss-api.voa.health/openapi.json).
-- **[MCP remoto](#conectar-agentes)**: 25 ferramentas e 3 prompts para agentes,
+- **[MCP remoto](#conectar-agentes)**: 26 ferramentas e 3 prompts para agentes,
   no [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0/servers?search=health.voa/tiss).
 - **[Operadora simulada](https://github.com/Voa-Health/tiss/blob/main/docs/tutoriais/06-operadora-simulada.ipynb)**: envie
   lotes e receba protocolo, demonstrativo e glosas sem tocar em produção.
@@ -210,6 +210,19 @@ Para usar o serviço remoto:
 ```
 
 </details>
+
+### ChatGPT: dados abertos
+
+No ChatGPT, conecte `https://tiss-api.voa.health/mcp/open-data` e autorize
+o acesso com sua conta Voa via OAuth (escopo `voa:tiss`).
+O pacote está em [plugins/chatgpt](plugins/chatgpt).
+
+Esse endpoint oferece apenas 11 ferramentas: `tuss_lookup`, `tuss_search`,
+`tiss_dominio`, `glosa_explain`, `tiss_sadt_catalog`, `operadora_lookup`,
+`operadora_perfil`, `operadora_rede`, `tiss_rede`, `tiss_referencia` e
+`buscar_docs`. Não recebe dados de beneficiário nem valida guias reais.
+Valores D-TISS são referências estatísticas, não preços contratados.
+O endpoint `/mcp` oferece as 26 ferramentas e 3 prompts.
 
 ### Privacidade
 
@@ -317,6 +330,11 @@ podem ler para enviar uma chave de acesso.
 
 O mapa de rejeição hospedado é uma coleta separada, opt-in e desligada por padrão.
 Quando habilitado no `/org`, envia somente agregados por prestador, código, regra e mês.
+O payload do mapa usa a versão `"2"` e chaves em inglês; aceite apenas `version: "2"`.
+Essa quebra evita compatibilidade ambígua entre os contratos antigos e novos.
+O payload contém `version`, `lotes`, `guias`, `ignored`, `providers` e `rows`;
+as linhas usam `provider`, `month`, `code`, `glosa`, `rule_id`, `guias` e
+`affected_amount`. Os resumos usam `guias_with_finding` e `total_amount`.
 O CPF é pseudonimizado com HMAC e segredo próprio da organização antes de sair do cliente;
 o CNPJ permanece em claro, e o código do prestador na operadora tem preferência.
 A retenção é de 24 meses, e a organização pode desligar a coleta e apagar tudo no `/org`.

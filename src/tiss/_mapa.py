@@ -297,13 +297,13 @@ def rejection_map(
         coverage = state["coverage"]
         lines.append(
             {
-                "prestador": provider,
-                "mes": month,
-                "codigo": code,
+                "provider": provider,
+                "month": month,
+                "code": code,
                 "glosa": state["glosa"],
                 "rule_id": rule_id,
                 "guias": len(coverage),
-                "valor_afetado": _money_text(_coverage_value(coverage, guide_values)),
+                "affected_amount": _money_text(_coverage_value(coverage, guide_values)),
             }
         )
 
@@ -314,21 +314,21 @@ def rejection_map(
         affected = group["affected"]
         prestadores.append(
             {
-                "prestador": provider,
-                "mes": month,
+                "provider": provider,
+                "month": month,
                 "guias": len(group["guides"]),
-                "guias_com_achado": len(affected),
-                "valor_total": _money_text(group["all"]),
-                "valor_afetado": _money_text(_coverage_value(affected, guide_values)),
+                "guias_with_finding": len(affected),
+                "total_amount": _money_text(group["all"]),
+                "affected_amount": _money_text(_coverage_value(affected, guide_values)),
             }
         )
     return {
-        "versao": "1",
+        "version": "2",
         "lotes": lot_count,
         "guias": guide_count,
-        "ignorados": ignored,
-        "prestadores": prestadores,
-        "linhas": lines,
+        "ignored": ignored,
+        "providers": prestadores,
+        "rows": lines,
     }
 
 

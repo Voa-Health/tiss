@@ -502,38 +502,39 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
         segredo_pseudonimo=secret,
         at=date(2026, 10, 21),
     )
-    provider_rows = {item["prestador"]: item for item in result["prestadores"]}
+    assert result["version"] == "2"
+    provider_rows = {item["provider"]: item for item in result["providers"]}
     cpf_id = next(provider for provider in provider_rows if provider.startswith("cpf:hmac:"))
     assert result["lotes"] == 3
     assert result["guias"] == 6
-    assert result["ignorados"] == []
+    assert result["ignored"] == []
     assert provider_rows["codigo:CLINICA-A"]["guias"] == 2
-    assert provider_rows["codigo:CLINICA-A"]["guias_com_achado"] == 1
-    assert provider_rows["codigo:CLINICA-A"]["valor_afetado"] == "100.00"
-    assert provider_rows["cnpj:11222333000181"]["guias_com_achado"] == 2
-    assert provider_rows["cnpj:11222333000181"]["valor_afetado"] == "200.00"
-    assert provider_rows[cpf_id]["guias_com_achado"] == 2
-    assert provider_rows[cpf_id]["valor_afetado"] == "200.00"
-    assert provider_rows[cpf_id]["mes"] == "2026-10"
+    assert provider_rows["codigo:CLINICA-A"]["guias_with_finding"] == 1
+    assert provider_rows["codigo:CLINICA-A"]["affected_amount"] == "100.00"
+    assert provider_rows["cnpj:11222333000181"]["guias_with_finding"] == 2
+    assert provider_rows["cnpj:11222333000181"]["affected_amount"] == "200.00"
+    assert provider_rows[cpf_id]["guias_with_finding"] == 2
+    assert provider_rows[cpf_id]["affected_amount"] == "200.00"
+    assert provider_rows[cpf_id]["month"] == "2026-10"
 
     rule_line = next(
         item
-        for item in result["linhas"]
-        if item["prestador"] == "codigo:CLINICA-A" and item["rule_id"] == rule_finding.rule["id"]
+        for item in result["rows"]
+        if item["provider"] == "codigo:CLINICA-A" and item["rule_id"] == rule_finding.rule["id"]
     )
-    assert rule_line["codigo"] == rule_finding.code
+    assert rule_line["code"] == rule_finding.code
     assert rule_line["guias"] == 1
-    hash_line = next(item for item in result["linhas"] if item["codigo"] == hash_finding.code)
+    hash_line = next(item for item in result["rows"] if item["code"] == hash_finding.code)
     assert hash_line["glosa"] == hash_finding.glosa
     assert hash_line["guias"] == 2
-    assert hash_line["valor_afetado"] == "200.00"
+    assert hash_line["affected_amount"] == "200.00"
 
     cpf_unformatted = deepcopy(cpf_lote)
     cpf_unformatted["prestador"]["cpf"] = cpf
     equivalent = tiss.rejection_map([cpf_unformatted], segredo_pseudonimo=secret)
     changed_secret = tiss.rejection_map([cpf_unformatted], segredo_pseudonimo="t" * 16)
-    assert equivalent["prestadores"][0]["prestador"] == cpf_id
-    assert changed_secret["prestadores"][0]["prestador"] != cpf_id
+    assert equivalent["providers"][0]["provider"] == cpf_id
+    assert changed_secret["providers"][0]["provider"] != cpf_id
     with pytest.raises(ValueError, match="Informe segredo_pseudonimo"):
         tiss.rejection_map([cpf_unformatted])
 
@@ -632,7 +633,7 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     authorization_map = tiss.rejection_map([authorization_lote], operadora="000000")
     authorization_line = next(
         item
-        for item in authorization_map["linhas"]
+        for item in authorization_map["rows"]
         if item["rule_id"] == authorization_finding.rule["id"]
     )
     guide_total = (
@@ -640,9 +641,9 @@ def test_hash_uses_iso_8859_1_and_ignores_comments(tmp_path, monkeypatch, capsys
     ).quantize(Decimal("0.01"))
     assert authorization_finding.code == "regra.exige_autorizacao"
     assert authorization_finding.glosa == "1818"
-    assert authorization_line["codigo"] == authorization_finding.code
+    assert authorization_line["code"] == authorization_finding.code
     assert authorization_line["rule_id"] == "exige-autorizacao-consulta"
     assert authorization_line["glosa"] == authorization_finding.glosa
     assert authorization_line["guias"] == 1
-    assert authorization_line["valor_afetado"] == f"{guide_total:.2f}"
+    assert authorization_line["affected_amount"] == f"{guide_total:.2f}"
     _check_cli(tmp_path, capsys, monkeypatch)

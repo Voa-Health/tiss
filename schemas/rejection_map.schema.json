@@ -4,16 +4,16 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "versao",
+    "version",
     "lotes",
     "guias",
-    "ignorados",
-    "prestadores",
-    "linhas"
+    "ignored",
+    "providers",
+    "rows"
   ],
   "properties": {
-    "versao": {
-      "const": "1"
+    "version": {
+      "const": "2"
     },
     "lotes": {
       "type": "integer",
@@ -23,32 +23,32 @@
       "type": "integer",
       "minimum": 0
     },
-    "ignorados": {
+    "ignored": {
       "type": "array",
       "items": {
         "type": "integer",
         "minimum": 0
       }
     },
-    "prestadores": {
+    "providers": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "prestador",
-          "mes",
+          "provider",
+          "month",
           "guias",
-          "guias_com_achado",
-          "valor_total",
-          "valor_afetado"
+          "guias_with_finding",
+          "total_amount",
+          "affected_amount"
         ],
         "properties": {
-          "prestador": {
+          "provider": {
             "type": "string",
             "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$"
           },
-          "mes": {
+          "month": {
             "type": [
               "string",
               "null"
@@ -59,48 +59,48 @@
             "type": "integer",
             "minimum": 0
           },
-          "guias_com_achado": {
+          "guias_with_finding": {
             "type": "integer",
             "minimum": 0
           },
-          "valor_total": {
+          "total_amount": {
             "type": "string",
             "pattern": "^-?\\d+\\.\\d{2}$"
           },
-          "valor_afetado": {
+          "affected_amount": {
             "type": "string",
             "pattern": "^-?\\d+\\.\\d{2}$"
           }
         }
       }
     },
-    "linhas": {
+    "rows": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "prestador",
-          "mes",
-          "codigo",
+          "provider",
+          "month",
+          "code",
           "glosa",
           "rule_id",
           "guias",
-          "valor_afetado"
+          "affected_amount"
         ],
         "properties": {
-          "prestador": {
+          "provider": {
             "type": "string",
             "pattern": "^(codigo:.+|cnpj:\\d{14}|cpf:hmac:[0-9a-f]{64})$"
           },
-          "mes": {
+          "month": {
             "type": [
               "string",
               "null"
             ],
             "pattern": "^\\d{4}-\\d{2}$"
           },
-          "codigo": {
+          "code": {
             "type": "string"
           },
           "glosa": {
@@ -119,7 +119,7 @@
             "type": "integer",
             "minimum": 0
           },
-          "valor_afetado": {
+          "affected_amount": {
             "type": "string",
             "pattern": "^-?\\d+\\.\\d{2}$"
           }

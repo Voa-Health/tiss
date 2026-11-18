@@ -7,6 +7,7 @@ import hashlib
 import http.server
 import json
 import os
+import re
 import shutil
 import socket
 import struct
@@ -38,6 +39,95 @@ from tiss._schema import (
     verify_schema_bundle,
 )
 from tiss.codes import CODES
+
+
+def _check_chatgpt_package() -> None:
+    package = ROOT / "plugins/chatgpt"
+    manifest = json.loads((package / "plugin.json").read_text())
+    openai = manifest["extensions"]["com.openai"]
+    review = openai["review"]
+    assert set(review) == {"commerce", "test_cases"}
+    assert review["commerce"] is False
+    cases = review["test_cases"]
+    for kind, count in [("positive", 5), ("negative", 3)]:
+        assert len(cases[kind]) == count
+        for case in cases[kind]:
+            assert set(case) == {"description", "prompt", "tools_triggered", "expected_behavior"}
+            assert all(isinstance(value, str) for value in case.values())
+            assert case["description"] and case["prompt"] and case["expected_behavior"]
+            if kind == "positive":
+                assert case["tools_triggered"]
+    text = json.dumps(cases, ensure_ascii=False)
+    assert not re.search(r"(?<!\d)(?:\d{11}|\d{15})(?!\d)", text)
+    assert not re.search(r"\b(?:CPF|CNS|carteirinha)\b", text, re.IGNORECASE)
+    assert manifest["version"] == tiss.__version__
+    interface = openai["interface"]
+    assert interface["developerName"] == "Voa Health"
+    assert interface["category"] == "Healthcare"
+    assert interface["capabilities"] == []
+    assert interface["displayName"] == "Voa TISS"
+    assert interface["shortDescription"] == "Brazilian ANS open data"
+    assert interface["shortDescription"].isascii()
+    assert len(interface["displayName"]) <= 30
+    assert len(interface["shortDescription"]) <= 30
+    assert interface["longDescription"] == (
+        "Look up Brazilian ANS open data and the TUSS terminology: procedure codes, TISS domain "
+        "tables, Table 38 denial (glosa) codes, health plan operator registry, "
+        "profile and hospital network, and D-TISS reference values. For providers, "
+        "billing staff, health plans and public managers. Read-only and public data "
+        "only: it does not receive beneficiary data or validate claims. D-TISS values "
+        "are statistical references, not contracted prices."
+    )
+    assert interface["longDescription"].isascii()
+    assert len(interface["longDescription"]) <= 4000
+    assert interface["defaultPrompt"] == [
+        "Explique o código de glosa 1801 da Tabela 38.",
+        "Busque o código TUSS de ecocardiograma transtorácico.",
+        "Mostre o perfil público de uma operadora pelo registro ANS.",
+    ]
+    assert len(interface["defaultPrompt"]) <= 3
+    assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
+    assert {
+        key: interface[key]
+        for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+    } == {
+        "websiteURL": "https://tiss-api.voa.health",
+        "supportURL": "https://tiss-api.voa.health",
+        "privacyPolicyURL": "https://app.voa.health/legal/privacidade",
+        "termsOfServiceURL": "https://app.voa.health/legal/termos",
+    }
+    assert all(
+        interface[key].startswith("https://")
+        for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+    )
+    translation = openai["publication"]["translations"]["pt-BR"]
+    assert translation == {
+        "subtitle": "Dados abertos da ANS e TUSS",
+        "description": (
+            "Consulta dados abertos da ANS e a TUSS: códigos de procedimento, tabelas de domínio "
+            "TISS, códigos de glosa da Tabela 38, cadastro, perfil e rede hospitalar de operadoras "
+            "e valores de referência D-TISS. Para prestadores, faturistas, operadoras e gestores. "
+            "Só leitura e só dados públicos: não recebe dados de beneficiário nem valida guias. "
+            "Valores D-TISS são referências estatísticas, não preços contratados."
+        ),
+    }
+    assert len(translation["subtitle"]) <= 30
+    assert "\n" not in translation["subtitle"] and "\r" not in translation["subtitle"]
+    assert len(translation["description"]) <= 4000
+    assert all(
+        (package / interface[key].removeprefix("./")).is_file()
+        for key in ("logo", "logoDark", "composerIcon", "composerIconDark")
+    )
+    mcp_config = json.loads((package / "mcp.json").read_text())
+    assert list(mcp_config) == ["$schema", "mcpServers"]
+    assert mcp_config["$schema"] == "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+    server = mcp_config["mcpServers"]["tiss"]
+    assert server["url"] == "https://tiss-api.voa.health/mcp/open-data"
+    assert server["extensions"]["com.openai"]["auth"] == {
+        "type": "oauth",
+        "client": {"mode": "cimd"},
+        "baseScopes": ["voa:tiss"],
+    }
 
 
 @pytest.mark.parametrize(
@@ -207,6 +297,7 @@ def test_example_reports(name, expected, tmp_path, capsys):
 
 
 def test_public_api_and_example_contract():
+    _check_chatgpt_package()
     _check_browser_map_contract()
     assert set(tiss.__all__) == {
         "AuditContext",
@@ -289,7 +380,7 @@ def _check_browser_map_contract():
         lote = tiss.parse_lote(examples.load("lote-valido"))
         lote["prestador"] = {"cpf": cpf}
         value = tiss.rejection_map([lote], segredo_pseudonimo=secret)
-        vectors.append([cpf, secret, value["prestadores"][0]["prestador"]])
+        vectors.append([cpf, secret, value["providers"][0]["provider"]])
     script = r"""
 import assert from "node:assert/strict";
 import {
@@ -301,34 +392,35 @@ for (const [cpf, secret, expected] of JSON.parse(process.argv[1])) {
   assert.equal(await identificarPrestador(cpf, async () => secret), expected);
 }
 const segredo = async () => "a".repeat(64);
-const csv = 'prestador,nome\n000.000.000-00,"Clínica, Sintética"\n' +
+const csv = 'provider,name\n000.000.000-00,"Clínica, Sintética"\n' +
   '00.000.000/0000-00,Hospital\ncodigo: A,Centro';
 const itens = await prepararCadastro(lerCadastro(csv, false), segredo);
-assert.match(itens[0].prestador, /^cpf:hmac:[0-9a-f]{64}$/);
-assert.equal(itens[0].nome, "Clínica, Sintética");
-assert.equal(itens[1].prestador, "cnpj:00000000000000");
-assert.equal(itens[2].prestador, "codigo:A");
+assert.match(itens[0].provider, /^cpf:hmac:[0-9a-f]{64}$/);
+assert.equal(itens[0].name, "Clínica, Sintética");
+assert.equal(itens[1].provider, "cnpj:00000000000000");
+assert.equal(itens[2].provider, "codigo:A");
 assert.deepEqual(lerCadastro("[]", true), []);
 assert.deepEqual(await prepararCadastro([], segredo), []);
 for (const body of [
-  '[{"prestador":"A","nome":"X","extra":1}]', '[{"prestador":"A","nome":""}]', '{}',
+  '[{"provider":"A","name":"X","extra":1}]', '[{"provider":"A","name":""}]', '{}',
 ]) {
   assert.throws(() => lerCadastro(body, true));
 }
-assert.throws(() => lerCadastro('prestador,nome\n"incompleto', false));
-assert.throws(() => lerCadastro('nome,prestador\nA,X', false));
-await assert.rejects(() => prepararCadastro([{prestador:"cpf:abc",nome:"X"}], segredo));
+assert.throws(() => lerCadastro('provider,name\n"incompleto', false));
+assert.throws(() => lerCadastro('name,provider\nA,X', false));
+await assert.rejects(() => prepararCadastro([{provider:"cpf:abc",name:"X"}], segredo));
 await assert.rejects(() => prepararCadastro(
-  [{prestador:"00000000000",nome:"X"}], async () => {throw Error("indisponível")},
+  [{provider:"00000000000",name:"X"}], async () => {throw Error("indisponível")},
 ));
 await assert.rejects(() => prepararCadastro(
-  [{prestador:"A",nome:"X"},{prestador:"codigo:A",nome:"Y"}], segredo,
+  [{provider:"A",name:"X"},{provider:"codigo:A",name:"Y"}], segredo,
 ));
-const prestador = {id:"codigo:A",nome:null,nome_origem:null};
+const prestador = {id:"codigo:A",name:null,name_source:null};
 const linha = {
-  prestador, mes:"2026-10", codigo:"X", glosa:null, rule_id:null, guias:2, valor_afetado:"0.10",
+  provider:prestador, month:"2026-10", code:"X", glosa:null, rule_id:null,
+  guias:2, affected_amount:"0.10",
 };
-const matriz = matrizDoMapa([linha,{...linha,valor_afetado:"0.20"},{...linha,mes:null}]);
+const matriz = matrizDoMapa([linha,{...linha,affected_amount:"0.20"},{...linha,month:null}]);
 assert.deepEqual(matriz.meses, ["2026-10","sem mês"]);
 assert.deepEqual(matriz.linhas[0].total, {guias:6,centavos:40});
 assert.deepEqual(matrizDoMapa([]), {meses:[],linhas:[]});
@@ -349,7 +441,7 @@ assert.equal(visivel({...org,my_areas:["administration"]}), true);
 const base = "org/org-1/tiss/rejection-map/";
 for (const [path, methods] of [
   [base,["GET","DELETE"]], [base+"enable/",["POST"]], [base+"disable/",["POST"]],
-  [base+"secret/",["GET"]], [base+"providers/",["PUT"]],
+  [base+"secret/",["GET"]], [base+"provider/",["PUT"]],
 ]) {
   for (const method of ["GET","POST","PUT","DELETE","PATCH"]) {
     assert.equal(rotaPermitida(path, method), methods.includes(method));

@@ -17,8 +17,6 @@ ANONYMOUS_LIMIT = 10
 TIER_LIMITS = {"login": 50, "verified": 1_000}
 SITE_URL = "https://tiss-api.voa.health"
 KEYS_URL = f"{SITE_URL}/org"
-BILLING_URL = f"{KEYS_URL}/cobranca"
-ENTERPRISE_URL = "https://voa.health"
 LIMITS = {
     "limite_diario": None,
     "sem_chave": {"operacoes": ["sandbox_*", "lista_de_espera"], "chaves": KEYS_URL},
@@ -65,7 +63,7 @@ def _billing(value: Any) -> Billing | None:
     return Billing(
         enforced=value.get("enforced") is True,
         payment_method_active=value.get("payment_method_active") is True,
-        billing_url=url if isinstance(url, str) and url else BILLING_URL,
+        billing_url=url if isinstance(url, str) and url else KEYS_URL,
         cloud_free_remaining=(
             remaining if isinstance(remaining, int) and not isinstance(remaining, bool) else 0
         ),
@@ -140,9 +138,7 @@ def authenticate(header: str | None) -> tuple[int, Access | None]:
 
 __all__ = [
     "ANONYMOUS_LIMIT",
-    "BILLING_URL",
     "CACHE_SECONDS",
-    "ENTERPRISE_URL",
     "KEYS_URL",
     "KEY_PREFIX",
     "KEY_PREFIXES",

@@ -71,7 +71,7 @@ describe("repasse do IP ao backend", () => {
       Response.json({ access: "novo", refresh: "r2" }),
       Response.json({ status: "ausente", nome_oficial: "" }),
     ];
-    const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/api/v2/me/tiss/organizations/lookup/?cnpj=1", { method: "GET" }, extras);
+    const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/api/v2/me/tiss/organization/", { method: "GET" }, extras);
     assert.equal(resultado.status, 200);
     assert.deepEqual(chamadas.map((chamada) => chamada.headers["x-voa-client-ip"]), ["198.51.100.23", "198.51.100.23", "198.51.100.23"]);
     assert.equal(chamadas[2].headers.authorization, "Bearer novo");

@@ -14,6 +14,7 @@ from typing import Any
 
 from tiss import examples, json_schema, validate
 from tiss.codes import CODES
+from tiss.server._mcp import _READ_ONLY_ANNOTATIONS, OPEN_DATA_TOOLS
 from tiss.server._ops import OPS, render_api_docs
 
 if __package__:
@@ -140,15 +141,20 @@ def _artifact_contents() -> dict[Path, bytes]:
         )
         + b"\n"
     )
-    tools = [
-        {
+    tools = []
+    for op in OPS:
+        tool = {
             "name": op.tool_name,
             "description": op.description,
             "inputSchema": op.input_schema,
             "outputSchema": op.output_schema,
         }
-        for op in OPS
-    ]
+        if op.tool_name in OPEN_DATA_TOOLS:
+            tool["annotations"] = _READ_ONLY_ANNOTATIONS.model_dump(
+                by_alias=True,
+                exclude_none=True,
+            )
+        tools.append(tool)
     artifacts[ROOT / "schemas" / "mcp-tools.json"] = (
         json.dumps(tools, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n"
     )

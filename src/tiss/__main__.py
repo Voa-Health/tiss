@@ -186,7 +186,7 @@ def _mapa(args: argparse.Namespace) -> int:
         sys.stderr.write("Não foi possível ler as entradas do mapa.\n")
         return _USAGE_ERROR
 
-    for index in result["ignorados"]:
+    for index in result["ignored"]:
         if index < len(paths):
             sys.stderr.write(f"Lote ignorado: {paths[index]}\n")
     serialized = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
