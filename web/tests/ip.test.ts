@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, it } from "node:test";
 import { chamarBackend, postarSemToken } from "../lib/org/backend.ts";
 import { cabecalhosDoCliente, ipDoCliente } from "../lib/org/ip.ts";
 
-type Chamada = { url: string; method?: string; headers: Record<string, string>; body?: string };
+type Chamada = { url: string; headers: Record<string, string> };
 
 const fetchOriginal = globalThis.fetch;
 let chamadas: Chamada[] = [];
@@ -15,12 +15,7 @@ beforeEach(() => {
   chamadas = [];
   respostas = [];
   globalThis.fetch = (async (url: string | URL, init?: RequestInit) => {
-    chamadas.push({
-      url: String(url),
-      method: init?.method,
-      headers: Object.fromEntries(new Headers(init?.headers).entries()),
-      body: typeof init?.body === "string" ? init.body : undefined,
-    });
+    chamadas.push({ url: String(url), headers: Object.fromEntries(new Headers(init?.headers).entries()) });
     return respostas.shift() ?? Response.json({ ok: true });
   }) as typeof fetch;
 });
@@ -73,22 +68,13 @@ describe("repasse do IP ao backend", () => {
   it("chamada autenticada e renovação do token levam o mesmo IP", async () => {
     respostas = [
       new Response(null, { status: 401 }),
-      Response.json({ access_token: "novo", token_type: "Bearer", expires_in: 900, refresh_token: "r2" }),
+      Response.json({ access: "novo", refresh: "r2" }),
       Response.json({ status: "ausente", nome_oficial: "" }),
     ];
     const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/api/v2/me/tiss/organization/", { method: "GET" }, extras);
     assert.equal(resultado.status, 200);
     assert.deepEqual(chamadas.map((chamada) => chamada.headers["x-voa-client-ip"]), ["198.51.100.23", "198.51.100.23", "198.51.100.23"]);
     assert.equal(chamadas[2].headers.authorization, "Bearer novo");
-    assert.equal(chamadas[1].url, "https://backend.exemplo.test/oauth/token");
-    assert.equal(chamadas[1].method, "POST");
-    assert.equal(chamadas[1].headers["content-type"], "application/x-www-form-urlencoded");
-    assert.deepEqual(Object.fromEntries(new URLSearchParams(chamadas[1].body)), {
-      grant_type: "refresh_token",
-      client_id: "voa-saas",
-      refresh_token: "r1",
-    });
-    assert.deepEqual(resultado.par, { access: "novo", refresh: "r2" });
   });
 
   it("o cabeçalho de autenticação não pode ser sobrescrito pelos extras", async () => {

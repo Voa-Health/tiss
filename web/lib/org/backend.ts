@@ -41,26 +41,12 @@ export async function postarSemToken(
   }
 }
 
-/** `/oauth/token` gira a renovação: a anterior deixa de valer. */
 export async function renovar(par: ParDeTokens, extras: Record<string, string> = {}): Promise<ParDeTokens | null> {
-  const base = urlDoBackend();
-  if (!base) return null;
-  let resposta: Response;
-  try {
-    resposta = await fetch(`${base}/oauth/token`, {
-      method: "POST",
-      headers: { ...extras, "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
-      body: new URLSearchParams({ grant_type: "refresh_token", client_id: "voa-saas", refresh_token: par.refresh }).toString(),
-      cache: "no-store",
-    });
-  } catch {
-    return null;
-  }
-  const corpo = await lerCorpo(resposta);
-  if (resposta.status !== 200 || typeof corpo !== "object" || corpo === null) return null;
-  const { access_token: access, refresh_token: refresh } = corpo as { access_token?: unknown; refresh_token?: unknown };
-  if (typeof access !== "string" || !access || typeof refresh !== "string" || !refresh) return null;
-  return { access, refresh };
+  const { status, corpo } = await postarSemToken("/auth/token/refresh/", { refresh: par.refresh }, extras);
+  if (status !== 200 || typeof corpo !== "object" || corpo === null) return null;
+  const { access, refresh } = corpo as { access?: unknown; refresh?: unknown };
+  if (typeof access !== "string" || !access) return null;
+  return { access, refresh: typeof refresh === "string" && refresh ? refresh : par.refresh };
 }
 
 /** Chama o backend e renova o par uma vez se o acesso venceu. */
