@@ -41,12 +41,26 @@ export async function postarSemToken(
   }
 }
 
+/** `/oauth/token` gira a renovação: a anterior deixa de valer. */
 export async function renovar(par: ParDeTokens, extras: Record<string, string> = {}): Promise<ParDeTokens | null> {
-  const { status, corpo } = await postarSemToken("/auth/token/refresh/", { refresh: par.refresh }, extras);
-  if (status !== 200 || typeof corpo !== "object" || corpo === null) return null;
-  const { access, refresh } = corpo as { access?: unknown; refresh?: unknown };
-  if (typeof access !== "string" || !access) return null;
-  return { access, refresh: typeof refresh === "string" && refresh ? refresh : par.refresh };
+  const base = urlDoBackend();
+  if (!base) return null;
+  let resposta: Response;
+  try {
+    resposta = await fetch(`${base}/oauth/token`, {
+      method: "POST",
+      headers: { ...extras, "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
+      body: new URLSearchParams({ grant_type: "refresh_token", client_id: "voa-saas", refresh_token: par.refresh }).toString(),
+      cache: "no-store",
+    });
+  } catch {
+    return null;
+  }
+  const corpo = await lerCorpo(resposta);
+  if (resposta.status !== 200 || typeof corpo !== "object" || corpo === null) return null;
+  const { access_token: access, refresh_token: refresh } = corpo as { access_token?: unknown; refresh_token?: unknown };
+  if (typeof access !== "string" || !access || typeof refresh !== "string" || !refresh) return null;
+  return { access, refresh };
 }
 
 /** Chama o backend e renova o par uma vez se o acesso venceu. */
@@ -72,9 +86,9 @@ export async function chamarBackend(
       cache: "no-store",
       signal: init.signal,
     });
+  let novoPar: ParDeTokens | null | undefined;
   try {
     let resposta = await enviar(par.access);
-    let novoPar: ParDeTokens | null | undefined;
     if (resposta.status === 401) {
       novoPar = await renovar(par, extras);
       if (!novoPar) return { status: 401, corpo: { detail: "Entre novamente." }, par: null };
@@ -85,6 +99,7 @@ export async function chamarBackend(
     }
     return { status: resposta.status, corpo: await lerCorpo(resposta), par: novoPar };
   } catch {
-    return { status: 502, corpo: { detail: "O servidor não respondeu. Tente de novo." }, par: undefined };
+    // A renovação já gastou o refresh anterior; o par novo precisa voltar.
+    return { status: 502, corpo: { detail: "O servidor não respondeu. Tente de novo." }, par: novoPar };
   }
 }
