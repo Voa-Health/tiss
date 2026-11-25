@@ -86,9 +86,9 @@ export async function chamarBackend(
       cache: "no-store",
       signal: init.signal,
     });
+  let novoPar: ParDeTokens | null | undefined;
   try {
     let resposta = await enviar(par.access);
-    let novoPar: ParDeTokens | null | undefined;
     if (resposta.status === 401) {
       novoPar = await renovar(par, extras);
       if (!novoPar) return { status: 401, corpo: { detail: "Entre novamente." }, par: null };
@@ -99,6 +99,7 @@ export async function chamarBackend(
     }
     return { status: resposta.status, corpo: await lerCorpo(resposta), par: novoPar };
   } catch {
-    return { status: 502, corpo: { detail: "O servidor não respondeu. Tente de novo." }, par: undefined };
+    // A renovação já gastou o refresh anterior; o par novo precisa voltar.
+    return { status: 502, corpo: { detail: "O servidor não respondeu. Tente de novo." }, par: novoPar };
   }
 }

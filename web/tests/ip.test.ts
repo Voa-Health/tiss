@@ -91,6 +91,21 @@ describe("repasse do IP ao backend", () => {
     assert.deepEqual(resultado.par, { access: "novo", refresh: "r2" });
   });
 
+  it("falha de rede depois da renovação devolve o par novo", async () => {
+    respostas = [
+      new Response(null, { status: 401 }),
+      Response.json({ access_token: "novo", token_type: "Bearer", expires_in: 900, refresh_token: "r2" }),
+    ];
+    const fetchComRenovacao = globalThis.fetch;
+    globalThis.fetch = (async (url: string | URL, init?: RequestInit) => {
+      if (chamadas.length === 2) throw new TypeError("fetch failed");
+      return fetchComRenovacao(url, init);
+    }) as typeof fetch;
+    const resultado = await chamarBackend({ access: "velho", refresh: "r1" }, "/x/", { method: "GET" });
+    assert.equal(resultado.status, 502);
+    assert.deepEqual(resultado.par, { access: "novo", refresh: "r2" });
+  });
+
   it("o cabeçalho de autenticação não pode ser sobrescrito pelos extras", async () => {
     await chamarBackend({ access: "certo", refresh: "r" }, "/x/", { method: "GET" }, { authorization: "Bearer outro" });
     assert.equal(chamadas[0].headers.authorization, "Bearer certo");
